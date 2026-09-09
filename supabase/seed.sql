@@ -1,0 +1,15 @@
+-- Phase 2 development seed data
+--
+-- Keep this file deterministic and safe to run in a development database.
+--
+-- Do not invent seed records until the domain schema has been approved.
+--
+-- After domain tables exist, add small representative data sets here.
+-- Prefer stable sample values that allow every major backend flow to be tested.
+--
+-- Example pattern:
+--
+-- insert into example_table (name, status)
+-- values
+--   ('Example A', 'active'),
+--   ('Example B', 'inactive');
