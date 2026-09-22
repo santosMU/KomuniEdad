@@ -1,155 +1,75 @@
-# Phase 2 Backend + Database Initialization
+# KomuniEdad
 
-This scaffold initializes the database and backend portion of Phase 2.
+Senior citizen program and community activity management, following the Group 4 Phase 1 proposal.
 
-It is intentionally domain-neutral because the actual tables, relationships,
-roles, and business rules must come from the approved Phase 1 revision.
+**Stack:** PHP 8.2+, Laravel 12, Blade templates, Bootstrap 5.3.8, Supabase PostgreSQL and Supabase Auth. Laravel is the application at this repository root. The original Next.js scaffold has been replaced. Bootstrap is bundled locally; no frontend Node build is required.
 
-The structure is loosely based on the referenced `KaiserLycan/yangs-fried-rice`
-repository:
+## Start on this Windows machine
 
-- Next.js App Router
-- TypeScript
-- Supabase / PostgreSQL
-- SQL schema and seed files kept in `supabase/`
-- environment variables kept outside version control
+Dependencies and a local demo environment have already been prepared. In PowerShell:
 
-No frontend feature implementation is included.
-
-## Included
-
-```text
-app/api/health/route.ts       Backend health endpoint
-app/api/db-health/route.ts    Database connectivity endpoint
-lib/env.ts                    Environment validation
-lib/supabase/server.ts        Server-side Supabase client
-supabase/schema.sql           Database baseline + DB health function
-supabase/seed.sql             Seed-data placeholder
-docs/requirements.md          Phase 1 requirements handoff template
-docs/database/ERD.md          ERD planning template
-docs/api/endpoints.md         Initial API documentation
+```powershell
+cd 'D:\02_Projects\06_ProjectsDev\KomuniEdad'
+& 'C:\xampp\php\php.exe' artisan serve --port=8010
 ```
 
-## 1. Install
+Open http://127.0.0.1:8010. Use **Preview as** to explore Senior, Coordinator, and Admin screens. Demo data is session-only and changes no real records. Set `KOMUNIEDAD_DEMO=true` only for local demonstrations. The switch is unavailable in live mode and demo mode is rejected outside local/testing environments.
 
-```bash
+## Fresh checkout
+
+Install Composer and PHP 8.2+ (XAMPP PHP works). Enable PHP curl, mbstring, OpenSSL, fileinfo, XML, and zip extensions. Then:
+
+```powershell
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+```
+
+Set `KOMUNIEDAD_DEMO=true` in `.env` to preview, then `php artisan serve`. If PHP is not on PATH, use `C:\xampp\php\php.exe`. `vendor/` is intentionally not committed.
+
+## XAMPP Apache option
+
+You may use XAMPP's PHP with `artisan serve` without starting Apache or MySQL. If using Apache, configure a local virtual host with its DocumentRoot pointing to this project's **public/** directory, enable `mod_rewrite`, and allow `.htaccess` overrides. Do not expose the repository root as a web directory. No XAMPP configuration has been changed automatically.
+
+Supabase provides PostgreSQL and authentication as specified in the proposal. XAMPP MySQL/phpMyAdmin is not used by this version.
+
+## Connect Supabase
+
+Use a development Supabase project. In SQL Editor apply, in order:
+
+1. `supabase/schema.sql`
+2. Every `supabase/migrations/*.sql` file in filename order (once each)
+3. `supabase/seed.sql`
+
+Set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `KOMUNIEDAD_DEMO=false` in `.env`. Keep `SESSION_DRIVER=file`, `SESSION_ENCRYPT=true`, and `CACHE_STORE=file`. Use an anon JWT API key from your project; never a service-role key. Run `php artisan config:clear` after changes.
+
+Register senior accounts at `/register`. Supabase handles passwords and email confirmation. The profile trigger always creates the lowest-privilege role; client metadata cannot assign coordinator/admin access. Initial admin provisioning must be performed by the project owner through trusted Supabase administration. Use that administrator's Users screen to grant further staff roles. Existing Auth accounts created before the migration need profile backfilling; see `docs/setup.md`.
+
+Optional verification is off by default. Set `public.settings.require_verification=true` through trusted database administration only after the client approves that policy. No identity documents are collected in this implementation.
+
+For deployment set `APP_ENV=production`, `APP_DEBUG=false`, `KOMUNIEDAD_DEMO=false`, an HTTPS `APP_URL`, `SESSION_SECURE_COOKIE=true`, and a unique `APP_KEY`. Retain writable private storage for encrypted sessions. Live sessions require signing in again on token expiry; automatic token refresh is not implemented.
+
+## Implemented workflows
+
+- Senior: sign up/sign in/sign out, activity search and category filters, details, enrollment, waitlist, withdrawal, profile, participation history, announcements, eligible feedback.
+- Coordinator: assigned activity creation/editing/status changes, roster, attendance, reasoned participant actions/walk-ins, activity announcements, summary reports.
+- Administrator: organization-wide activity oversight, accounts/roles/status/verification, categories, announcements, reports, recent audit events.
+- Database: nine domain entities plus a verification settings table, relational constraints, row-level security, transactional seat allocation, duplicate prevention, eligible waitlist promotion, audit logging of staff mutations.
+
+## Validation
+
+```powershell
+php artisan test
+php artisan view:cache
+```
+
+Optional database tests need Node only:
+
+```powershell
 npm install
+npm run test:db
 ```
 
-## 2. Create a Supabase project
+Database tests execute the real migrations in isolated embedded PostgreSQL (PGlite) with a test-only Supabase Auth substitute. They do not connect to or modify your hosted project. Laravel HTTP integration tests use mocked Supabase responses. Hosted Supabase integration and true multi-connection concurrency/load tests remain necessary before production.
 
-Create the project, then copy its project URL and anon key.
-
-```bash
-cp .env.local.example .env.local
-```
-
-Fill in:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY
-SUPABASE_PROJECT_ID=YOUR_PROJECT_ID
-```
-
-Never commit `.env.local`.
-
-## 3. Apply the database baseline
-
-Run `supabase/schema.sql` in the Supabase SQL Editor.
-
-The baseline creates only a database health-check function. It does not invent
-project tables.
-
-Run `supabase/seed.sql` afterward. It is intentionally empty until the Phase 1
-requirements have been converted into the approved schema.
-
-## 4. Start the backend
-
-```bash
-npm run dev
-```
-
-Check:
-
-```text
-GET http://localhost:3000/api/health
-GET http://localhost:3000/api/db-health
-```
-
-Expected backend result:
-
-```json
-{
-  "status": "ok",
-  "service": "phase2-backend"
-}
-```
-
-The DB health endpoint should report `database.status = "ok"` after the schema
-has been applied.
-
-## 5. Before adding project tables
-
-Copy the approved Phase 1 revision into `docs/requirements.md`, then derive:
-
-1. entities
-2. attributes
-3. primary keys
-4. foreign keys
-5. relationships
-6. constraints
-7. required CRUD operations
-
-Document the ERD in `docs/database/ERD.md`.
-
-Only after the ERD is approved should domain tables be added to
-`supabase/schema.sql`.
-
-## Recommended implementation order
-
-```text
-Phase 1 requirements
-        |
-        v
-ERD + relational schema
-        |
-        v
-supabase/schema.sql
-        |
-        v
-supabase/seed.sql
-        |
-        v
-DB health verified
-        |
-        v
-backend routes
-        |
-        v
-validation + business rules
-        |
-        v
-tests
-        |
-        v
-frontend integration
-```
-
-## Git initialization
-
-```bash
-git init
-git add .
-git commit -m "chore: initialize phase 2 database and backend"
-git branch -M main
-```
-
-Recommended next branches:
-
-```text
-develop
-feature/database-schema
-feature/backend-core
-feature/<first-domain-module>
-```
+See `docs/requirements.md` for requirement coverage and limitations, `docs/api/endpoints.md` for routes/RPCs, and `docs/database/ERD.md` for the relational model. Nothing has been deployed or pushed by this change.
