@@ -138,17 +138,27 @@ class PortalTest extends TestCase
         $this->post('/register', $payload)->assertSessionHasErrors('email');
     }
 
-    public function test_live_registration_auto_signs_in_when_supabase_autoconfirms(): void
+    public function test_live_registration_never_inherits_admin_session_or_auto_signs_in(): void
     {
         config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'test']);
         Http::fake(['*' => Http::response(['user' => ['id' => 'new-user'], 'access_token' => 'new-token'])]);
 
-        $this->post('/register', [
-            'full_name' => 'New Member',
-            'email' => 'member@example.test',
-            'password' => 'A-long-password-123',
-            'password_confirmation' => 'A-long-password-123',
-        ])->assertRedirect('/')->assertSessionHas('access_token', 'new-token');
+        $this->withSession(['access_token' => 'old-admin-token', 'profile' => ['role' => 'admin']])
+            ->post('/register', [
+                'full_name' => 'New Member',
+                'email' => 'member@example.test',
+                'password' => 'A-long-password-123',
+                'password_confirmation' => 'A-long-password-123',
+            ])->assertRedirect('/login')
+            ->assertSessionMissing('access_token')
+            ->assertSessionMissing('profile');
+
+        Http::assertSent(fn ($request) =>
+            str_contains($request->url(), '/auth/v1/signup')
+            && ! $request->hasHeader('Authorization')
+            && ($request['data']['full_name'] ?? null) === 'New Member'
+            && ! isset($request['data']['role'])
+        );
     }
 
     public function test_live_registration_explains_default_smtp_restriction(): void
@@ -181,6 +191,45 @@ class PortalTest extends TestCase
             'password' => 'A-long-password-123',
             'password_confirmation' => 'A-long-password-123',
         ])->assertSessionHasErrors('service');
+    }
+
+    public function test_paid_activity_is_explicitly_cash_only_and_attendance_waits_for_payment(): void
+    {
+        $this->withSession(['demo_role' => 'senior'])
+            ->post('/activities/3/enroll')
+            ->assertRedirect();
+
+        $enrollment = session('demo_enrollments')[0];
+        $this->assertSame('unpaid', $enrollment['payment_status']);
+
+        $activities = session('demo_activities');
+        foreach ($activities as &$activity) {
+            if ($activity['activity_id'] === '3') {
+                $activity['status'] = 'ongoing';
+                $activity['start_at'] = now()->subHour()->toIso8601String();
+                $activity['end_at'] = now()->addHour()->toIso8601String();
+            }
+        }
+        unset($activity);
+
+        $this->withSession(['demo_role' => 'coordinator', 'demo_activities' => $activities])
+            ->post('/workspace/3/attendance', [
+                'enrollment_id' => $enrollment['enrollment_id'],
+                'attended' => 1,
+            ])->assertSessionHasErrors('attendance');
+
+        $this->post('/workspace/3/payment', [
+            'enrollment_id' => $enrollment['enrollment_id'],
+            'paid' => 1,
+            'reason' => 'Cash received at the front desk',
+        ])->assertRedirect();
+
+        $this->assertSame('paid', session('demo_enrollments')[0]['payment_status']);
+
+        $this->post('/workspace/3/attendance', [
+            'enrollment_id' => $enrollment['enrollment_id'],
+            'attended' => 1,
+        ])->assertRedirect();
     }
 
 }
