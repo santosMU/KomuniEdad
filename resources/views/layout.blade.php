@@ -81,7 +81,7 @@
                     <small>{{ ucfirst($currentRole) }} {{ $demo ? '· Demo' : '' }}</small>
                 </div>
             </div>
-            @if(!$demo && session('access_token'))
+            @if(!$demo && $portal->accessToken())
                 <form method="post" action="/logout">@csrf<button class="btn btn-link">Sign out</button></form>
             @endif
         </div>
@@ -103,7 +103,7 @@
                 <span class="portal-label">Senior citizen community portal</span>
             </div>
             <div class="topbar-end">
-                @if(!$demo && session('access_token'))
+                @if(!$demo && $portal->accessToken())
                     <form method="post" action="/logout" class="mobile-signout">@csrf<button class="btn btn-outline-secondary">Sign out</button></form>
                 @endif
                 <span class="today">{{ now()->format('l, F j') }}</span>
