@@ -18,9 +18,10 @@ class Community
         abort_unless(config('komuniedad.url') && config('komuniedad.key'), 503, 'Supabase is not configured.');
         try {
             $client = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))->timeout(15)->withHeaders(['apikey' => config('komuniedad.key')]);
-            if (session('access_token')) {
+            $publicAuthRequest = str_starts_with($path, '/auth/v1/signup') || str_starts_with($path, '/auth/v1/token');
+            if (! $publicAuthRequest && session('access_token')) {
                 $client = $client->withToken(session('access_token'));
-            } elseif (str_starts_with(config('komuniedad.key'), 'eyJ')) {
+            } elseif (! $publicAuthRequest && str_starts_with(config('komuniedad.key'), 'eyJ')) {
                 $client = $client->withToken(config('komuniedad.key'));
             }
             $r = $client->send($method, $path, $method === 'GET' ? ['query' => $data] : ['json' => (object) $data]);
@@ -68,7 +69,7 @@ class Community
 
             // Only expose known domain messages; never return raw database details.
             $safe = ['Registration is closed', 'Withdrawal is closed', 'Activity is full', 'Activity is closed', 'You already joined this activity', 'Not authorized', 'Enrollment not found', 'Active enrollment not found', 'Enrollment is not active'];
-            $safe = array_merge($safe, ['Capacity cannot be lower than allocated seats', 'The activity has not started', 'The activity has not ended', 'A finalized activity cannot be reopened', 'Complete or cancel the activity before archiving', 'Published activities cannot return to draft', 'Invalid coordinator', 'Invalid category', 'A correction reason is required', 'Attendance is not available for this enrollment', 'Ask another administrator to change your account', 'Reassign active activities before changing this coordinator', 'An active senior account is required']);
+            $safe = array_merge($safe, ['Capacity cannot be lower than allocated seats', 'The activity has not started', 'The activity has not ended', 'A finalized activity cannot be reopened', 'Complete or cancel the activity before archiving', 'Published activities cannot return to draft', 'Invalid coordinator', 'Invalid category', 'A correction reason is required', 'Attendance is not available for this enrollment', 'Ask another administrator to change your account', 'Reassign active activities before changing this coordinator', 'An active senior account is required', 'Cash payment must be recorded before attendance', 'No cash payment is required for this activity', 'Cash payment can only be recorded for a confirmed participant']);
             $friendly = in_array($message, $safe, true) ? $message.'.' : 'Request unsuccessful. Check the activity rules, your permissions and the values entered.';
             if (str_starts_with($path, '/auth/v1/token')) {
                 $friendly = 'Sign-in failed. Check your email and password, and confirm your email if required.';
@@ -95,7 +96,7 @@ class Community
             ['Grow together: urban gardening', 'Learning', 'Barangay learning center', 8, 15, 'garden', 'Learn to grow herbs and vegetables in small spaces. Share your gardening stories. Materials are provided.'],
             ['Kwentuhan & coffee afternoon', 'Social', 'Senior citizens hall', 30, 30, 'coffee', 'Good stories, warm coffee, and familiar faces. Join a relaxed afternoon of conversation and community.'],
             ['Digital basics: stay connected', 'Learning', 'Community computer room', 7, 12, 'digital', 'Practice video calls and everyday phone skills at your own pace. Bring your phone if you have one.'],
-        ])->map(fn ($a, $i) => ['activity_id' => (string) ($i + 1), 'coordinator_id' => 'demo-coordinator', 'coordinator_name' => 'Alex Reyes', 'category_id' => strtolower($a[1]), 'title' => $a[0], 'categories' => ['name' => $a[1]], 'venue' => $a[2], 'confirmed' => $a[3], 'capacity' => $a[4], 'art' => $a[5], 'description' => $a[6], 'requirements' => 'Comfortable clothing and drinking water.', 'start_at' => now()->addDays($i + 2)->setTime(9 + $i, 0)->toIso8601String(), 'end_at' => now()->addDays($i + 2)->setTime(11 + $i, 0)->toIso8601String(), 'cutoff_at' => now()->addDays($i + 1)->toIso8601String(), 'status' => 'open'])->all();
+        ])->map(fn ($a, $i) => ['activity_id' => (string) ($i + 1), 'coordinator_id' => 'demo-coordinator', 'coordinator_name' => 'Alex Reyes', 'category_id' => strtolower($a[1]), 'title' => $a[0], 'categories' => ['name' => $a[1]], 'venue' => $a[2], 'confirmed' => $a[3], 'capacity' => $a[4], 'art' => $a[5], 'description' => $a[6], 'requirements' => 'Comfortable clothing and drinking water.', 'start_at' => now()->addDays($i + 2)->setTime(9 + $i, 0)->toIso8601String(), 'end_at' => now()->addDays($i + 2)->setTime(11 + $i, 0)->toIso8601String(), 'cutoff_at' => now()->addDays($i + 1)->toIso8601String(), 'status' => 'open', 'is_free' => $i !== 2, 'fee' => $i === 2 ? 50.00 : 0.00])->all();
         session(['demo_activities' => $activities]);
 
         return $activities;
