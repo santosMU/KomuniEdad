@@ -115,4 +115,47 @@ class InteractiveTest extends TestCase
         $this->assertNull(session('access_token'));
     }
 
+    public function test_cookie_authenticated_user_can_see_and_use_logout(): void
+    {
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'sb_publishable_test']);
+
+        Http::fake(function ($request) {
+            if (str_contains($request->url(), '/auth/v1/user')) {
+                return Http::response(['id' => 'senior-user']);
+            }
+
+            if (str_contains($request->url(), '/rest/v1/profiles')) {
+                return Http::response([[
+                    'user_id' => 'senior-user',
+                    'full_name' => 'Senior C',
+                    'role' => 'senior',
+                    'account_status' => 'active',
+                ]]);
+            }
+
+            if (str_contains($request->url(), '/rest/v1/senior_profiles')) {
+                return Http::response([[
+                    'user_id' => 'senior-user',
+                    'verification_status' => 'pending',
+                ]]);
+            }
+
+            if (str_contains($request->url(), '/auth/v1/logout')) {
+                return Http::response([], 204);
+            }
+
+            return Http::response([]);
+        });
+
+        $this->withCookie(\App\Services\Community::AUTH_COOKIE, 'user-token')
+            ->get('/profile')
+            ->assertOk()
+            ->assertSee('Sign out');
+
+        $this->withCookie(\App\Services\Community::AUTH_COOKIE, 'user-token')
+            ->post('/logout')
+            ->assertRedirect('/login')
+            ->assertCookieExpired(\App\Services\Community::AUTH_COOKIE);
+    }
+
 }
