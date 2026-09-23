@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>@yield('title','Activities') · KomuniEdad</title><link rel="stylesheet" href="/vendor/bootstrap.min.css"><link rel="stylesheet" href="/community.css"><meta name="csrf-token" content="{{ csrf_token() }}"><script src="/community.js" defer></script></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>@yield('title','Activities') · KomuniEdad</title><link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/5/5a/Sun_Symbol_of_the_National_Flag_of_the_Philippines.svg"><link rel="stylesheet" href="/vendor/bootstrap.min.css"><link rel="stylesheet" href="/community.css"><meta name="csrf-token" content="{{ csrf_token() }}"><script src="/community.js" defer></script></head>
 <body><a class="skip" href="#main">Skip to content</a>
 @php($portal=app(\App\Services\Community::class))
 @php($demo=$portal->demo())
 @php($currentRole=$portal->role())
-<div class="app-shell"><aside class="sidebar"><a class="brand" href="/"><span class="brand-mark">k.</span> KomuniEdad</a><p class="brand-note">A community for every chapter.</p><div class="nav-label">YOUR COMMUNITY</div>
+<div class="app-shell"><aside class="sidebar"><a class="brand" href="/"><span class="brand-mark"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Sun_Symbol_of_the_National_Flag_of_the_Philippines.svg" alt="" aria-hidden="true"></span> KomuniEdad</a><p class="brand-note">A community for every chapter.</p><div class="nav-label">YOUR COMMUNITY</div>
 <nav aria-label="Main navigation">
 @if($currentRole==='senior')
 <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover activities</a>
