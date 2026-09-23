@@ -6,6 +6,7 @@ use App\Services\Community;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -150,8 +151,20 @@ class CommunityController extends Controller
         }
 
         $r->session()->regenerate();
-        session(['access_token' => $a['access_token']]);
+        $r->session()->forget('access_token');
 
-        return redirect('/');
+        $cookie = cookie(
+            Community::AUTH_COOKIE,
+            $a['access_token'],
+            (int) config('session.lifetime', 120),
+            '/',
+            config('session.domain'),
+            (bool) config('session.secure', false),
+            true,
+            false,
+            config('session.same_site', 'lax')
+        );
+
+        return redirect('/')->withCookie($cookie);
     }
 }
