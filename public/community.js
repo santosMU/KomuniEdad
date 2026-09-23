@@ -132,27 +132,55 @@
         }
         first?.focus();
     }
+    const localUrl = target => {
+        const parsed = new URL(target || location.href, location.origin);
+        return new URL(parsed.pathname + parsed.search + parsed.hash, location.origin);
+    };
+
     async function updatePage(target) {
-        const url = new URL(target, location.origin);
-        if (url.origin !== location.origin) throw new Error('Unexpected navigation response.');
+        const url = localUrl(target);
         searchRequest?.abort();
         clearTimeout(searchTimer);
         ++searchVersion;
-        const response = await fetch(url, { credentials: 'same-origin', headers: { Accept: 'text/html' } });
-        if (!response.ok) throw new Error('Saved, but the page could not refresh. Refresh manually before making another change.');
+
+        const response = await fetch(url, {
+            credentials: 'same-origin',
+            redirect: 'follow',
+            headers: { Accept: 'text/html' },
+        });
+
+        if (!response.ok) {
+            throw Object.assign(new Error('The updated page could not be loaded.'), {
+                refreshTarget: url.pathname + url.search,
+            });
+        }
+
+        const finalUrl = localUrl(response.url);
+        if (finalUrl.pathname === '/login') {
+            location.assign('/login');
+            return false;
+        }
+
         const page = new DOMParser().parseFromString(await response.text(), 'text/html');
         const main = page.querySelector('#main');
-        if (!main) throw new Error('Saved. Refresh this page to see the latest information.');
+        if (!main) {
+            throw Object.assign(new Error('The updated page could not be loaded.'), {
+                refreshTarget: url.pathname + url.search,
+            });
+        }
+
         document.querySelector('#main').replaceWith(main);
         syncPaymentFields(main);
         document.title = page.title;
-        history.replaceState(null, '', new URL(response.url).pathname + new URL(response.url).search);
+        history.replaceState(null, '', finalUrl.pathname + finalUrl.search);
         const nav = page.querySelector('.sidebar nav');
         if (nav) document.querySelector('.sidebar nav').replaceWith(nav);
         const member = page.querySelector('.member');
         if (member) document.querySelector('.member').replaceWith(member);
         main.setAttribute('tabindex', '-1');
         main.focus({ preventScroll: true });
+
+        return true;
     }
     document.addEventListener('input', event => {
         if (event.target.setCustomValidity) event.target.setCustomValidity('');
@@ -243,19 +271,25 @@
                 headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
             });
             saved = true;
-            await updatePage(data.redirect || location.href);
+            const refreshed = await updatePage(data.redirect || location.href);
+            if (refreshed === false) return;
             mutationBusy = false;
             notice(data.message || 'Changes saved.');
         } catch (error) {
+            if (saved) {
+                const fallback = localUrl(error.refreshTarget || location.href);
+                location.assign(fallback.pathname + fallback.search);
+                return;
+            }
+
             uncertain = !error.status || error.status >= 500;
-            notice(saved ? 'Your change was saved, but the view could not refresh. Refresh the page before submitting again.' : error.message, true);
+            notice(error.message, true);
             fieldErrors(form, error.errors);
             if (error.errors) {
                 const all = Object.values(error.errors).flat().join(' ');
                 notice(all, true);
             }
         } finally {
-            // A saved mutation must not be retried if only its refresh failed.
             if (!saved && !uncertain) {
                 mutationBusy = false;
                 delete form.dataset.busy;
