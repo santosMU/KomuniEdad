@@ -44,6 +44,7 @@ Route::middleware([CommunitySession::class, \App\Http\Middleware\JsonFormRespons
     Route::post('/workspace/{id}/edit', [Portal::class, 'save']);
     Route::get('/workspace/{id}/participants', [Portal::class, 'roster']);
     Route::post('/workspace/{id}/attendance', [Portal::class, 'attendance']);
+    Route::post('/workspace/{id}/payment', [Portal::class, 'payment']);
     Route::post('/workspace/{id}/enrollment', [Portal::class, 'enrollment']);
     Route::get('/profile', [Portal::class, 'profile']);
     Route::post('/profile', [Portal::class, 'updateProfile']);
