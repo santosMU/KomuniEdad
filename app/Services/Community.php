@@ -8,6 +8,13 @@ use Illuminate\Validation\ValidationException;
 
 class Community
 {
+    public const AUTH_COOKIE = 'komuniedad_access';
+
+    public function accessToken(): ?string
+    {
+        return session('access_token') ?: request()->cookie(self::AUTH_COOKIE);
+    }
+
     public function demo(): bool
     {
         return config('komuniedad.demo') && app()->environment('local', 'testing');
@@ -19,8 +26,8 @@ class Community
         try {
             $client = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))->timeout(15)->withHeaders(['apikey' => config('komuniedad.key')]);
             $publicAuthRequest = str_starts_with($path, '/auth/v1/signup') || str_starts_with($path, '/auth/v1/token');
-            if (! $publicAuthRequest && session('access_token')) {
-                $client = $client->withToken(session('access_token'));
+            if (! $publicAuthRequest && $this->accessToken()) {
+                $client = $client->withToken($this->accessToken());
             } elseif (! $publicAuthRequest && str_starts_with(config('komuniedad.key'), 'eyJ')) {
                 $client = $client->withToken(config('komuniedad.key'));
             }
