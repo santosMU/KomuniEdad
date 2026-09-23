@@ -32,7 +32,7 @@ Route::post('/demo/role', function (Request $r, CommunityService $s) {
     return redirect($d['role'] === 'senior' ? '/' : '/workspace');
 });
 Route::get('/health', fn () => response()->json(['status' => 'ok', 'service' => 'komuniedad-laravel']));
-Route::middleware(CommunitySession::class)->group(function () {
+Route::middleware([CommunitySession::class, \App\Http\Middleware\JsonFormResponse::class])->group(function () {
     Route::get('/', [Community::class, 'index']);
     Route::get('/activities/{id}', [Community::class, 'detail']);
     Route::post('/activities/{id}/enroll', [Community::class, 'enroll'])->middleware('throttle:20,1');

@@ -54,4 +54,13 @@ assert.equal((await db.query('select * from participant_list($1)',[c])).rows.fin
 await asUser(ids[4]);await assert.rejects(db.query('select manage_enrollment($1,$2,$3,$4)',[c,ids[1],'cancelled','Wrong coordinator']),/Not authorized/);
 await asUser(ids[0]);await assert.rejects(db.query('select promote_waitlist($1)',[c]),/permission denied/);
 console.log('PASS: all migrations, safe provisioning, staff ownership, category/activity CRUD, capacity, duplicates, waitlists, RLS, attendance, feedback eligibility/uniqueness, profile safety, announcements, verification, audit, cutoff, staff walk-ins and capacity/cancellation, private helper permissions.');
+await asUser(ids[3]);
+const d=(await db.query('select save_activity($1) id',[payload])).rows[0].id;
+await asUser(ids[0]);await db.query('select enroll_in_activity($1)',[d]);
+await asUser(ids[1]);await db.query('select enroll_in_activity($1)',[d]);
+await asUser(ids[3]);await db.query('select save_activity($1,$2)',[{...payload,capacity:2},d]);
+assert.equal((await db.query('select * from participant_list($1)',[d])).rows.find(e=>e.senior_id===ids[1]).status,'confirmed');
+await asUser(ids[2]);
+assert.equal((await db.query('select * from enroll_in_activity($1)',[d])).rows[0].status,'waitlisted');
+console.log('PASS: capacity increase promotes existing eligible waitlist before a newer registration.');
 await db.close();
