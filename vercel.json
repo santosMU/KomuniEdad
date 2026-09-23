@@ -1,5 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "echo \"No frontend build required; Laravel is handled by vercel-php.\"",
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.6.2"
