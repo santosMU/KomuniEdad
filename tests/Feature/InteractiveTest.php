@@ -102,4 +102,17 @@ class InteractiveTest extends TestCase
         );
     }
 
+    public function test_live_login_sets_dedicated_auth_cookie(): void
+    {
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'sb_publishable_test']);
+        Http::fake(['*' => Http::response(['access_token' => 'user-token'])]);
+
+        $this->post('/login', [
+            'email' => 'senior@example.com',
+            'password' => 'A-long-password-123',
+        ])->assertRedirect('/')->assertCookie(\App\Services\Community::AUTH_COOKIE, 'user-token');
+
+        $this->assertNull(session('access_token'));
+    }
+
 }
