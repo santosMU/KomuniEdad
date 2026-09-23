@@ -78,6 +78,7 @@ await assert.rejects(db.query('select record_attendance($1,true)',[paidEnrollmen
 await db.query('select record_cash_payment($1,true,$2)',[paidEnrollment.enrollment_id,'Cash received by coordinator']);
 assert.equal((await db.query('select payment_status from enrollments where enrollment_id=$1',[paidEnrollment.enrollment_id])).rows[0].payment_status,'paid');
 await db.query('select record_attendance($1,true)',[paidEnrollment.enrollment_id]);
+await db.exec('reset role');
 assert.equal((await db.query("select details->>'method' method from audit_logs where action_type='payment.cash_recorded' order by created_at desc limit 1")).rows[0].method,'cash');
 console.log('PASS: cash-only payments, unpaid attendance block, paid attendance, and payment audit.');
 await db.close();
