@@ -386,6 +386,13 @@ class PortalController extends Controller
             throw ValidationException::withMessages(['email' => 'Registration could not be confirmed. Please try again.']);
         }
 
-        return redirect('/login')->with('status', 'Registration submitted. Check your email for any required confirmation, then sign in.');
+        if ($token = data_get($result, 'access_token')) {
+            $r->session()->regenerate();
+            session(['access_token' => $token]);
+
+            return redirect('/')->with('status', 'Account created and signed in successfully.');
+        }
+
+        return redirect('/login')->with('status', 'Registration submitted. Check your email for the confirmation message, then sign in.');
     }
 }

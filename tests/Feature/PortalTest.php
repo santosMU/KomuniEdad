@@ -138,4 +138,49 @@ class PortalTest extends TestCase
         $this->post('/register', $payload)->assertSessionHasErrors('email');
     }
 
+    public function test_live_registration_auto_signs_in_when_supabase_autoconfirms(): void
+    {
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'test']);
+        Http::fake(['*' => Http::response(['user' => ['id' => 'new-user'], 'access_token' => 'new-token'])]);
+
+        $this->post('/register', [
+            'full_name' => 'New Member',
+            'email' => 'member@example.test',
+            'password' => 'A-long-password-123',
+            'password_confirmation' => 'A-long-password-123',
+        ])->assertRedirect('/')->assertSessionHas('access_token', 'new-token');
+    }
+
+    public function test_live_registration_explains_default_smtp_restriction(): void
+    {
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'test']);
+        Http::fake(['*' => Http::response([
+            'code' => 'email_address_not_authorized',
+            'message' => 'Email address not authorized',
+        ], 400)]);
+
+        $this->post('/register', [
+            'full_name' => 'New Member',
+            'email' => 'member@real-domain.test',
+            'password' => 'A-long-password-123',
+            'password_confirmation' => 'A-long-password-123',
+        ])->assertSessionHasErrors('service');
+    }
+
+    public function test_live_registration_explains_profile_trigger_failure(): void
+    {
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'test']);
+        Http::fake(['*' => Http::response([
+            'code' => 'unexpected_failure',
+            'message' => 'Database error saving new user',
+        ], 500)]);
+
+        $this->post('/register', [
+            'full_name' => 'New Member',
+            'email' => 'member@example.test',
+            'password' => 'A-long-password-123',
+            'password_confirmation' => 'A-long-password-123',
+        ])->assertSessionHasErrors('service');
+    }
+
 }

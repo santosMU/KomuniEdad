@@ -28,16 +28,44 @@ class Community
             abort(503, 'The data service is unavailable. Your session is preserved. Please try again.');
         }
         if ($r->failed()) {
-            if ($r->serverError()) {
-                abort(503, 'The data service is temporarily unavailable. Please try again.');
-            }
+            $message = $r->json('message') ?? $r->json('msg') ?? '';
+            $code = $r->json('code') ?? $r->json('error_code') ?? '';
+
             if ($path === '/auth/v1/user' && in_array($r->status(), [401, 403])) {
                 abort(401, 'Please sign in again.');
             }
+
             if ($r->status() === 429) {
-                abort(429, 'Too many requests. Please wait a moment and try again.');
+                $friendly = str_starts_with($path, '/auth/v1/signup')
+                    ? 'Too many registration or confirmation-email attempts. Wait a few minutes and try again.'
+                    : 'Too many requests. Please wait a moment and try again.';
+                throw ValidationException::withMessages(['service' => $friendly]);
             }
-            $message = $r->json('message') ?? $r->json('msg') ?? '';
+
+            if (str_starts_with($path, '/auth/v1/signup')) {
+                $friendly = match ($code) {
+                    'email_address_not_authorized' => 'This Supabase project cannot send a confirmation email to that address. For the class demo, disable Confirm email in Supabase Auth, or configure custom SMTP.',
+                    'email_address_invalid' => 'Use a real email address. Supabase blocks example and test email domains.',
+                    'signup_disabled', 'email_provider_disabled' => 'Email registration is disabled in Supabase Authentication settings.',
+                    'weak_password' => 'The password does not meet the Supabase password requirements.',
+                    'email_exists', 'user_already_exists' => 'An account with this email already exists. Sign in instead.',
+                    'over_email_send_rate_limit' => 'The confirmation-email limit was reached. Wait before retrying or configure custom SMTP.',
+                    'unexpected_failure' => 'Supabase could not finish account creation. The database profile trigger may need repair; apply the latest Supabase migration and check Auth/Postgres logs.',
+                    default => match (true) {
+                        str_contains(strtolower($message), 'database error saving new user'),
+                        str_contains(strtolower($message), 'database error creating new user') => 'Supabase could not finish account creation because the database profile trigger failed. Apply the latest Supabase migration and check Auth/Postgres logs.',
+                        str_contains(strtolower($message), 'email address not authorized') => 'This Supabase project cannot send a confirmation email to that address. For the class demo, disable Confirm email in Supabase Auth, or configure custom SMTP.',
+                        str_contains(strtolower($message), 'already registered') => 'An account with this email already exists. Sign in instead.',
+                        default => 'Registration could not be completed by Supabase. Check the Auth settings and try again.',
+                    },
+                };
+                throw ValidationException::withMessages(['service' => $friendly]);
+            }
+
+            if ($r->serverError()) {
+                abort(503, 'The data service is temporarily unavailable. Please try again.');
+            }
+
             // Only expose known domain messages; never return raw database details.
             $safe = ['Registration is closed', 'Withdrawal is closed', 'Activity is full', 'Activity is closed', 'You already joined this activity', 'Not authorized', 'Enrollment not found', 'Active enrollment not found', 'Enrollment is not active'];
             $safe = array_merge($safe, ['Capacity cannot be lower than allocated seats', 'The activity has not started', 'The activity has not ended', 'A finalized activity cannot be reopened', 'Complete or cancel the activity before archiving', 'Published activities cannot return to draft', 'Invalid coordinator', 'Invalid category', 'A correction reason is required', 'Attendance is not available for this enrollment', 'Ask another administrator to change your account', 'Reassign active activities before changing this coordinator', 'An active senior account is required']);
