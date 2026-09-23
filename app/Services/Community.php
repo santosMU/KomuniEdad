@@ -73,6 +73,40 @@ class Community
         return $activities;
     }
 
+    public function activityImage(array $activity): string
+    {
+        $title = strtolower(($activity['title'] ?? '').' '.($activity['categories']['name'] ?? ''));
+
+        $url = match (true) {
+            str_contains($title, 'story'), str_contains($title, 'kwento') => 'https://images.pexels.com/photos/33688541/pexels-photo-33688541.jpeg',
+            str_contains($title, 'movement'), str_contains($title, 'stretch'), str_contains($title, 'wellness'), str_contains($title, 'exercise') => 'https://images.pexels.com/photos/37786191/pexels-photo-37786191.png',
+            str_contains($title, 'garden'), str_contains($title, 'plant') => 'https://images.pexels.com/photos/20640188/pexels-photo-20640188.jpeg',
+            str_contains($title, 'coffee'), str_contains($title, 'cafe'), str_contains($title, 'social') => 'https://images.pexels.com/photos/5637706/pexels-photo-5637706.jpeg',
+            str_contains($title, 'phone'), str_contains($title, 'smartphone') => 'https://images.pexels.com/photos/8153902/pexels-photo-8153902.jpeg',
+            str_contains($title, 'digital'), str_contains($title, 'technology') => 'https://images.pexels.com/photos/35356186/pexels-photo-35356186.jpeg',
+            str_contains($title, 'walk') => 'https://images.pexels.com/photos/20487017/pexels-photo-20487017.jpeg',
+            default => 'https://images.pexels.com/photos/19524029/pexels-photo-19524029.jpeg',
+        };
+
+        return $url.'?auto=compress&cs=tinysrgb&w=900';
+    }
+
+    public function activityImageAlt(array $activity): string
+    {
+        $title = strtolower(($activity['title'] ?? '').' '.($activity['categories']['name'] ?? ''));
+
+        return match (true) {
+            str_contains($title, 'story'), str_contains($title, 'kwento') => 'Portrait of an elderly Filipina representing stories, heritage, and lived experience',
+            str_contains($title, 'movement'), str_contains($title, 'stretch'), str_contains($title, 'wellness'), str_contains($title, 'exercise') => 'Filipino senior doing gentle outdoor exercise in Manila',
+            str_contains($title, 'garden'), str_contains($title, 'plant') => 'Older Asian couple smiling with freshly harvested garden greens',
+            str_contains($title, 'coffee'), str_contains($title, 'cafe'), str_contains($title, 'social') => 'Older Asian couple sharing coffee and conversation',
+            str_contains($title, 'phone'), str_contains($title, 'smartphone') => 'Older couple learning to use a smartphone together',
+            str_contains($title, 'digital'), str_contains($title, 'technology') => 'Older Asian man using a smartphone in a local market',
+            str_contains($title, 'walk') => 'Older Filipino man walking outdoors in La Trinidad, Philippines',
+            default => 'Three generations of Filipino women sharing a warm moment in Manila',
+        };
+    }
+
     public function enrollments(): array
     {
         return $this->demo() ? session('demo_enrollments', []) : $this->api('GET', '/rest/v1/enrollments', ['select' => '*', 'senior_id' => 'eq.'.session('profile.user_id')]);
