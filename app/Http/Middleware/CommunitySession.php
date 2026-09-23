@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Services\Community;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CommunitySession
@@ -17,7 +18,7 @@ class CommunitySession
             abort_unless($profile && $profile['account_status'] === 'active' && $profile['role'] === $s->role(), 403);
             return $next($r);
         }
-        if (! session('access_token')) {
+        if (! $s->accessToken()) {
             abort_if($r->expectsJson(), 401, 'Please sign in to continue.');
             return redirect('/login');
         }
@@ -30,7 +31,9 @@ class CommunitySession
             }
             $r->session()->invalidate();
             $r->session()->regenerateToken();
+            Cookie::queue(Cookie::forget(Community::AUTH_COOKIE));
             abort_if($r->expectsJson(), 401, 'Your session has expired. Please sign in again.');
+
             return redirect('/login')->withErrors(['account' => 'Please sign in again.']);
         }
         abort_unless(isset($p[0]) && $p[0]['account_status'] === 'active', 403);
