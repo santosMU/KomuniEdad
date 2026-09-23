@@ -1,0 +1,49 @@
+name: Phase 3 checks
+
+on:
+  push:
+    branches:
+      - feature/laravel-phase3
+  pull_request:
+
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:clear
+
+      - name: Run Laravel tests
+        run: php artisan test
+
+      - name: Check JavaScript syntax
+        run: node --check public/community.js
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install database test dependencies
+        run: npm ci
+
+      - name: Run database tests
+        run: npm run test:db
