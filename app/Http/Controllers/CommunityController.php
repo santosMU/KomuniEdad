@@ -72,7 +72,14 @@ class CommunityController extends Controller
                 throw ValidationException::withMessages(['enrollment' => 'You already joined this activity.']);
             }
             $state = $a['confirmed'] < $a['capacity'] ? 'confirmed' : 'waitlisted';
-            $entries[] = ['enrollment_id' => (string) Str::uuid(), 'activity_id' => $id, 'senior_id' => 'demo-senior', 'status' => $state, 'enrolled_at' => now()->toIso8601String()];
+            $entries[] = [
+                'enrollment_id' => (string) Str::uuid(),
+                'activity_id' => $id,
+                'senior_id' => 'demo-senior',
+                'status' => $state,
+                'payment_status' => ($a['is_free'] ?? true) ? 'not_required' : 'unpaid',
+                'enrolled_at' => now()->toIso8601String(),
+            ];
             session(['demo_enrollments' => $entries]);
             if ($state === 'confirmed') {
                 $activities = $s->activities();
