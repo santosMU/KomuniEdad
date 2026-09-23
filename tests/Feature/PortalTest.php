@@ -85,4 +85,57 @@ class PortalTest extends TestCase
         Http::fake(['*' => Http::response('"new-activity-id"', 200, ['Content-Type' => 'application/json'])]);
         $this->assertSame('new-activity-id', app(Community::class)->rpc('save_activity', ['payload' => []]));
     }
+    public function test_login_and_register_are_public_pages_without_authenticated_navigation(): void
+    {
+        $this->get('/login')->assertOk()
+            ->assertSee('Good to see you.')
+            ->assertDontSee('Discover activities')
+            ->assertDontSee('data-sidebar-toggle', false);
+
+        $this->get('/register')->assertOk()
+            ->assertSee('Create a senior account')
+            ->assertDontSee('Discover activities')
+            ->assertDontSee('data-sidebar-toggle', false);
+    }
+
+    public function test_demo_registration_and_login_work_end_to_end(): void
+    {
+        $payload = [
+            'full_name' => 'Demo New Member',
+            'email' => 'demo.member@example.test',
+            'password' => 'A-long-password-123',
+            'password_confirmation' => 'A-long-password-123',
+        ];
+
+        $this->post('/register', $payload)->assertRedirect('/login')
+            ->assertSessionHas('demo_registered_account');
+
+        $this->post('/login', [
+            'email' => $payload['email'],
+            'password' => $payload['password'],
+        ])->assertRedirect('/');
+
+        $this->get('/profile')->assertOk()->assertSee('Demo New Member');
+    }
+
+    public function test_demo_registration_rejects_invalid_and_duplicate_accounts(): void
+    {
+        $this->post('/register', [
+            'full_name' => '',
+            'email' => 'not-an-email',
+            'password' => 'short',
+            'password_confirmation' => 'different',
+        ])->assertSessionHasErrors(['full_name', 'email', 'password']);
+
+        $payload = [
+            'full_name' => 'Demo Member',
+            'email' => 'duplicate@example.test',
+            'password' => 'A-long-password-123',
+            'password_confirmation' => 'A-long-password-123',
+        ];
+
+        $this->post('/register', $payload)->assertRedirect('/login');
+        $this->post('/register', $payload)->assertSessionHasErrors('email');
+    }
+
 }

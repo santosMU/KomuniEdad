@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\Community;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -340,12 +341,51 @@ class PortalController extends Controller
         return view('reports', ['rows' => $rows, 'demo' => $s->demo()]);
     }
 
-    public function register(Request $r,Community $s)
+    public function register(Request $r, Community $s)
     {
-        $d = $r->validate(['full_name' => 'required|string|max:120', 'email' => 'required|email|max:254', 'password' => 'required|string|min:12|max:128|confirmed']);
-        abort_if($s->demo(),422,'Registration is available only when Supabase is configured.');
-        $s->api('POST','/auth/v1/signup',['email' => $d['email'], 'password' => $d['password'], 'data' => ['full_name' => $d['full_name']]]);
+        $d = $r->validate([
+            'full_name' => 'required|string|max:120',
+            'email' => 'required|email|max:254',
+            'password' => 'required|string|min:12|max:128|confirmed',
+        ]);
 
-        return redirect('/login')->with('status','Registration submitted. Check your email for any required confirmation, then sign in.');
+        if ($s->demo()) {
+            $email = strtolower(trim($d['email']));
+            $existing = session('demo_registered_account');
+            if ($existing && strtolower($existing['email']) === $email) {
+                throw ValidationException::withMessages(['email' => 'A demo account with this email already exists in this browser session.']);
+            }
+
+            $profile = collect($s->table('profiles'))->firstWhere('user_id', 'demo-senior');
+            $this->saveDemo('profiles', 'user_id', array_merge($profile ?? [], [
+                'user_id' => 'demo-senior',
+                'full_name' => trim($d['full_name']),
+                'email' => $email,
+                'role' => 'senior',
+                'account_status' => 'active',
+            ]), $s);
+
+            session([
+                'demo_registered_account' => [
+                    'email' => $email,
+                    'password' => Hash::make($d['password']),
+                ],
+                'demo_role' => 'senior',
+            ]);
+
+            return redirect('/login')->with('status', 'Demo senior account created. Sign in with the email and password just entered.');
+        }
+
+        $result = $s->api('POST', '/auth/v1/signup', [
+            'email' => strtolower(trim($d['email'])),
+            'password' => $d['password'],
+            'data' => ['full_name' => trim($d['full_name'])],
+        ]);
+
+        if (! data_get($result, 'user.id')) {
+            throw ValidationException::withMessages(['email' => 'Registration could not be confirmed. Please try again.']);
+        }
+
+        return redirect('/login')->with('status', 'Registration submitted. Check your email for any required confirmation, then sign in.');
     }
 }

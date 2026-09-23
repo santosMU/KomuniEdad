@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\Community;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -119,7 +120,28 @@ class CommunityController extends Controller
     public function login(Request $r, Community $s)
     {
         $d = $r->validate(['email' => 'required|email', 'password' => 'required|string']);
+
+        if ($s->demo()) {
+            $account = session('demo_registered_account');
+            $matches = $account
+                && hash_equals(strtolower($account['email']), strtolower(trim($d['email'])))
+                && Hash::check($d['password'], $account['password']);
+
+            if (! $matches) {
+                throw ValidationException::withMessages(['email' => 'The demo email or password is incorrect. Create a demo senior account first if needed.']);
+            }
+
+            $r->session()->regenerate();
+            session(['demo_role' => 'senior', 'demo_authenticated' => true]);
+
+            return redirect('/')->with('status', 'Signed in successfully.');
+        }
+
         $a = $s->api('POST', '/auth/v1/token?grant_type=password', $d);
+        if (empty($a['access_token'])) {
+            throw ValidationException::withMessages(['email' => 'Sign-in could not be confirmed. Please try again.']);
+        }
+
         $r->session()->regenerate();
         session(['access_token' => $a['access_token']]);
 
