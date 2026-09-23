@@ -6,6 +6,7 @@ use App\Services\Community;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -459,6 +460,7 @@ class PortalController extends Controller
         // Public registration always creates a Senior account. Any existing
         // authenticated staff/admin session is cleared before the signup request.
         $r->session()->forget(['access_token', 'profile']);
+        Cookie::queue(Cookie::forget(Community::AUTH_COOKIE));
 
         $result = $s->api('POST', '/auth/v1/signup', [
             'email' => strtolower(trim($d['email'])),
