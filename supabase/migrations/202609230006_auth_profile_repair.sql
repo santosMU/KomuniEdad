@@ -14,7 +14,7 @@ begin
   safe_name := left(
     coalesce(
       nullif(btrim(coalesce(new.raw_user_meta_data->>'full_name', '')), ''),
-      nullif(split_part(coalesce(new.email, ''), '@', 1), ''),
+      nullif(split_part(coalesce(to_jsonb(new)->>'email', ''), '@', 1), ''),
       'New member'
     ),
     120
@@ -23,7 +23,9 @@ begin
   insert into public.profiles(user_id, full_name, role, account_status)
   values(new.id, safe_name, 'senior', 'active')
   on conflict(user_id) do update
-    set full_name = excluded.full_name;
+    set full_name = excluded.full_name,
+        role = 'senior',
+        account_status = 'active';
 
   insert into public.senior_profiles(user_id, verification_status)
   values(new.id, 'pending')
@@ -45,7 +47,7 @@ select
   left(
     coalesce(
       nullif(btrim(coalesce(u.raw_user_meta_data->>'full_name', '')), ''),
-      nullif(split_part(coalesce(u.email, ''), '@', 1), ''),
+      nullif(split_part(coalesce(to_jsonb(u)->>'email', ''), '@', 1), ''),
       'New member'
     ),
     120
