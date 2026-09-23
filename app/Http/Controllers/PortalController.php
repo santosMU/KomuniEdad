@@ -50,7 +50,18 @@ class PortalController extends Controller
             return $s->rpc('participant_list', ['target' => $id]);
         }
 
-        return array_values(array_map(fn ($e) => $e + ['senior_id' => 'demo-senior', 'full_name' => 'Maria Santos', 'attended' => null, 'remarks' => ''], array_filter($s->enrollments(), fn ($e) => $e['activity_id'] === $id)));
+        $activity = collect($s->activities())->firstWhere('activity_id', $id);
+
+        return array_values(array_map(
+            fn ($e) => $e + [
+                'senior_id' => 'demo-senior',
+                'full_name' => 'Maria Santos',
+                'attended' => null,
+                'remarks' => '',
+                'payment_status' => $e['payment_status'] ?? (($activity['is_free'] ?? true) ? 'not_required' : 'unpaid'),
+            ],
+            array_filter($s->enrollments(), fn ($e) => $e['activity_id'] === $id)
+        ));
     }
 
     public function workspace(Community $s)
@@ -76,7 +87,26 @@ class PortalController extends Controller
         if ($id) {
             $this->activity($id, $s);
         }
-        $d = $r->validate(['title' => 'required|string|max:160', 'description' => 'required|string|max:5000', 'venue' => 'required|string|max:200', 'category_id' => 'required|string', 'coordinator_id' => 'nullable|string', 'start_at' => 'required|date', 'end_at' => 'required|date|after:start_at', 'cutoff_at' => 'required|date|before_or_equal:start_at', 'capacity' => 'required|integer|min:1|max:10000', 'requirements' => 'nullable|string|max:2000', 'status' => ['required', Rule::in(['draft', 'open', 'full', 'ongoing', 'completed', 'cancelled', 'archived'])]]);
+        $d = $r->validate([
+            'title' => 'required|string|max:160',
+            'description' => 'required|string|max:5000',
+            'venue' => 'required|string|max:200',
+            'category_id' => 'required|string',
+            'coordinator_id' => 'nullable|string',
+            'start_at' => 'required|date',
+            'end_at' => 'required|date|after:start_at',
+            'cutoff_at' => 'required|date|before_or_equal:start_at',
+            'capacity' => 'required|integer|min:1|max:10000',
+            'requirements' => 'nullable|string|max:2000',
+            'status' => ['required', Rule::in(['draft', 'open', 'full', 'ongoing', 'completed', 'cancelled', 'archived'])],
+            'is_free' => 'nullable|boolean',
+            'fee' => 'nullable|numeric|min:0|max:100000',
+        ]);
+        $d['is_free'] = $r->has('is_free') ? $r->boolean('is_free') : true;
+        $d['fee'] = $d['is_free'] ? 0.0 : round((float) ($d['fee'] ?? 0), 2);
+        if (! $d['is_free'] && $d['fee'] <= 0) {
+            throw ValidationException::withMessages(['fee' => 'Enter the cash amount collected for this activity.']);
+        }
         foreach (['start_at', 'end_at', 'cutoff_at'] as $key) {
             $d[$key] = Carbon::parse($d[$key], config('app.timezone'))->toIso8601String();
         }
@@ -155,6 +185,9 @@ class PortalController extends Controller
             if (! in_array($entry['status'], ['confirmed', 'completed'])) {
                 throw ValidationException::withMessages(['attendance' => 'Attendance requires a confirmed or completed enrollment.']);
             }
+            if (! ($a['is_free'] ?? true) && ($entry['payment_status'] ?? 'unpaid') !== 'paid') {
+                throw ValidationException::withMessages(['attendance' => 'Record the cash payment before attendance.']);
+            }
             if ($s->role() === 'admin' && isset($entry['attended']) && strlen(trim($d['remarks'] ?? '')) < 3) {
                 throw ValidationException::withMessages(['remarks' => 'Explain the attendance correction.']);
             }
@@ -206,7 +239,14 @@ class PortalController extends Controller
                 if ($d['status'] === 'cancelled') {
                     throw ValidationException::withMessages(['enrollment' => 'No active enrollment found.']);
                 }
-                $rows[] = ['enrollment_id' => (string) Str::uuid(), 'activity_id' => $id, 'senior_id' => $d['senior_id'], 'status' => $d['status'], 'enrolled_at' => now()->toIso8601String()];
+                $rows[] = [
+                    'enrollment_id' => (string) Str::uuid(),
+                    'activity_id' => $id,
+                    'senior_id' => $d['senior_id'],
+                    'status' => $d['status'],
+                    'payment_status' => ($a['is_free'] ?? true) ? 'not_required' : 'unpaid',
+                    'enrolled_at' => now()->toIso8601String(),
+                ];
             }
             $s->saveDemoEnrollments($s->enrollments(), $rows, ($existing['status'] ?? '') === 'confirmed' && $d['status'] !== 'confirmed' ? $id : null, $existing['enrollment_id'] ?? null);
         } else {
@@ -214,6 +254,46 @@ class PortalController extends Controller
         }
 
         return back()->with('status', 'Participant enrollment updated.');
+    }
+
+    public function payment(Request $r, string $id, Community $s)
+    {
+        $a = $this->activity($id, $s);
+        $d = $r->validate([
+            'enrollment_id' => 'required|string',
+            'paid' => 'required|boolean',
+            'reason' => 'required|string|min:3|max:500',
+        ]);
+        abort_unless(collect($this->participants($id, $s))->contains('enrollment_id', $d['enrollment_id']), 404);
+
+        if ($a['is_free'] ?? true) {
+            throw ValidationException::withMessages(['payment' => 'This activity is free. No cash payment is required.']);
+        }
+
+        if ($s->demo()) {
+            $rows = $s->enrollments();
+            $found = false;
+            foreach ($rows as &$e) {
+                if ($e['enrollment_id'] === $d['enrollment_id'] && $e['activity_id'] === $id) {
+                    if (! in_array($e['status'], ['confirmed', 'completed'])) {
+                        throw ValidationException::withMessages(['payment' => 'Cash payment can only be recorded for a confirmed participant.']);
+                    }
+                    $e['payment_status'] = $d['paid'] ? 'paid' : 'unpaid';
+                    $found = true;
+                }
+            }
+            unset($e);
+            abort_unless($found, 404);
+            session(['demo_enrollments' => $rows]);
+        } else {
+            $s->rpc('record_cash_payment', [
+                'target' => $d['enrollment_id'],
+                'paid' => (bool) $d['paid'],
+                'reason' => $d['reason'],
+            ]);
+        }
+
+        return back()->with('status', $d['paid'] ? 'Cash payment recorded as paid.' : 'Cash payment marked unpaid.');
     }
 
     public function updateProfile(Request $r, Community $s)
@@ -376,6 +456,10 @@ class PortalController extends Controller
             return redirect('/login')->with('status', 'Demo senior account created. Sign in with the email and password just entered.');
         }
 
+        // Public registration always creates a Senior account. Any existing
+        // authenticated staff/admin session is cleared before the signup request.
+        $r->session()->forget(['access_token', 'profile']);
+
         $result = $s->api('POST', '/auth/v1/signup', [
             'email' => strtolower(trim($d['email'])),
             'password' => $d['password'],
@@ -386,13 +470,8 @@ class PortalController extends Controller
             throw ValidationException::withMessages(['email' => 'Registration could not be confirmed. Please try again.']);
         }
 
-        if ($token = data_get($result, 'access_token')) {
-            $r->session()->regenerate();
-            session(['access_token' => $token]);
+        $r->session()->regenerate();
 
-            return redirect('/')->with('status', 'Account created and signed in successfully.');
-        }
-
-        return redirect('/login')->with('status', 'Registration submitted. Check your email for the confirmation message, then sign in.');
+        return redirect('/login')->with('status', 'Senior account created. Sign in with the email and password you registered.');
     }
 }
