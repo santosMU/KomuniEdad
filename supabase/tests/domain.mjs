@@ -63,4 +63,21 @@ assert.equal((await db.query('select * from participant_list($1)',[d])).rows.fin
 await asUser(ids[2]);
 assert.equal((await db.query('select * from enroll_in_activity($1)',[d])).rows[0].status,'waitlisted');
 console.log('PASS: capacity increase promotes existing eligible waitlist before a newer registration.');
+
+await db.exec('reset role');
+await db.exec('update settings set require_verification=false');
+await asUser(ids[3]);
+const paidActivity=(await db.query('select save_activity($1) id',[{...payload,title:'Cash activity',is_free:false,fee:75}])).rows[0].id;
+await asUser(ids[0]);
+const paidEnrollment=(await db.query('select * from enroll_in_activity($1)',[paidActivity])).rows[0];
+assert.equal(paidEnrollment.payment_status,'unpaid');
+await db.exec('reset role');
+await db.query("update activities set start_at=now()-interval '2 hours',end_at=now()+interval '1 hour',cutoff_at=now()-interval '3 hours',status='ongoing' where activity_id=$1",[paidActivity]);
+await asUser(ids[3]);
+await assert.rejects(db.query('select record_attendance($1,true)',[paidEnrollment.enrollment_id]),/Cash payment must be recorded/);
+await db.query('select record_cash_payment($1,true,$2)',[paidEnrollment.enrollment_id,'Cash received by coordinator']);
+assert.equal((await db.query('select payment_status from enrollments where enrollment_id=$1',[paidEnrollment.enrollment_id])).rows[0].payment_status,'paid');
+await db.query('select record_attendance($1,true)',[paidEnrollment.enrollment_id]);
+assert.equal((await db.query("select details->>'method' method from audit_logs where action_type='payment.cash_recorded' order by created_at desc limit 1")).rows[0].method,'cash');
+console.log('PASS: cash-only payments, unpaid attendance block, paid attendance, and payment audit.');
 await db.close();
