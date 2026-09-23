@@ -2,6 +2,7 @@
 (() => {
     'use strict';
     let searchRequest, searchTimer, searchVersion = 0;
+    let mutationBusy = false;
     const shell = document.querySelector('[data-app-shell]');
     const sidebar = document.querySelector('#site-sidebar');
     const sidebarBreakpoint = window.matchMedia('(max-width: 1180px)');
@@ -22,6 +23,7 @@
         sidebar.toggleAttribute('inert', !open);
         sidebar.setAttribute('aria-hidden', String(!open));
         document.body.classList.toggle('sidebar-lock', mobile && open);
+        document.querySelector('.workspace')?.toggleAttribute('inert', mobile && open);
     };
     const setSidebarOpen = open => {
         if (!shell || !sidebar) return;
@@ -54,7 +56,9 @@
             credentials: 'same-origin', ...options,
             headers: { Accept: 'application/json', ...options.headers },
         });
-        const data = await response.json().catch(() => ({}));
+        const data = await response.json().catch(() => {
+            throw new Error('The server response could not be confirmed. Refresh before trying again.');
+        });
         if (!response.ok) {
             let message = data.message || 'The request failed. Please try again.';
             if (response.status === 401) message = 'Your session expired. Sign in again to continue.';
@@ -181,6 +185,12 @@
         search(form);
     });
     document.addEventListener('keydown', event => {
+        if (event.key === 'Tab' && sidebarBreakpoint.matches && shell?.classList.contains('sidebar-open')) {
+            const controls = [...sidebar.querySelectorAll('a[href],button:not([disabled]),select,input,[tabindex="0"]')].filter(el => el.getClientRects().length);
+            const first = controls[0], last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+        }
         if (event.key === 'Escape' && sidebarBreakpoint.matches && shell?.classList.contains('sidebar-open')) {
             setSidebarOpen(false);
             document.querySelector('[data-sidebar-toggle]')?.focus({ preventScroll: true });
@@ -201,7 +211,7 @@
         const path = new URL(form.action).pathname;
         if (form.method.toLowerCase() !== 'post' || ['/login', '/register', '/logout', '/demo/role'].includes(path)) return;
         event.preventDefault();
-        if (form.dataset.busy) return;
+        if (form.dataset.busy || mutationBusy) return;
         clearErrors(form);
         validateDates(form);
         if (!form.reportValidity()) return;
@@ -209,9 +219,11 @@
         const body = new FormData(form);
         const buttons = [...form.querySelectorAll('button[type="submit"], button:not([type])')];
         form.dataset.busy = 'true';
+        mutationBusy = true;
         form.setAttribute('aria-busy', 'true');
         buttons.forEach(button => button.disabled = true);
         let saved = false;
+        let uncertain = false;
         try {
             const data = await request(form.action, {
                 method: 'POST', body,
@@ -219,8 +231,10 @@
             });
             saved = true;
             await updatePage(data.redirect || location.href);
+            mutationBusy = false;
             notice(data.message || 'Changes saved.');
         } catch (error) {
+            uncertain = !error.status || error.status >= 500;
             notice(saved ? 'Your change was saved, but the view could not refresh. Refresh the page before submitting again.' : error.message, true);
             fieldErrors(form, error.errors);
             if (error.errors) {
@@ -229,7 +243,8 @@
             }
         } finally {
             // A saved mutation must not be retried if only its refresh failed.
-            if (!saved) {
+            if (!saved && !uncertain) {
+                mutationBusy = false;
                 delete form.dataset.busy;
                 form.removeAttribute('aria-busy');
                 buttons.forEach(button => button.disabled = false);

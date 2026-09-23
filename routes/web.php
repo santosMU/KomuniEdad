@@ -16,7 +16,7 @@ Route::post('/logout', function (Request $r, CommunityService $s) {
     if (! $s->demo() && session('access_token')) {
         try {
             $s->api('POST', '/auth/v1/logout');
-        } catch (ValidationException $e) {
+        } catch (ValidationException | \Symfony\Component\HttpKernel\Exception\HttpException $e) {
         }
     }
     $r->session()->invalidate();

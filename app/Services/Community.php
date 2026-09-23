@@ -112,6 +112,12 @@ class Community
         return $this->demo() ? session('demo_enrollments', []) : $this->api('GET', '/rest/v1/enrollments', ['select' => '*', 'senior_id' => 'eq.'.session('profile.user_id')]);
     }
 
+    public function ownEnrollments(): array
+    {
+        $id = $this->demo() ? 'demo-senior' : session('profile.user_id');
+        return array_values(array_filter($this->enrollments(), fn ($e) => $e['senior_id'] === $id));
+    }
+
     public function saveDemoEnrollments(array $before, array $after, ?string $promoteActivity = null, ?string $excluded = null): void
     {
         $activities = $this->activities();

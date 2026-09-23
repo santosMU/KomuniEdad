@@ -81,6 +81,16 @@ class PortalController extends Controller
         }
         if ($s->demo()) {
             $old = $id ? $this->activity($id, $s) : null;
+            $category = collect($s->table('categories'))->firstWhere('category_id', $d['category_id']);
+            if (! $category || ! $category['is_active']) {
+                throw ValidationException::withMessages(['category_id' => 'Choose an active category.']);
+            }
+            if ($old && $old['status'] !== 'draft' && $d['status'] === 'draft') {
+                throw ValidationException::withMessages(['status' => 'Published activities cannot return to draft.']);
+            }
+            if ($s->role() === 'coordinator') {
+                $d['coordinator_id'] = 'demo-coordinator';
+            }
             if ($old && $d['capacity'] < $old['confirmed']) {
                 throw ValidationException::withMessages(['capacity' => 'Capacity cannot be lower than allocated seats.']);
             }
@@ -116,7 +126,8 @@ class PortalController extends Controller
                         $e['status'] = $d['status'] === 'completed' && $e['status'] === 'confirmed' ? 'completed' : 'cancelled';
                     }
                 }
-                session(['demo_enrollments' => $entries]);
+                unset($e);
+                $s->saveDemoEnrollments($s->enrollments(), $entries);
             }
         } else {
             $s->rpc('save_activity', ['payload' => $d, 'target' => $id]);
@@ -222,7 +233,7 @@ class PortalController extends Controller
     {
         abort_unless($s->role() === 'senior', 403);
 
-        return view('history', ['enrollments' => $s->enrollments(), 'activities' => collect($s->activities())->keyBy('activity_id'), 'attendance' => collect($s->table('attendance'))->keyBy('enrollment_id'), 'feedback' => collect($s->table('feedback'))->keyBy('enrollment_id'), 'demo' => $s->demo()]);
+        return view('history', ['enrollments' => $s->ownEnrollments(), 'activities' => collect($s->activities())->keyBy('activity_id'), 'attendance' => collect($s->table('attendance'))->keyBy('enrollment_id'), 'feedback' => collect($s->table('feedback'))->keyBy('enrollment_id'), 'demo' => $s->demo()]);
     }
 
     public function feedback(Request $r, string $id, Community $s)
@@ -230,7 +241,7 @@ class PortalController extends Controller
         abort_unless($s->role() === 'senior', 403);
         $d = $r->validate(['rating' => 'required|integer|between:1,5', 'comments' => 'nullable|string|max:2000']);
         if ($s->demo()) {
-            $e = collect($s->enrollments())->firstWhere('enrollment_id', $id);
+            $e = collect($s->ownEnrollments())->firstWhere('enrollment_id', $id);
             if (! $e || $e['status'] !== 'completed' || ! ($e['attended'] ?? false) || collect($s->table('feedback'))->contains('enrollment_id', $id)) {
                 throw ValidationException::withMessages(['feedback' => 'Feedback is available once after a completed activity you attended.']);
             }
@@ -256,6 +267,15 @@ class PortalController extends Controller
             $this->activity($d['activity_id'], $s);
         }
         if ($s->demo()) {
+            if (! empty($d['announcement_id'])) {
+                $existing = collect($s->table('announcements'))->firstWhere('announcement_id', $d['announcement_id']);
+                abort_unless($existing, 404);
+                if ($s->role() === 'coordinator') {
+                    abort_unless($existing['activity_id'], 403);
+                    $this->activity($existing['activity_id'], $s);
+                }
+                $d['activity_id'] = $existing['activity_id'];
+            }
             $this->saveDemo('announcements', 'announcement_id', array_merge($d, ['announcement_id' => $d['announcement_id'] ?? (string) Str::uuid(), 'posted_at' => now()->toIso8601String(), 'archived_at' => $r->boolean('archived') ? now()->toIso8601String() : null]), $s);
         } else {
             $s->rpc('save_announcement', ['payload' => $d, 'target' => $d['announcement_id'] ?? null]);
@@ -278,7 +298,16 @@ class PortalController extends Controller
         if ($s->demo()) {
             $p = collect($s->table('profiles'))->firstWhere('user_id', $id);
             abort_unless($p, 404);
+            if ($id === 'demo-admin') {
+                throw ValidationException::withMessages(['account' => 'Ask another administrator to change your account.']);
+            }
+            if (($d['role'] !== 'coordinator' || $d['account_status'] === 'disabled') && collect($s->activities())->contains(fn ($a) => $a['coordinator_id'] === $id && !in_array($a['status'], ['completed', 'cancelled', 'archived']))) {
+                throw ValidationException::withMessages(['account' => 'Reassign active activities before changing this coordinator.']);
+            }
             $this->saveDemo('profiles', 'user_id', array_merge($p, $d), $s);
+            if ($d['role'] === 'senior') {
+                $this->saveDemo('senior_profiles', 'user_id', ['user_id' => $id, 'verification_status' => $d['verification_status']], $s);
+            }
         } else {
             $s->rpc('manage_user', ['target' => $id, 'payload' => $d, 'reason' => $d['reason']]);
         }

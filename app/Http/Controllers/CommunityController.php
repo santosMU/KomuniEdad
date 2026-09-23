@@ -21,12 +21,18 @@ class CommunityController extends Controller
             'status' => 'nullable|in:open,full,ongoing,completed,cancelled',
             'mine' => 'nullable|boolean',
         ]);
-        $enrollments = $s->enrollments();
+        $enrollments = $s->ownEnrollments();
         $category = $r->string('category')->toString();
         $query = $r->string('q')->toString();
         $mine = $r->boolean('mine');
         $status = $r->string('status')->toString();
         $activities = array_filter($s->activities(), fn ($a) => (! $category || ($a['categories']['name'] ?? '') === $category) && (! $query || str_contains(strtolower($a['title'].' '.$a['venue']), strtolower($query))) && (! $mine || collect($enrollments)->contains(fn ($e) => $e['activity_id'] === $a['activity_id'] && $e['status'] !== 'cancelled')));
+        $activities = array_map(function ($a) {
+            if (in_array($a['status'], ['open', 'full'])) {
+                $a['status'] = $a['confirmed'] >= $a['capacity'] ? 'full' : 'open';
+            }
+            return $a;
+        }, $activities);
         $activities = array_filter($activities, fn ($a) => ! in_array($a['status'], ['draft', 'archived']) && (! $status || $a['status'] === $status));
 
         if ($r->expectsJson()) {
@@ -44,8 +50,11 @@ class CommunityController extends Controller
     {
         $activity = collect($s->activities())->firstWhere('activity_id', $id);
         abort_unless($activity, 404);
+        if ($s->role() === 'senior' && in_array($activity['status'], ['draft', 'archived'])) {
+            abort_unless(collect($s->ownEnrollments())->contains('activity_id', $id), 404);
+        }
 
-        return view('detail', ['activity' => $activity, 'enrollments' => $s->enrollments(), 'demo' => $s->demo()]);
+        return view('detail', ['activity' => $activity, 'enrollments' => $s->ownEnrollments(), 'demo' => $s->demo()]);
     }
 
     public function enroll(string $id, Community $s)
@@ -58,7 +67,7 @@ class CommunityController extends Controller
             if (! in_array($a['status'], ['open', 'full']) || Carbon::parse($a['cutoff_at'])->isPast()) {
                 throw ValidationException::withMessages(['enrollment' => 'Registration is closed.']);
             }
-            if (collect($entries)->contains(fn ($e) => $e['activity_id'] === $id && $e['status'] !== 'cancelled')) {
+            if (collect($s->ownEnrollments())->contains(fn ($e) => $e['activity_id'] === $id && $e['status'] !== 'cancelled')) {
                 throw ValidationException::withMessages(['enrollment' => 'You already joined this activity.']);
             }
             $state = $a['confirmed'] < $a['capacity'] ? 'confirmed' : 'waitlisted';
@@ -87,7 +96,7 @@ class CommunityController extends Controller
             $found = false;
             $promote = null;
             foreach ($entries as &$e) {
-                if ($e['enrollment_id'] === $id && $e['status'] !== 'cancelled') {
+                if ($e['enrollment_id'] === $id && $e['senior_id'] === 'demo-senior' && in_array($e['status'], ['pending', 'confirmed', 'waitlisted'])) {
                     $a = collect($s->activities())->firstWhere('activity_id', $e['activity_id']);
                     if (! $a || ! in_array($a['status'], ['open', 'full']) || Carbon::parse($a['cutoff_at'])->isPast()) {
                         throw ValidationException::withMessages(['enrollment' => 'Withdrawal is closed.']);

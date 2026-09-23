@@ -13,6 +13,8 @@ class CommunitySession
     {
         $s = app(Community::class);
         if ($s->demo()) {
+            $profile = collect($s->table('profiles'))->firstWhere('user_id', 'demo-'.$s->role());
+            abort_unless($profile && $profile['account_status'] === 'active' && $profile['role'] === $s->role(), 403);
             return $next($r);
         }
         if (! session('access_token')) {
