@@ -79,7 +79,7 @@ class InteractiveTest extends TestCase
 
     public function test_publishable_key_is_not_sent_as_a_user_bearer_token(): void
     {
-        config(['komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'sb_publishable_test']);
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'sb_publishable_test']);
         Http::fake(['*' => Http::response(['access_token' => 'user-token'])]);
         $this->post('/login', ['email' => 'test@example.com', 'password' => 'password'])->assertRedirect('/');
         Http::assertSent(fn ($r) => $r->hasHeader('apikey', 'sb_publishable_test') && ! $r->hasHeader('Authorization'));
