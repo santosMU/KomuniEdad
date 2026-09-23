@@ -144,6 +144,7 @@
         const main = page.querySelector('#main');
         if (!main) throw new Error('Saved. Refresh this page to see the latest information.');
         document.querySelector('#main').replaceWith(main);
+        syncPaymentFields(main);
         document.title = page.title;
         history.replaceState(null, '', new URL(response.url).pathname + new URL(response.url).search);
         const nav = page.querySelector('.sidebar nav');
@@ -196,9 +197,21 @@
             document.querySelector('[data-sidebar-toggle]')?.focus({ preventScroll: true });
         }
     });
+    function syncPaymentFields(scope = document) {
+        scope.querySelectorAll('[data-payment-mode]').forEach(select => {
+            const fee = select.form?.querySelector('[data-payment-fee]');
+            if (!fee) return;
+            const free = select.value === '1';
+            fee.disabled = free;
+            fee.required = !free;
+            if (free) fee.value = '0';
+        });
+    }
+    syncPaymentFields();
     document.addEventListener('change', event => {
         const form = event.target.closest('[data-activity-search]');
         if (form) search(form);
+        if (event.target.matches?.('[data-payment-mode]')) syncPaymentFields(event.target.form || document);
     });
     document.addEventListener('submit', async event => {
         const form = event.target;
