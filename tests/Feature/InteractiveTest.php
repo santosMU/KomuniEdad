@@ -84,4 +84,22 @@ class InteractiveTest extends TestCase
         $this->post('/login', ['email' => 'test@example.com', 'password' => 'password'])->assertRedirect('/');
         Http::assertSent(fn ($r) => $r->hasHeader('apikey', 'sb_publishable_test') && ! $r->hasHeader('Authorization'));
     }
+    public function test_signup_endpoint_does_not_receive_existing_user_bearer(): void
+    {
+        config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'sb_publishable_test']);
+        Http::fake(['*' => Http::response(['user' => ['id' => 'new-user']])]);
+
+        $this->withSession(['access_token' => 'admin-token'])->post('/register', [
+            'full_name' => 'New Senior',
+            'email' => 'new.senior@example.test',
+            'password' => 'A-long-password-123',
+            'password_confirmation' => 'A-long-password-123',
+        ])->assertRedirect('/login');
+
+        Http::assertSent(fn ($request) =>
+            str_contains($request->url(), '/auth/v1/signup')
+            && ! $request->hasHeader('Authorization')
+        );
+    }
+
 }
