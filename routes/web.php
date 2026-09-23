@@ -6,6 +6,7 @@ use App\Http\Middleware\CommunitySession;
 use App\Services\Community as CommunityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
 
 Route::view('/login', 'login')->name('login');
@@ -13,7 +14,7 @@ Route::view('/register', 'register');
 Route::post('/register', [Portal::class, 'register'])->middleware('throttle:5,1');
 Route::post('/login', [Community::class, 'login'])->middleware('throttle:6,1');
 Route::post('/logout', function (Request $r, CommunityService $s) {
-    if (! $s->demo() && session('access_token')) {
+    if (! $s->demo() && $s->accessToken()) {
         try {
             $s->api('POST', '/auth/v1/logout');
         } catch (ValidationException | \Symfony\Component\HttpKernel\Exception\HttpException $e) {
@@ -21,6 +22,7 @@ Route::post('/logout', function (Request $r, CommunityService $s) {
     }
     $r->session()->invalidate();
     $r->session()->regenerateToken();
+    Cookie::queue(Cookie::forget(CommunityService::AUTH_COOKIE));
 
     return redirect('/login');
 });
