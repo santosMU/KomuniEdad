@@ -196,7 +196,7 @@ class PortalTest extends TestCase
     public function test_paid_activity_is_explicitly_cash_only_and_attendance_waits_for_payment(): void
     {
         $this->withSession(['demo_role' => 'senior'])
-            ->post('/activities/3/enroll')
+            ->post('/activities/2/enroll')
             ->assertRedirect();
 
         $enrollment = session('demo_enrollments')[0];
@@ -204,7 +204,7 @@ class PortalTest extends TestCase
 
         $activities = session('demo_activities');
         foreach ($activities as &$activity) {
-            if ($activity['activity_id'] === '3') {
+            if ($activity['activity_id'] === '2') {
                 $activity['status'] = 'ongoing';
                 $activity['start_at'] = now()->subHour()->toIso8601String();
                 $activity['end_at'] = now()->addHour()->toIso8601String();
@@ -213,12 +213,12 @@ class PortalTest extends TestCase
         unset($activity);
 
         $this->withSession(['demo_role' => 'coordinator', 'demo_activities' => $activities])
-            ->post('/workspace/3/attendance', [
+            ->post('/workspace/2/attendance', [
                 'enrollment_id' => $enrollment['enrollment_id'],
                 'attended' => 1,
             ])->assertSessionHasErrors('attendance');
 
-        $this->post('/workspace/3/payment', [
+        $this->post('/workspace/2/payment', [
             'enrollment_id' => $enrollment['enrollment_id'],
             'paid' => 1,
             'reason' => 'Cash received at the front desk',
