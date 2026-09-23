@@ -226,7 +226,7 @@ class PortalTest extends TestCase
 
         $this->assertSame('paid', session('demo_enrollments')[0]['payment_status']);
 
-        $this->post('/workspace/3/attendance', [
+        $this->post('/workspace/2/attendance', [
             'enrollment_id' => $enrollment['enrollment_id'],
             'attended' => 1,
         ])->assertRedirect();
