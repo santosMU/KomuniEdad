@@ -2,6 +2,46 @@
 (() => {
     'use strict';
     let searchRequest, searchTimer, searchVersion = 0;
+    const shell = document.querySelector('[data-app-shell]');
+    const sidebar = document.querySelector('#site-sidebar');
+    const sidebarBreakpoint = window.matchMedia('(max-width: 1180px)');
+    const sidebarToggles = () => [...document.querySelectorAll('[data-sidebar-toggle]')];
+    const readDesktopSidebarState = () => {
+        try { return localStorage.getItem('komuniedad-sidebar-collapsed') === '1'; }
+        catch { return false; }
+    };
+    const writeDesktopSidebarState = collapsed => {
+        try { localStorage.setItem('komuniedad-sidebar-collapsed', collapsed ? '1' : '0'); }
+        catch {}
+    };
+    const syncSidebar = () => {
+        if (!shell || !sidebar) return;
+        const mobile = sidebarBreakpoint.matches;
+        const open = mobile ? shell.classList.contains('sidebar-open') : !shell.classList.contains('sidebar-desktop-collapsed');
+        sidebarToggles().forEach(button => button.setAttribute('aria-expanded', String(open)));
+        sidebar.toggleAttribute('inert', !open);
+        sidebar.setAttribute('aria-hidden', String(!open));
+        document.body.classList.toggle('sidebar-lock', mobile && open);
+    };
+    const setSidebarOpen = open => {
+        if (!shell || !sidebar) return;
+        if (sidebarBreakpoint.matches) {
+            shell.classList.toggle('sidebar-open', open);
+        } else {
+            shell.classList.toggle('sidebar-desktop-collapsed', !open);
+            writeDesktopSidebarState(!open);
+        }
+        syncSidebar();
+    };
+    const resetSidebarForViewport = () => {
+        if (!shell) return;
+        shell.classList.remove('sidebar-open');
+        if (sidebarBreakpoint.matches) shell.classList.remove('sidebar-desktop-collapsed');
+        else shell.classList.toggle('sidebar-desktop-collapsed', readDesktopSidebarState());
+        syncSidebar();
+    };
+    resetSidebarForViewport();
+    sidebarBreakpoint.addEventListener?.('change', resetSidebarForViewport);
     const notice = (message, error = false) => {
         const box = document.querySelector('#request-status');
         box.hidden = false;
@@ -121,11 +161,30 @@
         }
     });
     document.addEventListener('click', event => {
+        const sidebarToggle = event.target.closest('[data-sidebar-toggle]');
+        if (sidebarToggle) {
+            const isOpen = sidebarBreakpoint.matches ? shell?.classList.contains('sidebar-open') : !shell?.classList.contains('sidebar-desktop-collapsed');
+            setSidebarOpen(!isOpen);
+            if (!isOpen && sidebarBreakpoint.matches) requestAnimationFrame(() => sidebar?.querySelector('a,button')?.focus({ preventScroll: true }));
+            return;
+        }
+        if (event.target.closest('[data-sidebar-dismiss]')) {
+            setSidebarOpen(false);
+            document.querySelector('[data-sidebar-toggle]')?.focus({ preventScroll: true });
+            return;
+        }
+        if (sidebarBreakpoint.matches && event.target.closest('#site-sidebar nav a')) setSidebarOpen(false);
         const button = event.target.closest('[data-clear-search]');
         if (!button) return;
         const form = button.closest('form');
         for (const name of ['q', 'category', 'status']) form.elements.namedItem(name).value = '';
         search(form);
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && sidebarBreakpoint.matches && shell?.classList.contains('sidebar-open')) {
+            setSidebarOpen(false);
+            document.querySelector('[data-sidebar-toggle]')?.focus({ preventScroll: true });
+        }
     });
     document.addEventListener('change', event => {
         const form = event.target.closest('[data-activity-search]');
