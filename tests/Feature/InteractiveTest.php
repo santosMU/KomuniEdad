@@ -158,4 +158,28 @@ class InteractiveTest extends TestCase
             ->assertCookieExpired(\App\Services\Community::AUTH_COOKIE);
     }
 
+    public function test_ajax_redirects_are_same_origin_relative_paths(): void
+    {
+        $this->postJson('/activities/1/enroll')
+            ->assertOk()
+            ->assertJsonPath('redirect', '/?mine=1');
+
+        $this->withSession(['demo_role' => 'coordinator'])
+            ->postJson('/workspace/create', [
+                'title' => 'Relative redirect test',
+                'description' => 'Checks AJAX redirect normalization.',
+                'venue' => 'Hall',
+                'category_id' => 'social',
+                'start_at' => now()->addDays(3)->toDateTimeString(),
+                'end_at' => now()->addDays(3)->addHour()->toDateTimeString(),
+                'cutoff_at' => now()->addDays(2)->toDateTimeString(),
+                'capacity' => 10,
+                'status' => 'open',
+                'is_free' => 1,
+                'fee' => 0,
+            ])
+            ->assertOk()
+            ->assertJsonPath('redirect', '/workspace');
+    }
+
 }
