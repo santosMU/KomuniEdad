@@ -17,12 +17,35 @@ class Community
     {
         abort_unless(config('komuniedad.url') && config('komuniedad.key'), 503, 'Supabase is not configured.');
         try {
-            $r = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))->timeout(15)->withHeaders(['apikey' => config('komuniedad.key')])->withToken(session('access_token', config('komuniedad.key')))->send($method, $path, $method === 'GET' ? ['query' => $data] : ['json' => (object) $data]);
+            $client = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))->timeout(15)->withHeaders(['apikey' => config('komuniedad.key')]);
+            if (session('access_token')) {
+                $client = $client->withToken(session('access_token'));
+            } elseif (str_starts_with(config('komuniedad.key'), 'eyJ')) {
+                $client = $client->withToken(config('komuniedad.key'));
+            }
+            $r = $client->send($method, $path, $method === 'GET' ? ['query' => $data] : ['json' => (object) $data]);
         } catch (ConnectionException $e) {
-            throw ValidationException::withMessages(['service' => 'Service unavailable. Please try again.']);
+            abort(503, 'The data service is unavailable. Your session is preserved. Please try again.');
         }
         if ($r->failed()) {
-            throw ValidationException::withMessages(['service' => 'Request unsuccessful. Check your account, activity status, or existing enrollment.']);
+            if ($r->serverError()) {
+                abort(503, 'The data service is temporarily unavailable. Please try again.');
+            }
+            if ($path === '/auth/v1/user' && in_array($r->status(), [401, 403])) {
+                abort(401, 'Please sign in again.');
+            }
+            if ($r->status() === 429) {
+                abort(429, 'Too many requests. Please wait a moment and try again.');
+            }
+            $message = $r->json('message') ?? $r->json('msg') ?? '';
+            // Only expose known domain messages; never return raw database details.
+            $safe = ['Registration is closed', 'Withdrawal is closed', 'Activity is full', 'Activity is closed', 'You already joined this activity', 'Not authorized', 'Enrollment not found', 'Active enrollment not found', 'Enrollment is not active'];
+            $safe = array_merge($safe, ['Capacity cannot be lower than allocated seats', 'The activity has not started', 'The activity has not ended', 'A finalized activity cannot be reopened', 'Complete or cancel the activity before archiving', 'Published activities cannot return to draft', 'Invalid coordinator', 'Invalid category', 'A correction reason is required', 'Attendance is not available for this enrollment', 'Ask another administrator to change your account', 'Reassign active activities before changing this coordinator', 'An active senior account is required']);
+            $friendly = in_array($message, $safe, true) ? $message.'.' : 'Request unsuccessful. Check the activity rules, your permissions and the values entered.';
+            if (str_starts_with($path, '/auth/v1/token')) {
+                $friendly = 'Sign-in failed. Check your email and password, and confirm your email if required.';
+            }
+            throw ValidationException::withMessages(['service' => $friendly]);
         }
 
         return $r->json() ?? [];
@@ -53,6 +76,25 @@ class Community
     public function enrollments(): array
     {
         return $this->demo() ? session('demo_enrollments', []) : $this->api('GET', '/rest/v1/enrollments', ['select' => '*', 'senior_id' => 'eq.'.session('profile.user_id')]);
+    }
+
+    public function saveDemoEnrollments(array $before, array $after, ?string $promoteActivity = null, ?string $excluded = null): void
+    {
+        $activities = $this->activities();
+        foreach ($activities as &$activity) {
+            $count = fn ($rows) => collect($rows)->filter(fn ($e) => $e['activity_id'] === $activity['activity_id'] && in_array($e['status'], ['confirmed', 'completed']))->count();
+            $activity['confirmed'] = max(0, $activity['confirmed'] + $count($after) - $count($before));
+            if ($activity['activity_id'] === $promoteActivity && in_array($activity['status'], ['open', 'full', 'ongoing'])) {
+                $waiting = collect($after)->filter(fn ($e) => $e['activity_id'] === $promoteActivity && $e['status'] === 'waitlisted' && $e['enrollment_id'] !== $excluded)->sortBy('enrolled_at');
+                foreach ($waiting as $key => $entry) {
+                    if ($activity['confirmed'] >= $activity['capacity']) break;
+                    $after[$key]['status'] = 'confirmed';
+                    $activity['confirmed']++;
+                }
+            }
+        }
+        unset($activity);
+        session(['demo_enrollments' => $after, 'demo_activities' => $activities]);
     }
 
     public function role(): string

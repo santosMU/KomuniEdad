@@ -106,6 +106,9 @@ class PortalController extends Controller
             $rows = array_values(array_filter($s->activities(), fn ($a) => $a['activity_id'] !== $d['activity_id']));
             $rows[] = $d;
             session(['demo_activities' => $rows]);
+            if ($old && $d['capacity'] > $old['capacity'] && in_array($d['status'], ['open', 'full']) && Carbon::parse($d['cutoff_at'])->isFuture()) {
+                $s->saveDemoEnrollments($s->enrollments(), $s->enrollments(), $d['activity_id']);
+            }
             if (in_array($d['status'], ['cancelled', 'completed'])) {
                 $entries = $s->enrollments();
                 foreach ($entries as &$e) {
@@ -135,6 +138,13 @@ class PortalController extends Controller
         if ($s->demo()) {
             if (! in_array($a['status'], ['ongoing', 'completed'])) {
                 throw ValidationException::withMessages(['attendance' => 'Start or complete the activity before recording attendance.']);
+            }
+            $entry = collect($s->enrollments())->firstWhere('enrollment_id', $d['enrollment_id']);
+            if (! in_array($entry['status'], ['confirmed', 'completed'])) {
+                throw ValidationException::withMessages(['attendance' => 'Attendance requires a confirmed or completed enrollment.']);
+            }
+            if ($s->role() === 'admin' && isset($entry['attended']) && strlen(trim($d['remarks'] ?? '')) < 3) {
+                throw ValidationException::withMessages(['remarks' => 'Explain the attendance correction.']);
             }
             $rows = $s->enrollments();
             foreach ($rows as &$e) {
@@ -167,7 +177,8 @@ class PortalController extends Controller
             if (! in_array($a['status'], ['open', 'full', 'ongoing'])) {
                 throw ValidationException::withMessages(['enrollment' => 'Activity is closed.']);
             }
-            if ($d['status'] === 'confirmed' && $a['confirmed'] >= $a['capacity']) {
+            $existing = collect($s->enrollments())->first(fn ($e) => $e['activity_id'] === $id && $e['senior_id'] === $d['senior_id'] && $e['status'] !== 'cancelled');
+            if ($d['status'] === 'confirmed' && ($existing['status'] ?? '') !== 'confirmed' && $a['confirmed'] >= $a['capacity']) {
                 throw ValidationException::withMessages(['enrollment' => 'Activity is full.']);
             }
             $rows = $s->enrollments();
@@ -185,7 +196,7 @@ class PortalController extends Controller
                 }
                 $rows[] = ['enrollment_id' => (string) Str::uuid(), 'activity_id' => $id, 'senior_id' => $d['senior_id'], 'status' => $d['status'], 'enrolled_at' => now()->toIso8601String()];
             }
-            session(['demo_enrollments' => $rows]);
+            $s->saveDemoEnrollments($s->enrollments(), $rows, ($existing['status'] ?? '') === 'confirmed' && $d['status'] !== 'confirmed' ? $id : null, $existing['enrollment_id'] ?? null);
         } else {
             $s->rpc('manage_enrollment', ['activity' => $id, 'senior' => $d['senior_id'], 'new_status' => $d['status'], 'reason' => $d['reason']]);
         }

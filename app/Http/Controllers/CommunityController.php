@@ -15,6 +15,12 @@ class CommunityController extends Controller
         if ($s->role() !== 'senior') {
             return redirect('/workspace');
         }
+        $r->validate([
+            'q' => 'nullable|string|max:160',
+            'category' => 'nullable|string|max:80',
+            'status' => 'nullable|in:open,full,ongoing,completed,cancelled',
+            'mine' => 'nullable|boolean',
+        ]);
         $enrollments = $s->enrollments();
         $category = $r->string('category')->toString();
         $query = $r->string('q')->toString();
@@ -22,6 +28,14 @@ class CommunityController extends Controller
         $status = $r->string('status')->toString();
         $activities = array_filter($s->activities(), fn ($a) => (! $category || ($a['categories']['name'] ?? '') === $category) && (! $query || str_contains(strtolower($a['title'].' '.$a['venue']), strtolower($query))) && (! $mine || collect($enrollments)->contains(fn ($e) => $e['activity_id'] === $a['activity_id'] && $e['status'] !== 'cancelled')));
         $activities = array_filter($activities, fn ($a) => ! in_array($a['status'], ['draft', 'archived']) && (! $status || $a['status'] === $status));
+
+        if ($r->expectsJson()) {
+            return response()->json([
+                'data' => array_values($activities),
+                'count' => count($activities),
+                'html' => view('activity-results', compact('activities', 'enrollments', 'mine'))->render(),
+            ])->header('Cache-Control', 'private, no-store');
+        }
 
         return view('community', compact('activities', 'enrollments', 'category', 'query', 'mine', 'status') + ['demo' => $s->demo(), 'categories' => $s->table('categories')]);
     }
@@ -71,26 +85,21 @@ class CommunityController extends Controller
         if ($s->demo()) {
             $entries = $s->enrollments();
             $found = false;
+            $promote = null;
             foreach ($entries as &$e) {
                 if ($e['enrollment_id'] === $id && $e['status'] !== 'cancelled') {
                     $a = collect($s->activities())->firstWhere('activity_id', $e['activity_id']);
                     if (! $a || ! in_array($a['status'], ['open', 'full']) || Carbon::parse($a['cutoff_at'])->isPast()) {
                         throw ValidationException::withMessages(['enrollment' => 'Withdrawal is closed.']);
                     }
-                    if ($e['status'] === 'confirmed') {
-                        $activities = $s->activities();
-                        foreach ($activities as &$activity) {
-                            if ($activity['activity_id'] === $e['activity_id']) {
-                                $activity['confirmed'] = max(0, $activity['confirmed'] - 1);
-                            }
-                        }session(['demo_activities' => $activities]);
-                    }
+                    $promote = $e['status'] === 'confirmed' ? $e['activity_id'] : null;
                     $e['status'] = 'cancelled';
                     $found = true;
                 }
             }
             abort_unless($found, 404);
-            session(['demo_enrollments' => $entries]);
+            unset($e);
+            $s->saveDemoEnrollments($s->enrollments(), $entries, $promote);
         } else {
             $s->api('POST', '/rest/v1/rpc/withdraw_enrollment', ['target' => $id]);
         }
