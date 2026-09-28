@@ -121,7 +121,7 @@
             <div class="member">
                 <span class="avatar">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
-                    <strong>{{ $demo?'Demo'.ucfirst(currentRole) : session('profile.full_name','Welcome') }}</strong>
+                    <strong>{{ $demo?'Demo'.ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
                     <small>{{ ucfirst($currentRole) }} {{ $demo ? '· Demo' : '' }}</small>
                 </div>
             </div>
