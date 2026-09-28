@@ -9,6 +9,10 @@
   },
   "routes": [
     {
+      "src": "/images/(.*)",
+      "dest": "/public/images/$1"
+    },
+    {
       "src": "/community\\.css",
       "dest": "/public/community.css"
     },
