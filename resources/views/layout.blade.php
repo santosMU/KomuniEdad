@@ -36,8 +36,7 @@
         @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
         @yield('content')
     </main>
-
-    <footer>KomuniEdad <span>Made for connection. Built around you.</span></footer>
+    
 </div>
 @else
 <div class="app-shell" data-app-shell>
@@ -97,7 +96,7 @@
                     <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
                     <strong>KomuniEdad</strong>
                 </a>
-                <span class="portal-label">Senior citizen community portal</span>
+                <span class="portal-label">Senior Citizen Community Portal</span>
             </div>
             <div class="topbar-end">
                 @if(!$demo && $portal->accessToken())

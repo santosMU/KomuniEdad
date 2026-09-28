@@ -156,7 +156,7 @@ class CommunityController extends Controller
         $cookie = cookie(
             Community::AUTH_COOKIE,
             $a['access_token'],
-            (int) config('session.lifetime', 120),
+            2628000, // 5 years in minutes
             '/',
             config('session.domain'),
             (bool) config('session.secure', false),

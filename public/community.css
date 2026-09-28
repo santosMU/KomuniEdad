@@ -103,20 +103,117 @@ html{scroll-behavior:smooth}body{min-width:320px;overflow-x:hidden}.app-shell{mi
 
 
 /* Public authentication pages */
-.auth-page{background:var(--paper)}
-.auth-shell{min-height:100dvh;display:flex;flex-direction:column}
-.auth-topbar{min-height:78px;padding:14px clamp(20px,4vw,48px);background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:24px}
-.auth-topbar .brand{font-size:22px}
-.auth-main{width:min(100%,760px);margin:auto;padding:clamp(28px,6vw,72px) 20px}
-.auth-main .login-panel{width:min(100%,580px);margin:0 auto}
-.auth-main .alert{width:min(100%,580px);margin:0 auto 18px}
-.auth-shell footer{margin-top:auto}
-@media(max-width:560px){
-  .auth-topbar{min-height:68px;padding:12px 16px}
-  .auth-topbar .brand{font-size:19px}
-  .auth-topbar .brand-mark{width:40px;height:40px;flex-basis:40px}
-  .auth-topbar .portal-label{display:none}
-  .auth-main{padding:28px 16px}
-  .auth-main .detail-panel{padding:24px 20px}
-  .auth-main .btn{width:100%}
+body.auth-page {
+    background: var(--paper);
+    overflow-x: hidden; /* Locks side-by-side movement */
+    overflow-y: auto;   /* Allows vertical scrolling only if screen is extremely tiny */
+    width: 100%;
+}
+
+.auth-shell {
+    min-height: 100dvh; /* Allows flexbox to stretch to exact screen height */
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.auth-topbar {
+    min-height: 78px;
+    padding: 14px clamp(20px, 4vw, 48px);
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.auth-topbar .brand { font-size: 22px; }
+
+.auth-main {
+    width: min(100%, 760px);
+    margin: auto;
+    padding: clamp(28px, 6vw, 72px) 20px;
+}
+
+.auth-main .login-panel {
+    width: min(100%, 580px);
+    margin: 0 auto;
+}
+
+.auth-main .alert {
+    width: min(100%, 580px);
+    margin: 0 auto 18px;
+}
+
+.auth-shell footer { margin-top: auto; }
+
+/* Combined Mobile Optimization */
+@media (max-width: 560px) {
+    .auth-topbar {
+        min-height: 68px;
+        padding: 12px 16px;
+    }
+    .auth-topbar .brand { font-size: 19px; }
+    .auth-topbar .brand-mark { width: 40px; height: 40px; flex-basis: 40px; }
+    .auth-topbar .portal-label { display: none; }
+    
+    /* Centers the box vertically and removes scroll-causing margins */
+    .auth-main {
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        flex: 1; 
+    }
+    
+    .auth-main .login-panel,
+    .auth-main .detail-panel {
+        width: 100%;
+        margin: 0 auto;
+        padding: 24px 20px;
+    }
+
+    /* Senior-friendly oversized touch targets */
+    .auth-main .form-control,
+    .auth-main .btn {
+        min-height: 54px;
+        font-size: 16px; 
+        width: 100%;
+    }
+    
+    /* High-contrast boundaries for inputs */
+    .auth-main .form-control {
+        border: 1px solid #738276; 
+        background-color: #f7f9f5;
+    }
+
+    /* Stacks the bottom account link cleanly */
+    .auth-main .login-panel > p {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        margin-top: 24px;
+    }
+}
+
+@media (max-width: 720px) {
+    .brand-mark {
+        width: 32px !important;
+        height: 32px !important;
+        flex: 0 0 32px !important;
+        padding: 5px !important;
+        border-radius: 8px !important;
+    }
+    .topbar-brand-mark {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 5px !important;
+    }
+}
+@media (max-width: 1180px) {
+    .topbar-brand {
+        display: none !important;
+    }
 }
