@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#245c48">
     <title>@yield('title','Activities') · KomuniEdad</title>
-    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/5/5a/Sun_Symbol_of_the_National_Flag_of_the_Philippines.svg">
+    <link rel="icon" type="image/png" href="/images/logo.png">
     <link rel="stylesheet" href="/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="/community.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -24,10 +24,10 @@
 <div class="auth-shell">
     <header class="auth-topbar">
         <a class="brand" href="/login">
-            <span class="brand-mark"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Sun_Symbol_of_the_National_Flag_of_the_Philippines.svg" alt="" aria-hidden="true"></span>
+            <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
             <span>KomuniEdad</span>
         </a>
-        <span class="portal-label">Senior citizen community portal</span>
+        <span class="portal-label">Senior Citizen Community Portal</span>
     </header>
 
     <div id="request-status" role="status" aria-live="polite" tabindex="-1" hidden></div>
@@ -42,16 +42,13 @@
 @else
 <div class="app-shell" data-app-shell>
     <aside class="sidebar" id="site-sidebar" aria-label="Community navigation">
-        <div class="sidebar-header">
+        <div class="sidebar-header" style="margin-bottom: 24px;">
             <a class="brand" href="/">
-                <span class="brand-mark"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Sun_Symbol_of_the_National_Flag_of_the_Philippines.svg" alt="" aria-hidden="true"></span>
+                <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -2px; margin-left: -5px;">
                 <span>KomuniEdad</span>
             </a>
             <button class="sidebar-close" type="button" data-sidebar-dismiss aria-label="Close navigation"><span aria-hidden="true">×</span></button>
         </div>
-        <p class="brand-note">A community for every chapter.</p>
-        <div class="nav-label">YOUR COMMUNITY</div>
-
         <nav aria-label="Main navigation">
             @if($currentRole==='senior')
                 <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover activities</a>
@@ -97,7 +94,7 @@
                     <span class="menu-label">Menu</span>
                 </button>
                 <a class="topbar-brand" href="/" aria-label="KomuniEdad home">
-                    <span class="topbar-brand-mark"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Sun_Symbol_of_the_National_Flag_of_the_Philippines.svg" alt="" aria-hidden="true"></span>
+                    <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
                     <strong>KomuniEdad</strong>
                 </a>
                 <span class="portal-label">Senior citizen community portal</span>
