@@ -37,7 +37,6 @@
         margin: 0 !important;
     }
 
-    /* Standard Desktop Card */
     .detail-panel.login-panel {
         width: 100%;
         max-width: 480px !important;
@@ -77,7 +76,6 @@
         font-size: 16px !important;
     }
 
-    /* Completely strips native browser password reveal icons */
     input[type="password"]::-ms-reveal,
     input[type="password"]::-ms-clear,
     input[type="password"]::-webkit-credentials-auto-fill-button,
@@ -113,19 +111,28 @@
         margin-top: 24px;
     }
 
-    /* Maximized proportions for iPad Pro / Tablets */
+    .login-support {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.5;
+    }
+
     @media (min-width: 768px) and (max-width: 1200px) {
         .detail-panel.login-panel {
             max-width: 980px !important;
-            padding: 80px 96px !important;
+            padding: 70px 96px !important;
             border-radius: 32px !important;
         }
         .login-logo {
-            width: 170px !important;
-            height: 170px !important;
+            width: 150px !important;
+            height: 150px !important;
         }
         .login-brand-name {
-            font-size: 52px !important;
+            font-size: 48px !important;
         }
         .login-label {
             font-size: 26px !important;
@@ -142,20 +149,25 @@
             -webkit-text-fill-color: var(--ink) !important;
         }
         .login-checkbox {
-            width: 40px !important;
-            height: 40px !important;
+            width: 36px !important;
+            height: 36px !important;
         }
         .login-checkbox-label {
-            font-size: 26px !important;
+            font-size: 24px !important;
         }
         .login-btn {
-            min-height: 80px !important;
+            min-height: 76px !important;
             font-size: 26px !important;
-            margin-top: 24px !important;
+            margin-top: 20px !important;
         }
         .login-footer {
-            font-size: 25px !important;
-            margin-top: 48px !important;
+            font-size: 24px !important;
+            margin-top: 36px !important;
+        }
+        .login-support {
+            font-size: 22px !important;
+            margin-top: 32px !important;
+            padding-top: 26px !important;
         }
     }
 
@@ -171,7 +183,7 @@
 </style>
 
 <div class="detail-panel login-panel" style="text-align: center;">
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 22px; margin-bottom: 44px;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 36px;">
         <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
         <span class="login-brand-name">Create a senior account</span>
     </div>
@@ -191,7 +203,7 @@
         <label for="password_confirmation" class="form-label login-label">Confirm password</label>
         <input class="form-control mb-4 login-input" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required>
 
-        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 38px;">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 34px;">
             <input type="checkbox" id="showPassword" onclick="togglePassword()" class="login-checkbox">
             <label for="showPassword" class="login-checkbox-label">Show passwords</label>
         </div>
@@ -200,6 +212,10 @@
     </form>
    
     <p class="mb-0 login-footer">Already have an account? <a href="/login" style="font-weight: 600; color: var(--green);">Sign in</a></p>
+
+    <div class="login-support">
+        <p style="margin: 0;">Need a hand signing up? Contact your coordinator at <strong style="color: var(--ink);">(02) 8123-4567</strong> or email <strong style="color: var(--ink);">support@komuniedad.com</strong>.</p>
+    </div>
 </div>
 
 <script>

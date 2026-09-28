@@ -95,7 +95,7 @@
             </a>
             <button class="sidebar-close" type="button" data-sidebar-dismiss aria-label="Close navigation"><span aria-hidden="true">×</span></button>
         </div>
-        <nav aria-label="Main navigation">
+       <nav aria-label="Main navigation">
             @if($currentRole==='senior')
                 <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover activities</a>
                 <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1">My activities</a>
@@ -106,6 +106,7 @@
             @endif
             <a class="nav-item {{ request()->is('announcements') ? 'selected' : '' }}" href="/announcements">Announcements</a>
             <a class="nav-item {{ request()->is('profile') ? 'selected' : '' }}" href="/profile">My profile</a>
+            <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help">Help & FAQ</a>
             @if($currentRole==='admin')
                 <a class="nav-item {{ request()->is('administration*') ? 'selected' : '' }}" href="/administration">Administration</a>
             @endif

@@ -58,4 +58,7 @@ Route::middleware([CommunitySession::class, \App\Http\Middleware\JsonFormRespons
     Route::post('/administration/users/{id}', [Portal::class, 'user']);
     Route::post('/administration/categories', [Portal::class, 'category']);
     Route::get('/reports',[Portal::class, 'reports']);
+    Route::get('/help', function () {
+        return view('help');
+    });
 });
