@@ -88,7 +88,7 @@ class PortalTest extends TestCase
     public function test_login_and_register_are_public_pages_without_authenticated_navigation(): void
     {
         $this->get('/login')->assertOk()
-            ->assertSee('Good to see you.')
+            ->assertSee('KomuniEdad')
             ->assertDontSee('Discover activities')
             ->assertDontSee('data-sidebar-toggle', false);
 
