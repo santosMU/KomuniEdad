@@ -1,50 +1,26 @@
-# Database ERD
-
-Do not finalize the SQL schema until this document matches the approved
-Phase 1 requirements.
-
-## Entity Checklist
-
-For every entity identify:
-
-- purpose
-- primary key
-- attributes
-- required vs nullable fields
-- unique constraints
-- foreign keys
-- delete/update behavior
-- indexes needed by actual queries
-
-## Proposed Entities
-
-| Entity | Purpose | Related requirements |
-| --- | --- | --- |
-| TBD | TBD | TBD |
-
-## Relationships
-
-| Parent | Child | Cardinality | Foreign key |
-| --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD |
-
-## Mermaid ERD Template
-
-Replace the placeholder after the entities are approved.
+# Relational model
 
 ```mermaid
 erDiagram
-    ENTITY_A ||--o{ ENTITY_B : relates_to
-
-    ENTITY_A {
-        uuid id PK
-    }
-
-    ENTITY_B {
-        uuid id PK
-        uuid entity_a_id FK
-    }
+    AUTH_USERS ||--|| PROFILES : identity
+    PROFILES ||--o| SENIOR_PROFILES : demographics
+    PROFILES ||--o{ ACTIVITIES : coordinates
+    CATEGORIES ||--o{ ACTIVITIES : classifies
+    ACTIVITIES ||--o{ ENROLLMENTS : receives
+    PROFILES ||--o{ ENROLLMENTS : participates
+    ENROLLMENTS ||--o| ATTENDANCE : outcome
+    ENROLLMENTS ||--o| FEEDBACK : evaluates
+    ACTIVITIES o|--o{ ANNOUNCEMENTS : concerns
+    PROFILES ||--o{ ANNOUNCEMENTS : posts
+    PROFILES ||--o{ AUDIT_LOGS : acts
 ```
 
-Remove `ENTITY_A` and `ENTITY_B`. They are documentation placeholders only and
-must not be copied into `supabase/schema.sql`.
+The Auth UUID is profiles.user_id. No application password or password-hash column exists. Contact email remains in Supabase Auth. Senior demographics are optional; identity documents are not collected.
+
+Enrollment status is pending/confirmed/waitlisted/cancelled/completed. A partial unique index permits only one non-cancelled enrollment per activity and senior, while preserving past cancellations. The waitlist is ordered by enrolled_at then enrollment_id rather than a stored position that becomes stale. Activity row locks serialize enrollment/withdrawal/staff seat operations.
+
+Activities require positive capacity, end after start, and cutoff no later than start. Attendance and feedback have unique enrollment references. Feedback ratings are 1–5. Foreign keys preserve actor, coordinator, category and participant references. Application deletion is cancel/archive, preserving history.
+
+settings is a one-row deployment policy table controlling optional verification. It is readable to active users and writable only through trusted database administration.
+
+Apply migrations once in filename order. The database test harness applies every migration to an isolated PostgreSQL instance and validates representative authorization/business rules.

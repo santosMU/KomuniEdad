@@ -1,0 +1,48 @@
+@extends('layout')
+@section('content')
+
+<section id="activities">
+    <div class="section-heading">
+        <div>
+            <h2>{{ $mine ? 'My activities' : 'Explore activities' }}</h2>
+            <p>{{ $mine ? 'Your confirmed places and waitlist requests, all in one place.' : 'Small moments. Meaningful connections.' }}</p>
+        </div>
+        <span class="result-count" id="result-count" aria-live="polite">{{ count($activities) }} {{ count($activities) === 1 ? 'activity' : 'activities' }}</span>
+    </div>
+
+    <form class="filters" method="get" data-activity-search>
+        <input type="hidden" name="mine" value="{{ $mine ? 1 : 0 }}">
+        <div class="search-field">
+            <label class="visually-hidden" for="search">Search activities or venues</label>
+            <input id="search" class="form-control" type="search" name="q" value="{{ $query }}" placeholder="Search activities or venues...">
+        </div>
+        <label class="visually-hidden" for="category">Category</label>
+        <select class="form-select" id="category" name="category">
+            <option value="">All categories</option>
+            @foreach($categories as $c)
+                @if($c['is_active'])
+                    <option @selected($category===$c['name'])>{{ $c['name'] }}</option>
+                @endif
+            @endforeach
+        </select>
+        <label class="visually-hidden" for="activity-status">Activity status</label>
+        <select class="form-select" id="activity-status" name="status">
+            <option value="">All statuses</option>
+            @foreach(['open','full','ongoing','completed','cancelled'] as $state)
+                <option value="{{ $state }}" @selected($status===$state)>{{ ucfirst($state) }}</option>
+            @endforeach
+        </select>
+        <button class="btn btn-primary">Find activities</button>
+        <button type="button" data-clear-search class="btn btn-outline-secondary">Clear</button>
+        <noscript><a href="/?mine={{ $mine ? 1 : 0 }}">Clear filters</a></noscript>
+    </form>
+
+    <p id="search-status" role="status" aria-live="polite"></p>
+    <div id="activity-results">@include('activity-results')</div>
+</section>
+
+<div class="community-note">
+    <span aria-hidden="true">✦</span>
+    <p><strong>Every connection counts.</strong> Choose an activity that feels right for you. We’re glad you’re here.</p>
+</div>
+@endsection
