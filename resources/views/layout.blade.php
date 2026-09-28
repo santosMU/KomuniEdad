@@ -10,6 +10,54 @@
     <link rel="stylesheet" href="/community.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="/community.js" defer></script>
+    <style>
+        @media (min-width: 768px) and (max-width: 1200px) {
+            .auth-page input.form-control {
+                font-size: 26px !important;
+                min-height: 74px !important;
+            }
+        }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--ink) !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        /* Locks the app shell and prevents background mirroring/scaling glitches */
+        .app-shell {
+            display: flex !important;
+            height: 100vh !important;
+            width: 100vw !important;
+            overflow: hidden !important;
+            position: relative !important;
+        }
+        .workspace {
+            flex: 1 !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            position: relative !important;
+            transform: none !important;
+            direction: ltr !important;
+        }
+        /* Neutralize any accidental CSS scaling or flipping from community.css */
+        .app-shell *, .workspace * {
+            backface-visibility: hidden;
+        }
+    </style>
+
+    <style>
+        /* Fixes Chrome DevTools iPad emulation rendering bug (mirrored/ghosted repaint) */
+        .topbar, .sidebar-backdrop {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .app-shell, .workspace, main, header {
+            transform: none !important;
+            filter: none !important;
+        }
+    </style>
 </head>
 @php
     $portal = app(\App\Services\Community::class);
@@ -17,11 +65,11 @@
     $guestPage = request()->is('login', 'register');
     $currentRole = $guestPage ? null : $portal->role();
 @endphp
-<body class="{{ $guestPage ? 'auth-page' : '' }}">
+<body class="{{ $guestPage ? 'auth-page' : '' }} @yield('body-class')">
 <a class="skip" href="#main">Skip to content</a>
 
 @if($guestPage)
-<div class="auth-shell">
+<div class="auth-shell @yield('auth-shell-class')">
     <header class="auth-topbar">
         <a class="brand" href="/login">
             <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
@@ -31,12 +79,11 @@
     </header>
 
     <div id="request-status" role="status" aria-live="polite" tabindex="-1" hidden></div>
-    <main id="main" class="auth-main">
+    <main id="main" class="auth-main @yield('auth-main-class')">
         @if(session('status'))<div class="alert alert-success" role="status">{{ session('status') }}</div>@endif
         @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
         @yield('content')
     </main>
-    
 </div>
 @else
 <div class="app-shell" data-app-shell>
@@ -73,7 +120,7 @@
             <div class="member">
                 <span class="avatar">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
-                    <strong>{{ $demo ? 'Demo '.ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
+                    <strong>{{ $demo?'Demo'.ucfirst(currentRole) : session('profile.full_name','Welcome') }}</strong>
                     <small>{{ ucfirst($currentRole) }} {{ $demo ? '· Demo' : '' }}</small>
                 </div>
             </div>
