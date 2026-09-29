@@ -74,9 +74,6 @@ $serverless = [
     'SESSION_HTTP_ONLY' => 'true',
     'SESSION_SAME_SITE' => 'lax',
     'SESSION_PATH' => '/',
-    // Preview and Production aliases use different hosts. A host-only cookie
-    // avoids stale-domain CSRF/session failures.
-    'SESSION_DOMAIN' => '',
     'LOG_CHANNEL' => 'stderr',
     'LOG_STACK' => 'stderr',
 ];
@@ -116,6 +113,12 @@ if ($supabaseUrl && ! getenv('SUPABASE_URL')) {
 if ($supabaseAnonKey && ! getenv('SUPABASE_ANON_KEY')) {
     $serverless['SUPABASE_ANON_KEY'] = $supabaseAnonKey;
 }
+
+// A host-only cookie requires no Domain attribute at all. An empty Domain
+// attribute can be rejected by browsers, which would create a fresh Laravel
+// session on every request and make every CSRF token fail with HTTP 419.
+putenv('SESSION_DOMAIN');
+unset($_ENV['SESSION_DOMAIN'], $_SERVER['SESSION_DOMAIN']);
 
 foreach ($serverless as $key => $value) {
     putenv($key.'='.$value);
