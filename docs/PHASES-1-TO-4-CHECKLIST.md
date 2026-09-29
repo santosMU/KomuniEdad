@@ -1,9 +1,10 @@
 # KomuniEdad — Master Requirements and Submission Checklist: Phases 1–4
 
-**Updated for Phase 3**  
-**Branch reviewed:** `feature/laravel-phase3`  
+**Updated through Phase 4**  
+**Branch reviewed:** `feature/laravel-phase4`  
 **Date:** 29 September 2026  
-**Commit reviewed:** `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`  
+**Phase 4 tested source/evidence baseline:** `a1ca211af34e685e758741603ec7c6f149061f54`  
+**Phase 3 historical baseline:** `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`  
 **Stack:** Laravel 12, Blade, Bootstrap 5.3.8, JavaScript/Fetch, Supabase Auth, Supabase PostgreSQL
 
 ---
@@ -33,7 +34,7 @@ Do not mark an unexecuted security or usability test as passed.
 | **Phase 1 — Proposal** | Core proposal, requirements, architecture and database planning exist. | Final consistency, client/policy confirmations, approval/submission evidence. |
 | **Phase 2 — Backend & Database** | Laravel workflows, Supabase Auth, RLS/RPC, roles, hosted sample data and live authentication are working. Seven database migrations are now present, including locked-ownership, auth-profile repair and cash-payment support. | Hosted verification of the newest migrations, full live authorization/concurrency checks and remaining policy confirmation. |
 | **Phase 3 — Frontend & API** | Responsive Blade UI, JavaScript/Fetch, JSON responses, no-reload search/forms and live Supabase integration are implemented. Mobile navigation/profile/auth screens, help content, CI checks and deployment configuration were further refined through the current branch head. | Final screenshots, browser Network evidence, current-head test output, contribution records and demo rehearsal. |
-| **Phase 4 — Security & Testing** | Some validation, role, XSS and workflow tests already exist. | Formal security, SQL injection, authorization, usability, bug log, report and evidence. |
+| **Phase 4 — Security & Testing** | Local security, validation, injection, authentication, authorization, XSS and FR-01..27 regression packages are complete and committed; ZAP passive evidence and bug/retest documentation exist. | Hosted deployment/Supabase verification, shared-cache throttling, concurrent/live checks, remaining browser evidence, three human testers and leader ratings. |
 
 ---
 
@@ -316,7 +317,8 @@ Updated 2026-09-29. See [full Phase 4 report](phase4/SECURITY-AND-TESTING-REPORT
 - [ ] BROWSER: finish staff drawer, full keyboard/zoom, full role workflow and real-phone checks.
 - [ ] HUMAN: obtain genuine feedback from at least three testers.
 - [ ] LEADER: complete contribution ratings.
-- [ ] RELEASE: commit/push final changes, record SHA/deployment, repeat hosted scan.
+- [x] RELEASE SOURCE: final local source/evidence baseline committed and pushed as `a1ca211af34e685e758741603ec7c6f149061f54`; GitHub Actions run 51 passed.
+- [ ] RELEASE DEPLOYMENT: record deployed Phase 4 identity and repeat the hosted passive scan after deployment.
 
 Phase 4 is partially complete. No full completion claim until manual and hosted requirements are evidenced.
 
