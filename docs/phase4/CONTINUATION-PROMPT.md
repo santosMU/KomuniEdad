@@ -10,7 +10,7 @@ Read docs/phase4/README.md, SECURITY-AND-TESTING-REPORT.md, BUG-LOG.md, TEST-CAS
 
 ## Verified state on 2026-09-29
 
-- Starting pushed commit: 4cca23f. It contains earlier Phase 4 work. The subsequent changes described below are currently uncommitted unless the user has since committed them. Verify Git before acting.
+- Current tested source/evidence baseline: `a1ca211af34e685e758741603ec7c6f149061f54` (`security: finish Phase 4 local verification and evidence`). GitHub Actions run 51 passed on this exact commit. Verify whether later commits are documentation-only or include application changes before relying on this baseline.
 - Final local tests: 175 PHP tests passed, 603 assertions; 26 additional named PGlite checks passed, plus the existing database scenario suite. JS syntax passed. Composer audit found no advisories. npm audit --omit=dev found zero production vulnerabilities. Outputs are under docs/phase4/evidence/automated/final-*.txt.
 - PHP tests use demo state or mocked Supabase HTTP. PGlite runs SQL/RLS with an auth.uid shim. These are not hosted Auth/RLS or concurrent multi-connection evidence.
 - Existing fixes include bounded auth-cookie expiry, separate profile/logout forms, live UUID validation, safe AJAX redirects, restored search and profile links, optional field defaults, mobile navigation scope and migration 008 database limits.
@@ -26,18 +26,16 @@ Hosted initial distinct alerts: 3 medium, 4 low, 3 informational, zero high. Loc
 
 ## Immediate priorities
 
-1. Verify all latest files survived and are committed/pushed. Agent staging failed with .git/index.lock Permission denied. User must run the commands in DEPLOYMENT-AND-SUPABASE.md if the deny persists. Do not bypass Windows ACLs or force-push. Earlier D: drive I/O errors occurred; stop on recurring hardware errors and preserve files.
-2. Record final commit SHA and deployment identity. tested-source-manifest.json identifies working source hashes; 4cca23f is not the final tested change commit.
-3. Configure shared cache for Vercel throttling. api/index.php no longer overwrites CACHE_STORE, and config/cache.php supports CACHE_LIMITER. Array and serverless local files are insufficient across instances. .env.production.example uses Redis placeholders; verify PHP client availability and reachable credentials. Do not claim rate limiting fixed in production until verified across independent requests/instances.
-4. Review/apply supabase/migrations/202609290008_phase4_validation.sql after preflight. It adds capacity <=10000, requirements <=2000 characters and fee <=100000. Hosted installation has not been done. Do not blindly rerun prior migrations or delete records.
-5. Deploy Phase 4 deliberately, then verify live synthetic senior A/B, coordinator A/B and admin workflows, RLS ownership, disabled users, token expiry, cash attendance gate, feedback, waitlist persistence, audit logs and counts. No live credentials are embedded in this handoff.
-6. Finish staff mobile drawer/keyboard/zoom/full role workflow screenshots and real-device checks. Three viewport widths currently cover discovery only. Reports render in tests but full aggregate reconciliation remains pending. Concurrent capacity testing remains pending.
-7. Collect actual feedback from at least three human testers and actual leader contribution ratings. Keep pending rows until supplied. Never invent feedback or PASS results.
-8. Repeat hosted passive scan after deployment, triage findings, run regressions after any code changes, update report/checklist, and preserve honest limitations.
+1. Configure shared cache for Vercel throttling. api/index.php no longer overwrites CACHE_STORE, and config/cache.php supports CACHE_LIMITER. Array and serverless local files are insufficient across instances. .env.production.example uses Redis placeholders; verify PHP client availability and reachable credentials. Do not claim rate limiting fixed in production until verified across independent requests/instances.
+2. Review/apply supabase/migrations/202609290008_phase4_validation.sql after preflight. It adds capacity <=10000, requirements <=2000 characters and fee <=100000. Hosted installation has not been done. Do not blindly rerun prior migrations or delete records.
+3. Deploy Phase 4 deliberately, then verify live synthetic senior A/B, coordinator A/B and admin workflows, RLS ownership, disabled users, token expiry, cash attendance gate, feedback, waitlist persistence, audit logs and counts. No live credentials are embedded in this handoff.
+4. Finish staff mobile drawer/keyboard/zoom/full role workflow screenshots and real-device checks. Three viewport widths currently cover discovery only. Reports render in tests but full aggregate reconciliation remains pending. Concurrent capacity testing remains pending.
+5. Collect actual feedback from at least three human testers and actual leader contribution ratings. Keep pending rows until supplied. Never invent feedback or PASS results.
+6. Repeat hosted passive scan after deployment, triage findings, run regressions after any code changes, update report/checklist, and preserve honest limitations.
 
 ## Tools and constraints
 
-PHP is C:\xampp\php\php.exe. Composer PHAR is C:\Users\User\Documents\Codex\2026-09-15\b\work\composer.phar. npm.cmd works. Portable ZAP is storage/phase4-tools/zap/ZAP_2.17.0/zap-2.17.0.jar; Java is C:\Program Files\Microsoft\jdk-21.0.12.8-hotspot\bin\java.exe. Do not commit scanner binaries, jbrofuzz, local .env, raw reports, dependencies or secrets. Git CLI network previously failed schannel credentials as well as metadata permissions. The user can push from their own terminal.
+PHP is C:\xampp\php\php.exe. Composer PHAR is C:\Users\User\Documents\Codex\2026-09-15\b\work\composer.phar. npm.cmd works. Portable ZAP is storage/phase4-tools/zap/ZAP_2.17.0/zap-2.17.0.jar; Java is C:\Program Files\Microsoft\jdk-21.0.12.8-hotspot\bin\java.exe. Do not commit scanner binaries, jbrofuzz, local .env, raw reports, dependencies or secrets. Earlier local agent Git writes had Windows permission/network issues, but the final local verification work was subsequently committed and pushed by the user. Do not assume any future local working tree is clean; verify Git state first.
 
 The current local demo may still run on http://127.0.0.1:8044. Verify process state before restarting. Its data is synthetic browser-session state, not hosted persistence. Browser clicks sometimes mis-targeted in the automation provider; keyboard activation worked. Viewport override was reset.
 
