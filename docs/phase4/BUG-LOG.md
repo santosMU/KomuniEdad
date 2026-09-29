@@ -1,6 +1,6 @@
 # Phase 4 bug and issue log
 
-Date: 2026-09-29. Local fixes refer to the working tree based on 4cca23f. Hosted deployment is not verified.
+Date: 2026-09-29. Local fixes are committed in `a1ca211af34e685e758741603ec7c6f149061f54`. Hosted deployment is not verified.
 
 | ID | Requirement / severity | Reproduction and root cause | Action | Status and evidence |
 |---|---|---|---|---|
