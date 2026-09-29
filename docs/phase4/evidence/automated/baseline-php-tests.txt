@@ -1,0 +1,55 @@
+
+   PASS  Tests\Feature\CommunityTest
+  ✓ search and category filter                                                                                   3.51s  
+  ✓ enrollment duplicate and withdrawal                                                                          1.07s  
+  ✓ full activity uses waitlist                                                                                  0.01s  
+  ✓ invalid activity and enrollment are not found                                                                0.11s  
+  ✓ live requires authentication                                                                                 0.01s  
+  ✓ invalid live token is rejected                                                                               1.02s  
+  ✓ live enrollment calls authenticated rpc                                                                      0.01s  
+
+   PASS  Tests\Feature\ConsistencyTest
+  ✓ other seniors records are private and do not block enrollment                                                0.39s  
+  ✓ logout clears session when supabase is unavailable                                                           0.03s  
+  ✓ demo published activity cannot return to draft                                                               0.11s  
+  ✓ coordinator cannot retarget another coordinators notice                                                      0.02s  
+  ✓ disabled demo account cannot access protected pages                                                          0.01s  
+  ✓ closed activities do not advertise available registration                                                    0.02s  
+  ✓ full filter uses current seat counts                                                                         0.01s  
+
+   PASS  Tests\Feature\InteractiveTest
+  ✓ fetch search returns filtered data and escaped cards                                                         0.02s  
+  ✓ fetch enrollment and withdrawal persist and refresh counts                                                   0.02s  
+  ✓ staff json validation and save                                                                               0.05s  
+  ✓ json guest and staff authorization                                                                           0.01s  
+  ✓ temporary service failure preserves session                                                                  0.01s  
+  ✓ staff seat counts and repeat confirmation                                                                    0.01s  
+  ✓ withdrawal promotes waitlisted demo participant                                                              0.01s  
+  ✓ publishable key is not sent as a user bearer token                                                           0.28s  
+  ✓ signup endpoint does not receive existing user bearer                                                        0.01s  
+  ✓ live login sets dedicated auth cookie                                                                        0.03s  
+  ✓ cookie authenticated user can see and use logout                                                             0.09s  
+  ✓ ajax redirects are same origin relative paths                                                                0.02s  
+
+   PASS  Tests\Feature\PortalTest
+  ✓ senior cannot access staff or admin pages                                                                    0.05s  
+  ✓ coordinator pages render and admin is denied                                                                 0.42s  
+  ✓ admin pages render                                                                                           0.09s  
+  ✓ profile update does not allow role escalation                                                                0.01s  
+  ✓ demo switch is unavailable in live mode                                                                      0.01s  
+  ✓ activity validation and save                                                                                 0.02s  
+  ✓ registration only sends senior profile metadata                                                              0.01s  
+  ✓ feedback requires completed attendance                                                                       0.01s  
+  ✓ announcement is saved and escaped                                                                            0.01s  
+  ✓ database rpc scalar response is supported                                                                    0.01s  
+  ✓ login and register are public pages without authenticated navigation                                         0.12s  
+  ✓ demo registration and login work end to end                                                                  0.09s  
+  ✓ demo registration rejects invalid and duplicate accounts                                                     0.07s  
+  ✓ live registration never inherits admin session or auto signs in                                              0.01s  
+  ✓ live registration explains default smtp restriction                                                          0.01s  
+  ✓ live registration explains profile trigger failure                                                           0.01s  
+  ✓ paid activity is explicitly cash only and attendance waits for payment                                       0.02s  
+
+  Tests:    43 passed (176 assertions)
+  Duration: 10.73s
+

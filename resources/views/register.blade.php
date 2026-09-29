@@ -29,6 +29,7 @@
 
     .login-main-override {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;

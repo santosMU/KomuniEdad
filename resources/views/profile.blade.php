@@ -18,6 +18,10 @@
 <div class="px-1 py-2 my-auto w-100">
     <h2 class="fs-5 mb-1 fw-bold">Your profile</h2>
     <p class="text-muted small mb-3">Keep your contact details up to date.</p>
+    <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Profile shortcuts">
+        @if($profile['role']==='senior')<a class="btn btn-outline-secondary" href="/history">Participation history</a>@endif
+        <a class="btn btn-outline-secondary" href="/announcements">Announcements</a>
+    </nav>
 
     <form class="panel form-grid bg-light p-3 rounded-3 shadow-sm m-0" method="post" action="/profile">
         @csrf
@@ -50,13 +54,13 @@
             <button type="submit" class="btn btn-primary btn-sm flex-grow-1 py-2 fw-bold">Save profile</button>
             
             @if(!$demo && app(\App\Services\Community::class)->accessToken())
-                <form method="post" action="/logout" class="flex-grow-1 m-0">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-2 fw-bold">Sign out</button>
-                </form>
+                <button type="submit" form="profile-logout" class="btn btn-outline-danger btn-sm flex-grow-1 py-2 fw-bold">Sign out</button>
             @endif
         </div>
     </form>
+    @if(!$demo && app(\App\Services\Community::class)->accessToken())
+        <form id="profile-logout" method="post" action="/logout">@csrf</form>
+    @endif
 </div>
 
 @endsection

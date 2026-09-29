@@ -59,7 +59,8 @@ class CommunityTest extends TestCase
     {
         config(['komuniedad.demo' => false, 'komuniedad.url' => 'https://example.test', 'komuniedad.key' => 'test']);
         Http::fake(['*/auth/v1/user' => Http::response(['id' => 'senior-1']), '*/rest/v1/profiles*' => Http::response([['user_id' => 'senior-1', 'role' => 'senior', 'account_status' => 'active']]), '*/rest/v1/rpc/enroll_in_activity' => Http::response(['status' => 'confirmed'])]);
-        $this->withSession(['access_token' => 'valid-token'])->post('/activities/activity-1/enroll')->assertRedirect('/?mine=1');
-        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/rpc/enroll_in_activity') && $r->hasHeader('Authorization', 'Bearer valid-token') && $r['target'] === 'activity-1');
+        $id = '00000000-0000-4000-8000-000000000001';
+        $this->withSession(['access_token' => 'valid-token'])->post('/activities/'.$id.'/enroll')->assertRedirect('/?mine=1');
+        Http::assertSent(fn ($r) => str_ends_with($r->url(), '/rpc/enroll_in_activity') && $r->hasHeader('Authorization', 'Bearer valid-token') && $r['target'] === $id);
     }
 }

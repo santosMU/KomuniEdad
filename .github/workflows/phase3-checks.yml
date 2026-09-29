@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/laravel-phase3
+      - feature/laravel-phase4
   pull_request:
 
 jobs:

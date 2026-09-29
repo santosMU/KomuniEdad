@@ -1,0 +1,38 @@
+
+  GET|HEAD  / .............................................................................. CommunityController@index
+  GET|HEAD  activities/{id} ............................................................... CommunityController@detail
+  POST      activities/{id}/enroll ........................................................ CommunityController@enroll
+  GET|HEAD  administration ........................................................... PortalController@administration
+  POST      administration/categories ...................................................... PortalController@category
+  POST      administration/users/{id} .......................................................... PortalController@user
+  GET|HEAD  announcements ............................................................. PortalController@announcements
+  POST      announcements .................................................................. PortalController@announce
+  POST      demo/role .............................................................................. routes/web.php:29
+  POST      enrollments/{id}/withdraw ................................................... CommunityController@withdraw
+  GET|HEAD  health ................................................................................. routes/web.php:36
+  GET|HEAD  help ................................................................................... routes/web.php:61
+  GET|HEAD  history ......................................................................... PortalController@history
+  POST      history/{id}/feedback .......................................................... PortalController@feedback
+  GET|HEAD  login .............................................................................................. login
+  POST      login .......................................................................... CommunityController@login
+  POST      logout ................................................................................. routes/web.php:16
+  GET|HEAD  profile ......................................................................... PortalController@profile
+  POST      profile ................................................................... PortalController@updateProfile
+  GET|HEAD  register ................................................................................................. 
+  POST      register ....................................................................... PortalController@register
+  GET|HEAD  reports ......................................................................... PortalController@reports
+  GET|HEAD  storage/{path} storage.local › vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServiceProvid…
+  PUT       storage/{path} storage.local.upload › vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServic…
+  GET|HEAD  up ........... vendor/laravel/framework/src/Illuminate/Foundation/Configuration/ApplicationBuilder.php:219
+  GET|HEAD  workspace ..................................................................... PortalController@workspace
+  GET|HEAD  workspace/create ................................................................... PortalController@edit
+  POST      workspace/create ................................................................... PortalController@save
+  POST      workspace/{id}/attendance .................................................... PortalController@attendance
+  GET|HEAD  workspace/{id}/edit ................................................................ PortalController@edit
+  POST      workspace/{id}/edit ................................................................ PortalController@save
+  POST      workspace/{id}/enrollment .................................................... PortalController@enrollment
+  GET|HEAD  workspace/{id}/participants ...................................................... PortalController@roster
+  POST      workspace/{id}/payment .......................................................... PortalController@payment
+
+                                                                                                   Showing [34] routes
+

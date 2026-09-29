@@ -62,10 +62,10 @@
         }
         @media (max-width: 1024px) {
             /* Hide the hamburger menu button and sidebar */
-            .menu-toggle {
+            .senior-shell .menu-toggle {
                 display: none !important;
             }
-            .sidebar {
+            .senior-shell .sidebar {
                 display: none !important;
             }
 
@@ -185,7 +185,7 @@
     </main>
 </div>
 @else
-<div class="app-shell" data-app-shell>
+<div class="app-shell {{ $currentRole === 'senior' ? 'senior-shell' : 'staff-shell' }}" data-app-shell>
     <aside class="sidebar" id="site-sidebar" aria-label="Community navigation">
         <div class="sidebar-header" style="margin-bottom: 24px;">
             <a class="brand" href="/">

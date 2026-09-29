@@ -1,6 +1,7 @@
 import {PGlite} from '@electric-sql/pglite';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {phase4} from './phase4.mjs';
 const db=new PGlite();
 const root=new URL('../../',import.meta.url).pathname.replace(/^\/(\w:)/,'$1');
 await db.exec(`create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}'); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to authenticated;`);
@@ -81,4 +82,5 @@ await db.query('select record_attendance($1,true)',[paidEnrollment.enrollment_id
 await db.exec('reset role');
 assert.equal((await db.query("select details->>'method' method from audit_logs where action_type='payment.cash_recorded' order by created_at desc limit 1")).rows[0].method,'cash');
 console.log('PASS: cash-only payments, unpaid attendance block, paid attendance, and payment audit.');
+await phase4(db,ids,asUser,payload);
 await db.close();

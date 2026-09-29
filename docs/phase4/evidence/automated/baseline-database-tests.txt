@@ -1,0 +1,12 @@
+
+> test:db
+> node supabase/tests/domain.mjs
+
+PASS: all migrations, safe provisioning, staff ownership, category/activity CRUD, capacity, duplicates, waitlists, RLS, attendance, feedback eligibility/uniqueness, profile safety, announcements, verification, audit, cutoff, staff walk-ins and capacity/cancellation, private helper permissions.
+PASS: capacity increase promotes existing eligible waitlist before a newer registration.
+PASS: cash-only payments, unpaid attendance block, paid attendance, and payment audit.
+npm notice
+npm notice New major version of npm available! 11.16.0 -> 12.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+npm notice To update run: npm install -g npm@12.1.0
+npm notice

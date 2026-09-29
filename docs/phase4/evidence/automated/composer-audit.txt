@@ -1,0 +1,2 @@
+Cannot create cache directory C:/Users/User/AppData/Local/Composer/repo/https---repo.packagist.org/, or directory is not writable. Proceeding without cache. See also cache-read-only config if your filesystem is read-only.
+No security vulnerability advisories found.

@@ -1,0 +1,556 @@
+
+   FAIL  Tests\Feature\Phase4FunctionalTest
+  ⨯ f u n c 10 search controls are reachable                                                                     0.15s  
+  ⨯ f u n c 04 profile links to history and announcements                                                        0.01s  
+  ✓ f u n c 07 optional requirements do not break detail                                                         0.03s  
+  ⨯ f u n c 09 complete local role workflow                                                                      0.08s  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Phase4FunctionalTest > f u n c 10 search controls are reachable                                
+  Expected: <!doctype html>\n
+<html lang="en">\n
+<head>\n
+    <meta charset="utf-8">\n
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n
+    <meta name="theme-color" content="#245c48">\n
+    <title>Activities · KomuniEdad</title>\n
+    <link rel="icon" type="image/png" href="/images/logo.png">\n
+    <link rel="stylesheet" href="/vendor/bootstrap.min.css">\n
+    <link rel="stylesheet" href="/community.css">\n
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">\n
+    <meta name="csrf-token" content="J8yNwQ4bMZYaJAVtwCHs6z54ZUYcf7lUDVfxtu0G">\n
+    <script src="/community.js" defer></script>\n
+    <style>\n
+        @media (min-width: 768px) and (max-width: 1200px) {\n
+            .auth-page input.form-control {\n
+                font-size: 26px !important;\n
+                min-height: 74px !important;\n
+            }\n
+        }\n
+        input:-webkit-autofill,\n
+        input:-webkit-autofill:hover,\n
+        input:-webkit-autofill:focus {\n
+            -webkit-text-fill-color: var(--ink) !important;\n
+            transition: background-color 5000s ease-in-out 0s;\n
+        }\n
+\n
+        /* Locks the app shell and prevents background mirroring/scaling glitches */\n
+        .app-shell {\n
+            display: flex !important;\n
+            height: 100vh !important;\n
+            width: 100vw !important;\n
+            overflow: hidden !important;\n
+            position: relative !important;\n
+        }\n
+       .workspace {\n
+            flex: 1 !important;\n
+            height: 100vh !important;\n
+            overflow-y: auto !important;\n
+            overflow-x: hidden !important;\n
+            position: relative !important;\n
+            transform: none !important;\n
+            direction: ltr !important;\n
+            box-sizing: border-box !important; /* Ensures padding is contained within 100vh */\n
+        }\n
+    </style>\n
+\n
+    <style>\n
+        /* Fixes Chrome DevTools iPad emulation rendering bug (mirrored/ghosted repaint) */\n
+        .topbar, .sidebar-backdrop {\n
+            backdrop-filter: none !important;\n
+            -webkit-backdrop-filter: none !important;\n
+        }\n
+        .app-shell, .workspace, main, header {\n
+            transform: none !important;\n
+            filter: none !important;\n
+        }\n
+\n
+        /* Mobile & Tablet Bottom Navigation Bar & Topbar Styles */\n
+        .mobile-bottom-nav {\n
+            display: none;\n
+        }\n
+        @media (max-width: 1024px) {\n
+            /* Hide the hamburger menu button and sidebar */\n
+            .menu-toggle {\n
+                display: none !important;\n
+            }\n
+            .sidebar {\n
+                display: none !important;\n
+            }\n
+\n
+            /* Style the mobile topbar: Logo + Name on left, Date on right */\n
+            .topbar {\n
+                display: flex !important;\n
+                justify-content: space-between !important;\n
+                align-items: center !important;\n
+                padding: 0 16px !important;\n
+            }\n
+            .topbar-start {\n
+                display: flex !important;\n
+                align-items: center !important;\n
+            }\n
+            .topbar-brand {\n
+                display: flex !important;\n
+                align-items: center;\n
+                gap: 6px;\n
+                text-decoration: none;\n
+            }\n
+            .topbar-brand img {\n
+                width: 38px !important;\n
+                height: auto;\n
+                margin: 0 !important;\n
+            }\n
+            .topbar-brand strong {\n
+                font-size: 16px;\n
+                color: #245c48;\n
+                font-weight: 700;\n
+            }\n
+            .portal-label {\n
+                display: none !important;\n
+            }\n
+        \n
+            /* Force topbar-end and date to be visible */\n
+            .topbar-end {\n
+                display: flex !important;\n
+                align-items: center !important;\n
+            }\n
+            .topbar-end .today {\n
+                display: inline-block !important;\n
+                visibility: visible !important;\n
+                font-size: 12px !important;\n
+                color: #4a5568 !important;\n
+                font-weight: 600 !important;\n
+            }\n
+            .mobile-signout {\n
+                display: none !important;\n
+            }\n
+\n
+            /* Mobile Bottom Navigation Bar Styles */\n
+            .mobile-bottom-nav {\n
+                position: fixed;\n
+                bottom: 0;\n
+                left: 0;\n
+                right: 0;\n
+                height: 70px;\n
+                background: #ffffff;\n
+                border-top: 2px solid #e2e8f0;\n
+                display: flex;\n
+                justify-content: space-around;\n
+                align-items: center;\n
+                z-index: 1050;\n
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);\n
+            }\n
+            .mobile-bottom-nav a {\n
+                flex: 1;\n
+                display: flex;\n
+                flex-direction: column;\n
+                align-items: center;\n
+                justify-content: center;\n
+                color: #4a5568;\n
+                text-decoration: none;\n
+                font-size: 13px;\n
+                font-weight: 600;\n
+                padding: 8px 0;\n
+            }\n
+            .mobile-bottom-nav a.active {\n
+                color: #245c48;\n
+                background: #f0fdf4;\n
+            }\n
+            .mobile-bottom-nav .nav-icon {\n
+                font-size: 24px;\n
+                margin-bottom: 2px;\n
+            }\n
+            .workspace {\n
+                padding-bottom: 70px !important;\n
+                box-sizing: border-box !important;\n
+            }\n
+        }\n
+    </style>\n
+</head>\n
+<body class=" ">\n
+<a class="skip" href="#main">Skip to content</a>\n
+\n
+<div class="app-shell" data-app-shell>\n
+    <aside class="sidebar" id="site-sidebar" aria-label="Community navigation">\n
+        <div class="sidebar-header" style="margin-bottom: 24px;">\n
+            <a class="brand" href="/">\n
+                <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -2px; margin-left: -5px;">\n
+                <span>KomuniEdad</span>\n
+            </a>\n
+            <button class="sidebar-close" type="button" data-sidebar-dismiss aria-label="Close navigation"><span aria-hidden="true">×</span></button>\n
+        </div>\n
+       <nav aria-label="Main navigation">\n
+                            <a class="nav-item selected" href="/">Discover activities</a>\n
+                <a class="nav-item " href="/?mine=1">My activities</a>\n
+                <a class="nav-item " href="/history">Participation history</a>\n
+                        <a class="nav-item " href="/announcements">Announcements</a>\n
+            <a class="nav-item " href="/profile">My profile</a>\n
+            <a class="nav-item " href="/help">Help & FAQ</a>\n
+                    </nav>\n
+\n
+        <div class="sidebar-bottom">\n
+            <div class="help-card">\n
+                <span class="help-symbol" aria-hidden="true">♡</span>\n
+                <strong>A little help goes a long way.</strong>\n
+                <p>Need a hand joining an activity? Ask your community coordinator.</p>\n
+            </div>\n
+            <div class="member">\n
+                <span class="avatar">D</span>\n
+                <div>\n
+                    <strong>Demo Senior</strong>\n
+                    <small>Senior · Demo</small>\n
+                </div>\n
+            </div>\n
+                    </div>\n
+    </aside>\n
+\n
+    <button class="sidebar-backdrop" type="button" data-sidebar-dismiss aria-label="Close navigation" tabindex="-1"></button>\n
+\n
+    <div class="workspace">\n
+        <header class="topbar">\n
+            <div class="topbar-start">\n
+                <button class="menu-toggle" type="button" data-sidebar-toggle aria-controls="site-sidebar" aria-expanded="true">\n
+                    <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>\n
+                    <span class="menu-label">Menu</span>\n
+                </button>\n
+                <a class="topbar-brand" href="/" aria-label="KomuniEdad home">\n
+                    <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">\n
+                    <strong>KomuniEdad</strong>\n
+                </a>\n
+                <span class="portal-label">Senior Citizen Community Portal</span>\n
+            </div>\n
+            <div class="topbar-end">\n
+                                <span class="today">Tuesday, September 29</span>\n
+            </div>\n
+        </header>\n
+\n
+        <div id="request-status" role="status" aria-live="polite" tabindex="-1" hidden></div>\n
+        <main id="main">\n
+                            <div class="demo-toolbar">\n
+                    <div class="demo-label"><span class="status-dot"></span> DEMO PREVIEW <span>Sample data saved in this browser session. No live records are changed.</span></div>\n
+                    <form method="post" action="/demo/role">\n
+                        <input type="hidden" name="_token" value="J8yNwQ4bMZYaJAVtwCHs6z54ZUYcf7lUDVfxtu0G" autocomplete="off">                        <label for="demo-role">Preview as</label>\n
+                        <select class="form-select" id="demo-role" name="role">\n
+                            <option selected>senior</option><option >coordinator</option><option >admin</option>                        </select>\n
+                        <button class="btn btn-outline-secondary">Switch role</button>\n
+                    </form>\n
+                </div>\n
+                                                \n
+<section id="activities">\n
+    <div class="section-heading mb-4">\n
+        <div>\n
+            <h2>Explore Activities</h2>\n
+        </div>\n
+        <span class="result-count fs-5 fw-bold" id="result-count" aria-live="polite">4 activities</span>\n
+    </div>\n
+\n
+    <p id="search-status" role="status" aria-live="polite"></p>\n
+    <div id="activity-results"><div class="activity-grid"><article class="activity-card"><div class="card-photo"><img src="https://images.pexels.com/photos/37786191/pexels-photo-37786191.png?auto=compress&amp;cs=tinysrgb&amp;w=900" alt="Filipino senior doing gentle outdoor exercise in Manila" loading="lazy" decoding="async"><span class="photo-label">WELLNESS</span></div><div class="card-content"><div class="card-meta"><span class="category-pill">Wellness</span><span class="availability">6 spots left</span></div><h3><a href="/activities/1">Morning movement &amp; gentle stretching</a></h3><p class="schedule">Thu, Oct 1 · 9:00 AM</p><p class="venue">Community garden</p><p class="payment-note">Free activity</p><a class="card-action" href="/activities/1">View activity <span aria-hidden="true">→</span></a></div></article>\n
+<article class="activity-card"><div class="card-photo"><img src="https://images.pexels.com/photos/20640188/pexels-photo-20640188.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900" alt="Older Asian couple smiling with freshly harvested garden greens" loading="lazy" decoding="async"><span class="photo-label">LEARNING</span></div><div class="card-content"><div class="card-meta"><span class="category-pill">Learning</span><span class="availability">7 spots left</span></div><h3><a href="/activities/2">Grow together: urban gardening</a></h3><p class="schedule">Fri, Oct 2 · 10:00 AM</p><p class="venue">Barangay learning center</p><p class="payment-note">₱50.00 cash payment</p><a class="card-action" href="/activities/2">View activity <span aria-hidden="true">→</span></a></div></article>\n
+<article class="activity-card"><div class="card-photo"><img src="https://images.pexels.com/photos/5637706/pexels-photo-5637706.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900" alt="Older Asian couple sharing coffee and conversation" loading="lazy" decoding="async"><span class="photo-label">SOCIAL</span></div><div class="card-content"><div class="card-meta"><span class="category-pill">Social</span><span class="availability">Waitlist available</span></div><h3><a href="/activities/3">Kwentuhan &amp; coffee afternoon</a></h3><p class="schedule">Sat, Oct 3 · 11:00 AM</p><p class="venue">Senior citizens hall</p><p class="payment-note">Free activity</p><a class="card-action" href="/activities/3">View activity <span aria-hidden="true">→</span></a></div></article>\n
+<article class="activity-card"><div class="card-photo"><img src="https://images.pexels.com/photos/35356186/pexels-photo-35356186.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900" alt="Older Asian man using a smartphone in a local market" loading="lazy" decoding="async"><span class="photo-label">LEARNING</span></div><div class="card-content"><div class="card-meta"><span class="category-pill">Learning</span><span class="availability">5 spots left</span></div><h3><a href="/activities/4">Digital basics: stay connected</a></h3><p class="schedule">Sun, Oct 4 · 12:00 PM</p><p class="venue">Community computer room</p><p class="payment-note">Free activity</p><a class="card-action" href="/activities/4">View activity <span aria-hidden="true">→</span></a></div></article>\n
+</div>\n
+</div>\n
+</section>\n
+\n
+\n
+        </main>\n
+    </div>\n
+\n
+    <!-- Mobile Bottom Navigation Bar (Visible only on smaller phone screens) -->\n
+        <nav class="mobile-bottom-nav" aria-label="Mobile bottom navigation">\n
+        <a href="/" class="active">\n
+            <i class="nav-icon bi bi-house-door-fill" aria-hidden="true"></i>\n
+            <span>Discover</span>\n
+        </a>\n
+        <a href="/?mine=1" class="">\n
+            <i class="nav-icon bi bi-calendar-check-fill" aria-hidden="true"></i>\n
+            <span>My Activities</span>\n
+        </a>\n
+        <a href="/help" class="">\n
+            <i class="nav-icon bi bi-question-circle-fill" aria-hidden="true"></i>\n
+            <span>Help & FAQ</span>\n
+        </a>\n
+        <a href="/profile" class="">\n
+            <i class="nav-icon bi bi-person-fill" aria-hidden="true"></i>\n
+            <span>Profile</span>\n
+        </a>\n
+    </nav>\n
+    </div>\n
+</body>\n
+</html>
+
+  To contain: data-activity-search
+
+  at tests\Feature\Phase4FunctionalTest.php:12
+      8▕ class Phase4FunctionalTest extends Phase4TestCase
+      9▕ {
+     10▕     public function test_FUNC_10_search_controls_are_reachable(): void
+     11▕     {
+  ➜  12▕         $this->get('/')->assertOk()->assertSee('data-activity-search',false)->assertSee('name="q"',false)->assertSee('name="category"',false)->assertSee('name="status"',false);
+     13▕     }
+     14▕     public function test_FUNC_04_profile_links_to_history_and_announcements(): void
+     15▕     {
+     16▕         $html=$this->get('/profile')->assertOk()->getContent();
+
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Phase4FunctionalTest > f u n c 04 profile links to history and announcements                   
+  Expected: \n
+                            <div class="demo-toolbar">\n
+                    <div class="demo-label"><span class="status-dot"></span> DEMO PREVIEW <span>Sample data saved in this browser session. No live records are changed.</span></div>\n
+                    <form method="post" action="/demo/role">\n
+                        <input type="hidden" name="_token" value="poJ2fsjSgBLpqVjvCDf8oPusVVHGgnbamDYZCdYI" autocomplete="off">                        <label for="demo-role">Preview as</label>\n
+                        <select class="form-select" id="demo-role" name="role">\n
+                            <option selected>senior</option><option >coordinator</option><option >admin</option>                        </select>\n
+                        <button class="btn btn-outline-secondary">Switch role</button>\n
+                    </form>\n
+                </div>\n
+                                                \n
+<style>\n
+    @media (max-width: 1024px) {\n
+        .workspace {\n
+            padding-bottom: 70px !important;\n
+            box-sizing: border-box !important;\n
+            display: flex;\n
+            flex-direction: column;\n
+            justify-content: space-between;\n
+            height: 100vh !important;\n
+        }\n
+    }\n
+</style>\n
+\n
+<div class="px-1 py-2 my-auto w-100">\n
+    <h2 class="fs-5 mb-1 fw-bold">Your profile</h2>\n
+    <p class="text-muted small mb-3">Keep your contact details up to date.</p>\n
+\n
+    <form class="panel form-grid bg-light p-3 rounded-3 shadow-sm m-0" method="post" action="/profile">\n
+        <input type="hidden" name="_token" value="poJ2fsjSgBLpqVjvCDf8oPusVVHGgnbamDYZCdYI" autocomplete="off">        \n
+        <div class="mb-2">\n
+            <label class="form-label small fw-bold mb-1" for="full_name">Full name</label>\n
+            <input class="form-control form-control-sm py-2" name="full_name" id="full_name" required maxlength="120" value="Maria Santos">\n
+        </div>\n
+\n
+        <div class="mb-2">\n
+            <label class="form-label small fw-bold mb-1" for="contact_number">Contact number (optional)</label>\n
+            <input class="form-control form-control-sm py-2" name="contact_number" id="contact_number" maxlength="30" value="">\n
+        </div>\n
+\n
+                    <div class="mb-2">\n
+                <label class="form-label small fw-bold mb-1" for="birthdate">Birthdate (optional)</label>\n
+                <input class="form-control form-control-sm py-2" type="date" name="birthdate" id="birthdate" max="2026-09-29" value="">\n
+            </div>\n
+\n
+            <div class="mb-2">\n
+                <label class="form-label small fw-bold mb-1" for="address">Address (optional)</label>\n
+                <input class="form-control form-control-sm py-2" name="address" id="address" maxlength="500" value="">\n
+            </div>\n
+\n
+            <p class="small text-muted mb-2">Status: <strong class="text-dark">Pending</strong></p>\n
+        \n
+        <div class="d-flex gap-2 mt-3">\n
+            <button type="submit" class="btn btn-primary btn-sm flex-grow-1 py-2 fw-bold">Save profile</button>\n
+            \n
+                    </div>\n
+    </form>\n
+    </div>\n
+\n
+        
+
+  To contain: href="/history"
+
+  at tests\Feature\Phase4FunctionalTest.php:18
+     14▕     public function test_FUNC_04_profile_links_to_history_and_announcements(): void
+     15▕     {
+     16▕         $html=$this->get('/profile')->assertOk()->getContent();
+     17▕         $main=explode('</main>',explode('<main id="main">',$html)[1])[0];
+  ➜  18▕         $this->assertStringContainsString('href="/history"',$main);
+     19▕         $this->assertStringContainsString('href="/announcements"',$main);
+     20▕     }
+     21▕     public function test_FUNC_07_optional_requirements_do_not_break_detail(): void
+     22▕     {
+
+  1   tests\Feature\Phase4FunctionalTest.php:18
+
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Phase4FunctionalTest > f u n c 09 complete local role workflow                                 
+  Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+ErrorException: Undefined array key "description" in D:\02_Projects\06_ProjectsDev\KomuniEdad\storage\framework\views\f2433414e626b1d77e501215f491297a.php:5
+Stack trace:
+#0 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(262): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'Undefined array...', 'D:\\02_Projects\\...', 5)
+#1 D:\02_Projects\06_ProjectsDev\KomuniEdad\storage\framework\views\f2433414e626b1d77e501215f491297a.php(5): Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(2, 'Undefined array...', 'D:\\02_Projects\\...', 5)
+#2 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Filesystem\Filesystem.php(123): require('D:\\02_Projects\\...')
+#3 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Filesystem\Filesystem.php(124): Illuminate\Filesystem\Filesystem::Illuminate\Filesystem\{closure}()
+#4 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\Engines\PhpEngine.php(57): Illuminate\Filesystem\Filesystem->getRequire('D:\\02_Projects\\...', Array)
+#5 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\Engines\CompilerEngine.php(76): Illuminate\View\Engines\PhpEngine->evaluatePath('D:\\02_Projects\\...', Array)
+#6 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\View.php(208): Illuminate\View\Engines\CompilerEngine->get('D:\\02_Projects\\...', Array)
+#7 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\View.php(191): Illuminate\View\View->getContents()
+#8 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\View.php(160): Illuminate\View\View->renderContents()
+#9 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Response.php(78): Illuminate\View\View->render()
+#10 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Response.php(34): Illuminate\Http\Response->setContent(Object(Illuminate\View\View))
+#11 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(939): Illuminate\Http\Response->__construct(Object(Illuminate\View\View), 200, Array)
+#12 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(906): Illuminate\Routing\Router::toResponse(Object(Illuminate\Http\Request), Object(Illuminate\View\View))
+#13 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(821): Illuminate\Routing\Router->prepareResponse(Object(Illuminate\Http\Request), Object(Illuminate\View\View))
+#14 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(180): Illuminate\Routing\Router->Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#15 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\JsonFormResponse.php(13): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#16 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\JsonFormResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#17 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\ValidateRecordIds.php(19): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#18 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\ValidateRecordIds->handle(Object(Illuminate\Http\Request), Object(Closure))
+#19 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\CommunitySession.php(19): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#20 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\CommunitySession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#21 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#22 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#23 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken.php(87): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#24 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\VerifyCsrfToken->handle(Object(Illuminate\Http\Request), Object(Closure))
+#25 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\Middleware\ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#26 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#27 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(120): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#28 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\EncryptedStore), Object(Closure))
+#29 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#31 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#32 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#33 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#34 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(137): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#35 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#36 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#37 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#38 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#39 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#40 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(180): Illuminate\Foundation\Http\Kernel->Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#41 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\SecurityHeaders.php(12): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#42 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\SecurityHeaders->handle(Object(Illuminate\Http\Request), Object(Closure))
+#43 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#44 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#46 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#47 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#49 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#50 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#51 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#52 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#53 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(61): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#54 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#55 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#56 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#57 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#58 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#59 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#60 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#61 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(137): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#62 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#63 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#64 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#65 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase->call('GET', '/administration', Array, Array, Array, Array)
+#66 D:\02_Projects\06_ProjectsDev\KomuniEdad\tests\Feature\Phase4FunctionalTest.php(52): Illuminate\Foundation\Testing\TestCase->get('/administration')
+#67 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): Tests\Feature\Phase4FunctionalTest->test_FUNC_09_complete_local_role_workflow()
+#68 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase->runTest()
+#69 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase->runBare()
+#70 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\Phase4FunctionalTest))
+#71 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase->run()
+#72 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite->run()
+#73 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite->run()
+#74 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#75 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#76 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\phpunit(104): PHPUnit\TextUI\Application->run(Array)
+#77 {main}
+
+Next Illuminate\View\ViewException: Undefined array key "description" (View: D:\02_Projects\06_ProjectsDev\KomuniEdad\resources\views\administration.blade.php) in D:\02_Projects\06_ProjectsDev\KomuniEdad\storage\framework\views\f2433414e626b1d77e501215f491297a.php:5
+Stack trace:
+#0 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\Engines\PhpEngine.php(59): Illuminate\View\Engines\CompilerEngine->handleViewException(Object(ErrorException), 1)
+#1 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\Engines\CompilerEngine.php(76): Illuminate\View\Engines\PhpEngine->evaluatePath('D:\\02_Projects\\...', Array)
+#2 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\View.php(208): Illuminate\View\Engines\CompilerEngine->get('D:\\02_Projects\\...', Array)
+#3 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\View.php(191): Illuminate\View\View->getContents()
+#4 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\View.php(160): Illuminate\View\View->renderContents()
+#5 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Response.php(78): Illuminate\View\View->render()
+#6 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Response.php(34): Illuminate\Http\Response->setContent(Object(Illuminate\View\View))
+#7 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(939): Illuminate\Http\Response->__construct(Object(Illuminate\View\View), 200, Array)
+#8 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(906): Illuminate\Routing\Router::toResponse(Object(Illuminate\Http\Request), Object(Illuminate\View\View))
+#9 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(821): Illuminate\Routing\Router->prepareResponse(Object(Illuminate\Http\Request), Object(Illuminate\View\View))
+#10 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(180): Illuminate\Routing\Router->Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#11 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\JsonFormResponse.php(13): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#12 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\JsonFormResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#13 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\ValidateRecordIds.php(19): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#14 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\ValidateRecordIds->handle(Object(Illuminate\Http\Request), Object(Closure))
+#15 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\CommunitySession.php(19): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#16 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\CommunitySession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#17 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#18 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#19 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken.php(87): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#20 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\VerifyCsrfToken->handle(Object(Illuminate\Http\Request), Object(Closure))
+#21 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\View\Middleware\ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#22 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#23 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(120): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#24 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\EncryptedStore), Object(Closure))
+#25 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#27 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(137): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#31 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#32 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#33 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#34 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Routing\Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#35 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#36 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(180): Illuminate\Foundation\Http\Kernel->Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#37 D:\02_Projects\06_ProjectsDev\KomuniEdad\app\Http\Middleware\SecurityHeaders.php(12): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#38 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): App\Http\Middleware\SecurityHeaders->handle(Object(Illuminate\Http\Request), Object(Closure))
+#39 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#40 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#41 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#42 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#43 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#44 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#46 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#47 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#48 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#49 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(61): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#50 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#51 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#52 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#53 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#54 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#55 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#56 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#57 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(137): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#58 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#59 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#60 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#61 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase->call('GET', '/administration', Array, Array, Array, Array)
+#62 D:\02_Projects\06_ProjectsDev\KomuniEdad\tests\Feature\Phase4FunctionalTest.php(52): Illuminate\Foundation\Testing\TestCase->get('/administration')
+#63 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): Tests\Feature\Phase4FunctionalTest->test_FUNC_09_complete_local_role_workflow()
+#64 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase->runTest()
+#65 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase->runBare()
+#66 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\Phase4FunctionalTest))
+#67 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase->run()
+#68 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite->run()
+#69 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite->run()
+#70 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#71 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#72 D:\02_Projects\06_ProjectsDev\KomuniEdad\vendor\phpunit\phpunit\phpunit(104): PHPUnit\TextUI\Application->run(Array)
+#73 {main}
+
+----------------------------------------------------------------------------------
+
+Undefined array key "description" (View: D:\02_Projects\06_ProjectsDev\KomuniEdad\resources\views\administration.blade.php)
+
+  at tests\Feature\Phase4FunctionalTest.php:52
+     48▕         $this->get('/help')->assertOk();
+     49▕         $this->withSession(['demo_role'=>'admin'])->postJson('/administration/users/demo-senior',['role'=>'senior','account_status'=>'active','verification_status'=>'verified','reason'=>'Synthetic verification'])->assertOk();
+     50▕         $this->postJson('/administration/categories',['name'=>'New category','is_active'=>1])->assertOk();
+     51▕         $this->postJson('/announcements',['title'=>'Global notice','message'=>'Synthetic global message'])->assertOk();
+  ➜  52▕         $this->get('/administration')->assertOk()->assertSee('New category');
+     53▕         $this->get('/reports')->assertOk();
+     54▕         $this->post('/logout')->assertRedirect('/login');
+     55▕         // Demo is intentionally a preview. Production authentication is tested separately.
+     56▕         config(['komuniedad.demo'=>false]); $this->get('/profile')->assertRedirect('/login');
+
+
+  Tests:    3 failed, 1 passed (30 assertions)
+  Duration: 0.44s
+
