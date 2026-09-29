@@ -28,6 +28,9 @@ foreach ([
     }
 }
 
+$redisUrl = getenv('REDIS_URL') ?: null;
+$sessionDriver = getenv('SESSION_DRIVER') ?: ($redisUrl ? 'redis' : 'cookie');
+
 $serverless = [
     'LARAVEL_STORAGE_PATH' => $storagePath,
     'APP_CONFIG_CACHE' => $runtimePath.'/bootstrap/cache/config.php',
@@ -36,7 +39,7 @@ $serverless = [
     'APP_ROUTES_CACHE' => $runtimePath.'/bootstrap/cache/routes.php',
     'APP_SERVICES_CACHE' => $runtimePath.'/bootstrap/cache/services.php',
     'VIEW_COMPILED_PATH' => $storagePath.'/framework/views',
-    'SESSION_DRIVER' => 'cookie',
+    'SESSION_DRIVER' => $sessionDriver,
     'SESSION_ENCRYPT' => 'true',
     'SESSION_SECURE_COOKIE' => 'true',
     'SESSION_HTTP_ONLY' => 'true',
@@ -51,10 +54,18 @@ $serverless = [
     'APP_DEBUG' => 'false',
 ];
 
-// Preserve a configured shared store. Array is only a compatibility fallback;
-// it cannot enforce rate limits across serverless invocations.
+// Prefer the shared Redis store whenever Vercel has provisioned REDIS_URL.
+// This keeps CSRF/session state and rate limits consistent across serverless
+// invocations. Cookie sessions remain a compatibility fallback only.
+if ($sessionDriver === 'redis') {
+    $serverless['SESSION_CONNECTION'] = getenv('SESSION_CONNECTION') ?: 'default';
+}
+
 if (! getenv('CACHE_STORE')) {
-    $serverless['CACHE_STORE'] = 'array';
+    $serverless['CACHE_STORE'] = $redisUrl ? 'redis' : 'array';
+}
+if (! getenv('CACHE_LIMITER') && $redisUrl) {
+    $serverless['CACHE_LIMITER'] = 'redis';
 }
 
 foreach ($serverless as $key => $value) {
