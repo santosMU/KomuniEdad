@@ -24,7 +24,7 @@ class CommunitySession
         }
         $cachedProfile = session('profile');
         $verifiedAt = (int) session('profile_verified_at', 0);
-        if (is_array($cachedProfile) && ($cachedProfile['account_status'] ?? null) === 'active' && time() - $verifiedAt < 300) {
+        if (is_array($cachedProfile) && ($cachedProfile['account_status'] ?? null) === 'active' && time() - $verifiedAt < 60) {
             $r->attributes->set('verified_profile', $cachedProfile);
 
             return $next($r);
