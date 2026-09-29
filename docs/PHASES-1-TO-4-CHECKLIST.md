@@ -2,7 +2,8 @@
 
 **Updated for Phase 3**  
 **Branch reviewed:** `feature/laravel-phase3`  
-**Date:** 23 September 2026  
+**Date:** 29 September 2026  
+**Commit reviewed:** `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`  
 **Stack:** Laravel 12, Blade, Bootstrap 5.3.8, JavaScript/Fetch, Supabase Auth, Supabase PostgreSQL
 
 ---
@@ -30,8 +31,8 @@ Do not mark an unexecuted security or usability test as passed.
 | Phase | Current state | Main remaining work |
 |---|---|---|
 | **Phase 1 — Proposal** | Core proposal, requirements, architecture and database planning exist. | Final consistency, client/policy confirmations, approval/submission evidence. |
-| **Phase 2 — Backend & Database** | Laravel workflows, Supabase Auth, RLS/RPC, migrations, roles, hosted sample data and live authentication are working. | Full live authorization/concurrency checks and remaining policy confirmation. |
-| **Phase 3 — Frontend & API** | Responsive Blade UI, JavaScript/Fetch, JSON responses, no-reload search/forms and live Supabase integration are implemented. | Final screenshots, browser Network evidence, final test output, contribution records and demo rehearsal. |
+| **Phase 2 — Backend & Database** | Laravel workflows, Supabase Auth, RLS/RPC, roles, hosted sample data and live authentication are working. Seven database migrations are now present, including locked-ownership, auth-profile repair and cash-payment support. | Hosted verification of the newest migrations, full live authorization/concurrency checks and remaining policy confirmation. |
+| **Phase 3 — Frontend & API** | Responsive Blade UI, JavaScript/Fetch, JSON responses, no-reload search/forms and live Supabase integration are implemented. Mobile navigation/profile/auth screens, help content, CI checks and deployment configuration were further refined through the current branch head. | Final screenshots, browser Network evidence, current-head test output, contribution records and demo rehearsal. |
 | **Phase 4 — Security & Testing** | Some validation, role, XSS and workflow tests already exist. | Formal security, SQL injection, authorization, usability, bug log, report and evidence. |
 
 ---
@@ -40,11 +41,13 @@ Do not mark an unexecuted security or usability test as passed.
 
 - [x] **DONE** — Laravel application routes, controllers, services and middleware are implemented.
 - [x] **DONE** — Supabase Auth integration is implemented.
-- [x] **DONE** — Four database migration files are present after the base schema, including capacity/waitlist promotion logic.
+- [x] **DONE** — Seven database migration files are present in total, including workflow, participant, capacity/waitlist, locked-ownership, auth-profile repair and cash-payment logic.
 - [x] **DONE** — Senior workflows are implemented.
 - [x] **DONE** — Coordinator workflows are implemented.
 - [x] **DONE** — Administrator workflows are implemented.
 - [x] **DONE** — Blade templates, Bootstrap and project CSS are implemented.
+- [x] **DONE** — Mobile navigation, login, registration and senior profile layouts received additional responsive UX refinements through the current branch head.
+- [x] **DONE** — A Help view is present for user-facing guidance.
 - [x] **DONE** — Student-written JavaScript exists in `public/community.js`.
 - [x] **DONE** — Laravel JSON responses support Fetch/AJAX behavior.
 - [x] **LIVE VERIFIED** — Laravel successfully authenticated against hosted Supabase.
@@ -54,6 +57,8 @@ Do not mark an unexecuted security or usability test as passed.
 - [x] **LIVE VERIFIED** — Senior A showed completed and confirmed enrollment data.
 - [x] **LIVE VERIFIED** — Senior B showed the expected waitlisted enrollment data.
 - [x] **TESTED LOCALLY** — Interactive tests cover JSON search, enrollment/withdrawal, validation, role checks, service failure handling, waitlist promotion and publishable-key behavior.
+- [x] **DONE** — GitHub Actions workflow `.github/workflows/phase3-checks.yml` is configured to run Laravel tests, JavaScript syntax checks and database tests on pushes/PRs.
+- [x] **DONE** — Vercel deployment configuration is present through `vercel.json`, `.vercelignore` and `api/index.php`.
 
 ---
 
@@ -122,6 +127,9 @@ Do not mark an unexecuted security or usability test as passed.
 - [x] **LIVE VERIFIED** — Sample activities and senior workflow records were loaded.
 - [x] **LIVE VERIFIED** — Hosted records remained available across account sign-out/sign-in.
 - [ ] **PENDING** — Confirm seed/script reruns do not produce unintended duplicates.
+- [x] **DONE** — Auth/profile repair migration `202609230006_auth_profile_repair.sql` is present.
+- [x] **DONE** — Cash-payment migration `202609230007_cash_payments.sql` is present.
+- [ ] **VERIFY** — Confirm both newest migrations are applied to the hosted Supabase project and behave as intended.
 
 ## Authentication and roles
 
@@ -161,7 +169,7 @@ Do not mark an unexecuted security or usability test as passed.
 - [x] **DONE** — Migration files exist.
 - [x] **DONE** — Setup and sample-data SQL scripts exist.
 - [x] **DONE** — ERD/data documentation exists.
-- [ ] **PARTIAL** — Final test results should be tied to the final Phase 3 commit.
+- [ ] **PARTIAL** — Final test results should be tied to the current Phase 3 submission commit; the checklist was refreshed against branch head `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`.
 - [ ] **PENDING** — Cross-check final backend deliverables against any separate Phase 2 rubric if provided.
 
 ---
@@ -173,6 +181,7 @@ Do not mark an unexecuted security or usability test as passed.
 - [x] **DONE** — Senior/public screens use responsive Blade + Bootstrap/custom CSS.
 - [x] **DONE** — Coordinator/admin screens use the same responsive application shell.
 - [x] **TESTED LOCALLY** — Reported browser checks covered mobile/tablet/desktop layouts.
+- [x] **DONE** — Current branch source includes additional mobile workspace, bottom-spacing and senior profile layout refinements.
 - [ ] **PENDING** — Capture final screenshots at approximately:
   - 375px mobile
   - 768px tablet
@@ -198,6 +207,7 @@ Do not mark an unexecuted security or usability test as passed.
 - [x] **DONE** — Dynamic focus handling is implemented after page-region refresh.
 - [x] **DONE** — Stale requests are prevented using `AbortController` and request versioning.
 - [ ] **VERIFY** — Final browser console shows no missing files or JavaScript errors.
+- [x] **DONE** — Responsive sidebar logic, keyboard/Escape handling, focus behavior and mobile navigation refinements are documented in the current source/README.
 
 ## 3. API integration
 
@@ -260,6 +270,8 @@ Do not mark an unexecuted security or usability test as passed.
 - [x] **DONE** — README/setup documentation exists.
 - [x] **DONE** — `.env.example` exists.
 - [x] **DONE** — API integration source exists.
+- [x] **DONE** — Automated Phase 3 CI configuration exists for application, JavaScript syntax and database checks.
+- [x] **DONE** — Deployment entry/configuration files for Vercel are present.
 - [ ] **PARTIAL** — API notes exist but should be refreshed to explicitly document the Phase 3 Fetch/JSON contract.
 - [ ] **PENDING** — Capture desktop screenshot.
 - [ ] **PENDING** — Capture tablet screenshot.
@@ -269,14 +281,14 @@ Do not mark an unexecuted security or usability test as passed.
 - [ ] **PENDING** — Capture Fetch/XHR Network screenshot.
 - [ ] **PENDING** — Capture API-generated live content screenshot.
 - [ ] **PENDING** — Capture coordinator/admin screenshots for the demo set.
-- [ ] **PENDING** — Record final PHP/database test output on the exact final submission commit.
+- [ ] **PENDING** — Record final PHP/database/JavaScript test output on the exact final submission commit/current branch head.
 - [ ] **PENDING** — Complete member contribution/rating records.
 - [ ] **PENDING** — Rehearse the complete Phase 3 demonstration from a clean browser session.
 
 ### Phase 3 status summary
 
-**Implementation status:** substantially complete.  
-**Submission status:** not complete until screenshots, network evidence, final test output and contribution records are attached.
+**Implementation status:** substantially complete through branch head `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`, including additional mobile/profile UX, CI and deployment-related source changes.  
+**Submission status:** not complete until screenshots, Network evidence, current-head test output and contribution records are attached.
 
 ---
 
@@ -394,7 +406,7 @@ Use only the authorized development/test environment and synthetic accounts.
 
 1. Finish the **Phase 3 evidence package**.
 2. Refresh the API notes to document the Fetch/JSON contract.
-3. Rerun PHP/database tests on the exact final Phase 3 commit.
+3. Rerun PHP/database tests and JavaScript syntax checks on the exact final Phase 3 commit.
 4. Capture desktop/tablet/mobile and Network evidence.
 5. Complete contribution/rating records.
 6. Move to **Phase 4 security and usability testing**.
