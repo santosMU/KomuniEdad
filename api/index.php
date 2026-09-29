@@ -36,7 +36,6 @@ $serverless = [
     'APP_ROUTES_CACHE' => $runtimePath.'/bootstrap/cache/routes.php',
     'APP_SERVICES_CACHE' => $runtimePath.'/bootstrap/cache/services.php',
     'VIEW_COMPILED_PATH' => $storagePath.'/framework/views',
-    'CACHE_STORE' => 'array',
     'SESSION_DRIVER' => 'cookie',
     'SESSION_ENCRYPT' => 'true',
     'SESSION_SECURE_COOKIE' => 'true',
@@ -44,6 +43,12 @@ $serverless = [
     'LOG_STACK' => 'stderr',
     'APP_DEBUG' => 'false',
 ];
+
+// Preserve a configured shared store. Array is only a compatibility fallback;
+// it cannot enforce rate limits across serverless invocations.
+if (! getenv('CACHE_STORE')) {
+    $serverless['CACHE_STORE'] = 'array';
+}
 
 foreach ($serverless as $key => $value) {
     putenv($key.'='.$value);

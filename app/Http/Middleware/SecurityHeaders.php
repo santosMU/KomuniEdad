@@ -14,9 +14,12 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-        // This policy protects framing and form targets without blocking the
-        // existing external images, icon stylesheet or inline presentation code.
-        $response->headers->set('Content-Security-Policy', "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'");
+        // Existing Blade presentation uses inline styles, but scripts are local files.
+        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https://images.pexels.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'");
+        if (! headers_sent()) {
+            header_remove('X-Powered-By');
+        }
+        $response->headers->remove('X-Powered-By');
         $response->headers->set('Cache-Control', 'private, no-store');
         return $response;
     }

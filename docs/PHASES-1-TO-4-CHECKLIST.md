@@ -292,97 +292,33 @@ Do not mark an unexecuted security or usability test as passed.
 
 ---
 
-# Phase 4 — Security and Testing
+# Phase 4 - Security and Testing
 
-Use only the authorized development/test environment and synthetic accounts.
+Updated 2026-09-29. See [full Phase 4 report](phase4/SECURITY-AND-TESTING-REPORT.md). Phase 1-3 sections retain their earlier status; they were not re-audited here.
 
-## A. Input validation
+- [x] LOCAL: VAL-01..35 validation checks passed.
+- [x] LOCAL: SQLI-01..14 harmless injection checks passed.
+- [x] LOCAL/MOCKED: AUTH-01..24 and AUTH-25 persistent-cache test passed.
+- [x] LOCAL: AUTHZ-01..30 mapped to PHP and PostgreSQL ownership checks.
+- [x] LOCAL: XSS-01..13 encoding tests and stored/reflected browser examples.
+- [x] LOCAL: actual CSRF middleware and safe-error tests passed.
+- [x] LOCAL: 175 PHP cases / 603 assertions and 26 additional DB checks passed; existing DB suite also passed.
+- [x] LOCAL: JS syntax, Composer audit and npm production audit passed.
+- [x] LOCAL: FR-01..27 mapped to executed assertions with explicit coverage limits.
+- [x] SCANNER: hosted initial and local before/retest sanitized ZAP reports recorded.
+- [x] LOCAL DEMO: discovery screenshots at 375, 768 and 1366px; validation/search/XSS evidence saved.
+- [x] DOCUMENTED: source audit, test-case tables, functional matrix, bug log, evidence register and testing summary.
+- [x] PREPARED: usability plan/results form and member-contribution template.
+- [ ] DEPLOYMENT: configure shared serverless cache and verify throttling across requests/instances.
+- [ ] SUPABASE: review/apply migration 008 and capture hosted constraint evidence.
+- [ ] LIVE SYNTHETIC: complete hosted Auth, RLS, persistence and role workflows.
+- [ ] LIVE/CONCURRENT: test simultaneous capacity requests and reconcile report counts.
+- [ ] BROWSER: finish staff drawer, full keyboard/zoom, full role workflow and real-phone checks.
+- [ ] HUMAN: obtain genuine feedback from at least three testers.
+- [ ] LEADER: complete contribution ratings.
+- [ ] RELEASE: commit/push final changes, record SHA/deployment, repeat hosted scan.
 
-- [ ] **PENDING** — Test blank and whitespace-only inputs.
-- [ ] **PENDING** — Test malformed emails.
-- [ ] **PENDING** — Test excessive field lengths.
-- [ ] **PENDING** — Test unexpected characters.
-- [ ] **PENDING** — Test zero/negative/fractional capacities.
-- [ ] **PENDING** — Test invalid date combinations.
-- [ ] **PENDING** — Test invalid status/rating values.
-- [ ] **PENDING** — Test forged/nonexistent record IDs.
-- [ ] **PENDING** — Record expected vs actual result for every case.
-
-## B. SQL injection
-
-- [ ] **PENDING** — Test login/search/writable fields using non-destructive SQL injection strings.
-- [ ] **PENDING** — Test literal values such as:
-  - `' OR '1'='1`
-  - `' OR 1=1 --`
-- [ ] **PENDING** — Verify there is no authentication bypass.
-- [ ] **PENDING** — Verify there is no unintended data exposure.
-- [ ] **PENDING** — Verify no raw database errors are disclosed.
-- [ ] **PENDING** — Document parameterized/RPC-based query handling and its limits.
-
-## C. Authentication
-
-- [ ] **PENDING** — Valid login.
-- [ ] **PENDING** — Wrong password.
-- [ ] **PENDING** — Nonexistent account.
-- [ ] **PENDING** — Empty login fields.
-- [ ] **PENDING** — Logout followed by protected URL access.
-- [x] **TESTED LOCALLY** — Invalid token rejection.
-- [ ] **PENDING** — Expired token handling.
-- [ ] **PENDING** — Disabled account handling.
-- [ ] **PENDING** — Login rate-limit behavior.
-
-## D. Authorization
-
-- [x] **TESTED LOCALLY** — Senior cannot access staff/admin pages.
-- [x] **TESTED LOCALLY** — Coordinator cannot access administration.
-- [x] **TESTED LOCALLY** — Admin pages render under the admin role.
-- [x] **TESTED LOCALLY** — Registration metadata cannot self-assign admin role.
-- [ ] **PENDING** — Hosted Coordinator A versus Coordinator B ownership isolation test.
-- [ ] **PENDING** — Direct-object/IDOR tests using modified record IDs.
-- [ ] **PENDING** — Verify senior cannot access another senior's private participation data.
-- [ ] **PENDING** — Verify coordinator cannot edit another coordinator's assigned activity.
-
-## E. XSS and output encoding
-
-- [x] **TESTED LOCALLY** — Stored announcement `<script>` marker is escaped.
-- [x] **TESTED LOCALLY** — JSON activity result rendering uses escaped Blade output.
-- [ ] **PENDING** — Test XSS payloads in all major writable text fields.
-- [ ] **PENDING** — Test reflected search values.
-- [ ] **PENDING** — Verify rendered pages do not execute injected HTML/JS.
-- [ ] **PENDING** — Record before/after evidence.
-
-## F. Functional / regression testing
-
-- [ ] **PENDING** — Complete end-to-end senior workflow.
-- [ ] **PENDING** — Complete end-to-end coordinator workflow.
-- [ ] **PENDING** — Complete end-to-end administrator workflow.
-- [ ] **PENDING** — Live enrollment persistence test.
-- [ ] **PENDING** — Live withdrawal/waitlist promotion test.
-- [ ] **PENDING** — Live attendance test.
-- [ ] **PENDING** — Live feedback submission test.
-- [ ] **PENDING** — Reports/count reconciliation.
-- [ ] **PENDING** — Regression test after each confirmed bug fix.
-
-## G. Usability testing
-
-- [ ] **PENDING** — Recruit representative testers where required.
-- [ ] **PENDING** — Record device/browser used.
-- [ ] **PENDING** — Observe core task completion.
-- [ ] **PENDING** — Record navigation/form difficulties.
-- [ ] **PENDING** — Record accessibility/readability comments.
-- [ ] **PENDING** — Apply reasonable fixes and retest.
-- [ ] **PENDING** — Summarize usability results in the Phase 4 report.
-
-## Phase 4 deliverables
-
-- [ ] **PENDING** — Security & Testing Report.
-- [ ] **PENDING** — Test-case table.
-- [ ] **PENDING** — Security evidence/screenshots.
-- [ ] **PENDING** — Bug log.
-- [ ] **PENDING** — Retest evidence for fixed bugs.
-- [ ] **PENDING** — Usability feedback summary.
-- [ ] **PENDING** — Final testing summary.
-- [ ] **PENDING** — Member contribution/rating records.
+Phase 4 is partially complete. No full completion claim until manual and hosted requirements are evidenced.
 
 ---
 

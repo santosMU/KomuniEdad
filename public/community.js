@@ -240,6 +240,11 @@
     }
     syncPaymentFields();
     document.addEventListener('change', event => {
+        if (event.target.matches?.('[data-show-password]')) {
+            event.target.form?.querySelectorAll('input[name="password"], input[name="password_confirmation"]').forEach(input => {
+                input.type = event.target.checked ? 'text' : 'password';
+            });
+        }
         const form = event.target.closest('[data-activity-search]');
         if (form) search(form);
         if (event.target.matches?.('[data-payment-mode]')) syncPaymentFields(event.target.form || document);

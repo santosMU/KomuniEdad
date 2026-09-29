@@ -1,0 +1,6 @@
+Command: & C:\xampp\php\php.exe C:\Users\User\Documents\Codex\2026-09-15\b\work\composer.phar audit --no-interaction
+Date: 2026-09-29
+Exit code: 0
+Cannot create cache directory C:/Users/User/AppData/Local/Composer/repo/https---repo.packagist.org/, or directory is not writable. Proceeding without cache. See also cache-read-only config if your filesystem is read-only.
+No security vulnerability advisories found.
+

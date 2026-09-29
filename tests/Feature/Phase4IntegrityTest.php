@@ -57,7 +57,34 @@ class Phase4IntegrityTest extends Phase4TestCase
     }
     public function test_HYP_04_security_headers(): void
     {
-        $this->get('/login')->assertHeader('X-Content-Type-Options', 'nosniff')->assertHeader('X-Frame-Options', 'DENY')->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        foreach (['/login', '/register', '/health'] as $path) {
+            $response = $this->get($path)->assertHeader('X-Content-Type-Options', 'nosniff')->assertHeader('X-Frame-Options', 'DENY')->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+            $this->assertStringContainsString("script-src 'self';", $response->headers->get('Content-Security-Policy'));
+            $this->assertStringContainsString("default-src 'self';", $response->headers->get('Content-Security-Policy'));
+            $this->assertFalse($response->headers->has('X-Powered-By'));
+        }
+    }
+    public function test_HYP_04_auth_controls_work_with_external_scripts_only(): void
+    {
+        foreach (['/login', '/register'] as $path) {
+            $response = $this->get($path)->assertOk()->assertSee('data-show-password', false)->assertSee('src="/images/logo.png"', false);
+            $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)|\bonclick=/i', $response->getContent());
+        }
+    }
+    public function test_AUTH_25_configured_limiter_survives_application_restarts(): void
+    {
+        $path = storage_path('framework/cache/phase4-'.bin2hex(random_bytes(8)));
+        $files = new \Illuminate\Filesystem\Filesystem;
+        try {
+            for ($attempt = 1; $attempt <= 7; $attempt++) {
+                $this->refreshApplication();
+                config(['komuniedad.demo' => true, 'cache.default' => 'array', 'cache.limiter' => 'file', 'cache.stores.file.path' => $path]);
+                $this->postJson('/login', [])->assertStatus($attempt <= 6 ? 422 : 429);
+            }
+        } finally {
+            // Remove only the unique cache directory created by this test.
+            $files->deleteDirectory($path);
+        }
     }
     public function test_ERROR_05_redirect_cannot_be_protocol_relative(): void
     {
