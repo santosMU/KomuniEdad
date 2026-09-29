@@ -6,6 +6,7 @@ Read [Security and Testing Report](SECURITY-AND-TESTING-REPORT.md), [test cases]
 
 ## Verified on 2026-09-29
 
+- Tested source/evidence baseline: `a1ca211af34e685e758741603ec7c6f149061f54`; GitHub Actions run 51 passed.
 - 175 PHP tests passed, 603 assertions.
 - 26 additional named PostgreSQL/PGlite checks passed. The existing database scenario suite also passed.
 - JavaScript syntax passed. Composer audit and npm production audit returned no vulnerability advisories.
