@@ -1,23 +1,10 @@
 # Remaining deployment and Supabase steps
 
-## 1. Preserve and push the final work
+## 1. Current Phase 4 release state
 
-Run from the required repository folder in your own VS Code PowerShell terminal. Agent Git writes are blocked by Windows permissions.
+The final tested source/evidence baseline is `a1ca211af34e685e758741603ec7c6f149061f54` on `feature/laravel-phase4`. GitHub Actions run 51 passed on that exact commit. Phase 3 was not modified or merged.
 
-```powershell
-cd "D:\02_Projects\06_ProjectsDev\KomuniEdad"
-git branch --show-current
-git status --short
-git add .env.production.example .gitignore api/index.php config/cache.php app/Http/Middleware/SecurityHeaders.php public/community.js resources/views tests/Feature/Phase4IntegrityTest.php tests/phase4-record-version.mjs docs/phase4 docs/PHASES-1-TO-4-CHECKLIST.md
-if ($LASTEXITCODE -ne 0) { throw "Staging failed. Stop here." }
-git diff --cached --stat
-git commit -m "security: finish Phase 4 local verification and evidence"
-if ($LASTEXITCODE -ne 0) { throw "Commit failed. Stop here." }
-git push origin feature/laravel-phase4
-git rev-parse HEAD
-```
-
-Branch must be feature/laravel-phase4. Do not merge into Phase 3. If drive I/O errors return, stop and preserve work before disk repair. No force push is needed.
+If application code changes after this baseline, rerun the complete verification commands in section 5 and record the new tested commit. Documentation-only synchronization commits may follow without changing the application-source baseline. Do not force-push Phase 4.
 
 ## 2. Supabase migration review
 
