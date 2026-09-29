@@ -10,7 +10,7 @@ Windows, PHP 8.2.12, Laravel 12, Node 24.18.0, PGlite 0.5.8, ZAP 2.17.0. Local d
 
 ## 3. Branch and Commit
 
-Branch: feature/laravel-phase4. Verified starting commit: 4cca23f. Final evidence covers subsequent local source changes on 2026-09-29. Those changes could not be committed by the agent because .git/index.lock access is denied. Record the final commit after the user commits; do not label 4cca23f as containing the final fixes. Phase 3 was not modified or merged.
+Branch: feature/laravel-phase4. Final tested source/evidence baseline: `a1ca211af34e685e758741603ec7c6f149061f54` (`security: finish Phase 4 local verification and evidence`). GitHub Actions run 51 completed successfully on that exact commit. Phase 3 was not modified or merged. Later documentation-only synchronization commits do not change the tested application source baseline.
 
 ## 4. Testing Methodology
 
@@ -78,7 +78,7 @@ Sanitized reports preserve alert names, locations and parameters while omitting 
 
 ## I. Bugs Discovered and Corrected
 
-[BUG-LOG](BUG-LOG.md) records BUG-001..013 and open issues. Twelve source fixes are implemented locally, including cookie lifetime, forms, validation, missing controls, redirects, headers, resource integrity and DB bounds. Staff mobile drawer retest is still pending. BUG-013 is partial until production shared-cache configuration is verified.
+[BUG-LOG](BUG-LOG.md) records BUG-001..013 and open issues. Twelve source fixes are committed in the Phase 4 branch, including cookie lifetime, forms, validation, missing controls, redirects, headers, resource integrity and DB bounds. Staff mobile drawer retest is still pending. BUG-013 remains partial until production shared-cache configuration is verified.
 
 ## J. Final Testing Summary
 
