@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services\Community;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use App\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Phase4TestCase;
