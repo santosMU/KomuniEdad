@@ -33,7 +33,7 @@
             overflow: hidden !important;
             position: relative !important;
         }
-        .workspace {
+       .workspace {
             flex: 1 !important;
             height: 100vh !important;
             overflow-y: auto !important;
@@ -41,10 +41,7 @@
             position: relative !important;
             transform: none !important;
             direction: ltr !important;
-        }
-        /* Neutralize any accidental CSS scaling or flipping from community.css */
-        .app-shell *, .workspace * {
-            backface-visibility: hidden;
+            box-sizing: border-box !important; /* Ensures padding is contained within 100vh */
         }
     </style>
 
@@ -155,7 +152,8 @@
                 margin-bottom: 2px;
             }
             .workspace {
-                padding-bottom: 80px !important;
+                padding-bottom: 70px !important;
+                box-sizing: border-box !important;
             }
         }
     </style>
