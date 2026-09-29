@@ -1,6 +1,6 @@
 # Evidence register
 
-Date: 2026-09-29. Final local files cover working-tree changes after 4cca23f, pending a final commit.
+Date: 2026-09-29. Final local evidence is committed in Phase 4 baseline `a1ca211af34e685e758741603ec7c6f149061f54`; GitHub Actions run 51 passed on that commit.
 
 | ID | Requirement / scope | File | What it proves |
 |---|---|---|---|
