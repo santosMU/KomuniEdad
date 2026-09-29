@@ -8,9 +8,8 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | Vercel's deployed application filesystem is read-only. Laravel runtime
-| files therefore use /tmp. When PostgreSQL is configured, sessions and
-| cache/rate-limit state use the shared database so they survive across
-| independent serverless invocations.
+| files therefore use /tmp. Shared session/cache state is stored in the
+| Supabase PostgreSQL database already connected to the Vercel project.
 |
 */
 
@@ -29,7 +28,22 @@ foreach ([
     }
 }
 
-$dbUrl = getenv('DB_URL') ?: null;
+// Accept either Laravel-style names or the variable names created by the
+// Vercel Supabase integration. This avoids requiring a second database setup.
+$dbUrl = getenv('DB_URL')
+    ?: getenv('POSTGRES_URL')
+    ?: getenv('POSTGRES_PRISMA_URL')
+    ?: null;
+
+$supabaseUrl = getenv('SUPABASE_URL')
+    ?: getenv('NEXT_PUBLIC_SUPABASE_URL')
+    ?: null;
+
+$supabaseAnonKey = getenv('SUPABASE_ANON_KEY')
+    ?: getenv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    ?: getenv('SUPABASE_PUBLISHABLE_KEY')
+    ?: null;
+
 $dbConfigured = (bool) $dbUrl || (
     (getenv('DB_CONNECTION') ?: '') !== ''
     && (getenv('DB_HOST') ?: '') !== ''
@@ -38,9 +52,6 @@ $dbConfigured = (bool) $dbUrl || (
     && (getenv('DB_PASSWORD') ?: '') !== ''
 );
 
-// On Vercel, prefer shared PostgreSQL state whenever database credentials
-// are present. This intentionally removes Redis as a deployment requirement.
-// Cookie sessions remain only as a fallback when no shared database exists.
 $sessionDriver = $dbConfigured
     ? 'database'
     : (getenv('SESSION_DRIVER') ?: 'cookie');
@@ -53,35 +64,57 @@ $serverless = [
     'APP_ROUTES_CACHE' => $runtimePath.'/bootstrap/cache/routes.php',
     'APP_SERVICES_CACHE' => $runtimePath.'/bootstrap/cache/services.php',
     'VIEW_COMPILED_PATH' => $storagePath.'/framework/views',
+    'APP_ENV' => 'production',
+    'APP_DEBUG' => 'false',
+    'KOMUNIEDAD_DEMO' => 'false',
     'SESSION_DRIVER' => $sessionDriver,
+    'SESSION_TABLE' => getenv('SESSION_TABLE') ?: 'sessions',
     'SESSION_ENCRYPT' => 'true',
     'SESSION_SECURE_COOKIE' => 'true',
     'SESSION_HTTP_ONLY' => 'true',
     'SESSION_SAME_SITE' => 'lax',
     'SESSION_PATH' => '/',
-    // Vercel Preview and Production aliases may use different hostnames.
-    // A host-only session cookie prevents CSRF/session loss from a stale
-    // SESSION_DOMAIN that points at another deployment or production host.
+    // Preview and Production aliases use different hosts. A host-only cookie
+    // avoids stale-domain CSRF/session failures.
     'SESSION_DOMAIN' => '',
     'LOG_CHANNEL' => 'stderr',
     'LOG_STACK' => 'stderr',
-    'APP_DEBUG' => 'false',
 ];
 
-if ($dbConfigured) {
-    // Use Supabase/PostgreSQL for shared session and limiter state.
-    $serverless['CACHE_STORE'] = 'database';
-    $serverless['CACHE_LIMITER'] = 'database';
+if (! getenv('APP_URL')) {
+    $productionHost = getenv('VERCEL_PROJECT_PRODUCTION_URL') ?: 'komuni-edad.vercel.app';
+    $serverless['APP_URL'] = str_starts_with($productionHost, 'http')
+        ? $productionHost
+        : 'https://'.$productionHost;
+}
 
-    if ((getenv('DB_CONNECTION') ?: '') === 'pgsql' && ! getenv('DB_SSLMODE')) {
+if ($dbConfigured) {
+    $serverless['DB_CONNECTION'] = getenv('DB_CONNECTION') ?: 'pgsql';
+
+    if ($dbUrl) {
+        $serverless['DB_URL'] = $dbUrl;
+    }
+
+    if (($serverless['DB_CONNECTION'] ?? '') === 'pgsql' && ! getenv('DB_SSLMODE')) {
         $serverless['DB_SSLMODE'] = 'require';
     }
-} else {
-    // This fallback keeps public pages bootable without a database, but it is
-    // not suitable for production authentication or cross-instance throttling.
-    if (! getenv('CACHE_STORE')) {
-        $serverless['CACHE_STORE'] = 'array';
-    }
+
+    $serverless['CACHE_STORE'] = 'database';
+    $serverless['CACHE_LIMITER'] = 'database';
+    $serverless['DB_CACHE_TABLE'] = getenv('DB_CACHE_TABLE') ?: 'cache';
+    $serverless['DB_CACHE_LOCK_TABLE'] = getenv('DB_CACHE_LOCK_TABLE') ?: 'cache_locks';
+} elseif (! getenv('CACHE_STORE')) {
+    // Public pages can still boot without a DB, but authenticated production
+    // traffic requires shared database-backed session state.
+    $serverless['CACHE_STORE'] = 'array';
+}
+
+if ($supabaseUrl && ! getenv('SUPABASE_URL')) {
+    $serverless['SUPABASE_URL'] = $supabaseUrl;
+}
+
+if ($supabaseAnonKey && ! getenv('SUPABASE_ANON_KEY')) {
+    $serverless['SUPABASE_ANON_KEY'] = $supabaseAnonKey;
 }
 
 foreach ($serverless as $key => $value) {
