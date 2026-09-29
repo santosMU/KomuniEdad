@@ -39,6 +39,13 @@ $serverless = [
     'SESSION_DRIVER' => 'cookie',
     'SESSION_ENCRYPT' => 'true',
     'SESSION_SECURE_COOKIE' => 'true',
+    'SESSION_HTTP_ONLY' => 'true',
+    'SESSION_SAME_SITE' => 'lax',
+    'SESSION_PATH' => '/',
+    // Vercel Preview and Production aliases may use different hostnames.
+    // A host-only session cookie prevents CSRF/session loss from a stale
+    // SESSION_DOMAIN that points at another deployment or production host.
+    'SESSION_DOMAIN' => '',
     'LOG_CHANNEL' => 'stderr',
     'LOG_STACK' => 'stderr',
     'APP_DEBUG' => 'false',
