@@ -8,8 +8,9 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | Vercel's deployed application filesystem is read-only. Laravel runtime
-| files therefore use /tmp, while sessions use encrypted cookies and logs
-| are sent to stderr.
+| files therefore use /tmp. When PostgreSQL is configured, sessions and
+| cache/rate-limit state use the shared database so they survive across
+| independent serverless invocations.
 |
 */
 
@@ -28,8 +29,21 @@ foreach ([
     }
 }
 
-$redisUrl = getenv('REDIS_URL') ?: null;
-$sessionDriver = getenv('SESSION_DRIVER') ?: ($redisUrl ? 'redis' : 'cookie');
+$dbUrl = getenv('DB_URL') ?: null;
+$dbConfigured = (bool) $dbUrl || (
+    (getenv('DB_CONNECTION') ?: '') !== ''
+    && (getenv('DB_HOST') ?: '') !== ''
+    && (getenv('DB_DATABASE') ?: '') !== ''
+    && (getenv('DB_USERNAME') ?: '') !== ''
+    && (getenv('DB_PASSWORD') ?: '') !== ''
+);
+
+// On Vercel, prefer shared PostgreSQL state whenever database credentials
+// are present. This intentionally removes Redis as a deployment requirement.
+// Cookie sessions remain only as a fallback when no shared database exists.
+$sessionDriver = $dbConfigured
+    ? 'database'
+    : (getenv('SESSION_DRIVER') ?: 'cookie');
 
 $serverless = [
     'LARAVEL_STORAGE_PATH' => $storagePath,
@@ -54,18 +68,20 @@ $serverless = [
     'APP_DEBUG' => 'false',
 ];
 
-// Prefer the shared Redis store whenever Vercel has provisioned REDIS_URL.
-// This keeps CSRF/session state and rate limits consistent across serverless
-// invocations. Cookie sessions remain a compatibility fallback only.
-if ($sessionDriver === 'redis') {
-    $serverless['SESSION_CONNECTION'] = getenv('SESSION_CONNECTION') ?: 'default';
-}
+if ($dbConfigured) {
+    // Use Supabase/PostgreSQL for shared session and limiter state.
+    $serverless['CACHE_STORE'] = 'database';
+    $serverless['CACHE_LIMITER'] = 'database';
 
-if (! getenv('CACHE_STORE')) {
-    $serverless['CACHE_STORE'] = $redisUrl ? 'redis' : 'array';
-}
-if (! getenv('CACHE_LIMITER') && $redisUrl) {
-    $serverless['CACHE_LIMITER'] = 'redis';
+    if ((getenv('DB_CONNECTION') ?: '') === 'pgsql' && ! getenv('DB_SSLMODE')) {
+        $serverless['DB_SSLMODE'] = 'require';
+    }
+} else {
+    // This fallback keeps public pages bootable without a database, but it is
+    // not suitable for production authentication or cross-instance throttling.
+    if (! getenv('CACHE_STORE')) {
+        $serverless['CACHE_STORE'] = 'array';
+    }
 }
 
 foreach ($serverless as $key => $value) {
