@@ -187,12 +187,8 @@
 
 <div class="detail-panel login-panel" style="text-align: center;">
 
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 20px;">
-        <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
-
     <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 24px;">
-        <img src="/images/logo.png" alt="KomuniEdad Logo" class="login-logo">
-
+        <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
         <span class="login-brand-name">KomuniEdad</span>
     </div>
 
