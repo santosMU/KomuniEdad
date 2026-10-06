@@ -4,19 +4,19 @@ Source: Group 4_KomuniEdad_Phase1_Documentation.pdf, revised 11 September 2026, 
 
 | Requirements | Implementation | Qualification |
 |---|---|---|
-| FR-01–03 Authentication and authorization | Supabase signup/password login, remote token verification, role checks, signout, SQL RLS | Hosted credentials/email flow not exercised here; no refresh-token flow |
+| FR-01â€“03 Authentication and authorization | Supabase signup/password login, remote token verification, role checks, signout, SQL RLS | Hosted credentials/email flow not exercised here; no refresh-token flow |
 | FR-04 Profile | Own name/contact/birthdate/address form and allowlisted RPC | Email changes remain with Auth administration |
 | FR-05 Verification | Admin status form; optional database policy setting | Client policy must be confirmed; no document uploads |
 | FR-06 Categories | Admin create/edit/activate/deactivate + audit | Deactivation preserves existing activity relationships |
-| FR-07–09 Activities | Assigned coordinator CRUD via create/read/update/cancel/archive, admin oversight and lifecycle states | Historical records are retained rather than hard deleted |
-| FR-10–11 Discovery/details | Search, categories, times, venue, coordinator, capacity, cutoff, requirements/status | List view rather than calendar; status filter included |
-| FR-12–15 Enrollment | Senior registration, duplicate/capacity checks, waitlist and withdrawal | Row-locking implemented; multi-client stress test pending |
+| FR-07â€“09 Activities | Assigned coordinator CRUD via create/read/update/cancel/archive, admin oversight, lifecycle states, activity imagery, and free/onsite-cash participation fees | Historical records are retained rather than hard deleted; activity image storage remains an implementation detail rather than a new domain entity |
+| FR-10â€“11 Discovery/details | Search, categories, times, venue, coordinator, capacity, cutoff, requirements/status | List view rather than calendar; status filter included |
+| FR-12â€“15 Enrollment | Senior registration, duplicate/capacity checks, waitlist and withdrawal | Row-locking implemented; multi-client stress test pending |
 | FR-16 Staff participants | Confirm, waitlist, cancel/reject, manual encoding with existing senior UUID and required reason | Baseline auto-confirms available seats; no configurable approval-required mode |
-| FR-17 Attendance | Assigned coordinator/admin attendance and remarks + audit | Admin corrections require a reason |
+| FR-17 Attendance | Assigned coordinator/admin attendance and remarks + audit; paid activities require the onsite cash record before attendance | Admin corrections require a reason; no online card/bank payment data is collected |
 | FR-18 History | Own enrollments/attendance incl. archived activity details | All enrollment states retained |
 | FR-19 Announcements | Activity notices and admin global notices; edit/archive; automatic schedule/venue notice | No email/SMS/push integration |
 | FR-20 Feedback | One rating/comment after completed attendance | Validated in database |
-| FR-21–22 Reports | Counts, category demand, coordinator workload; scope restricted | Summary tables only, no time-series charts/export; academic data volume |
+| FR-21â€“22 Reports | Participation totals, attendance rate, waitlists, onsite cash status, category demand, coordinator workload; scope restricted | Operational summaries only, no export or time-series analytics |
 | FR-23 Audit | Staff changes write actor/time/target/details; admin reads latest 100 | Trusted SQL owner bootstrap is outside app audit |
 
 ## Non-functional progress
