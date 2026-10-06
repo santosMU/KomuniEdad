@@ -69,7 +69,7 @@
             <div>
                 <label for="status">Status</label>
                 <select class="form-select" id="status" name="status">
-                    @foreach(isset($activity) && $activity ? ['draft', 'open', 'completed', 'cancelled', 'archived'] : ['draft', 'open'] as $status)
+                    @foreach(isset($activity) && $activity ? ['draft', 'open', 'full', 'ongoing', 'completed', 'cancelled', 'archived'] : ['draft', 'open'] as $status)
                         <option @selected(old('status', $activity['status'] ?? 'draft') === $status)>{{ $status }}</option>
                     @endforeach
                 </select>
