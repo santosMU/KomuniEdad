@@ -139,6 +139,47 @@ class Community
         return rtrim(config('komuniedad.url'), '/') . '/storage/v1/object/public/activities/' . $path;
     }
 
+    public function uploadProfilePhoto($file, string $userId): string
+    {
+        abort_unless($this->accessToken(), 401, 'Please sign in again.');
+
+        $path = $userId.'/avatar';
+        $response = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))
+            ->withHeaders([
+                'apikey' => config('komuniedad.key'),
+                'Authorization' => 'Bearer '.$this->accessToken(),
+                'Content-Type' => $file->getMimeType(),
+                'x-upsert' => 'true',
+            ])
+            ->timeout(15)
+            ->send('POST', '/storage/v1/object/profile-photos/'.$path, [
+                'body' => file_get_contents($file->getRealPath()),
+            ]);
+
+        if ($response->failed()) {
+            throw ValidationException::withMessages([
+                'profile_photo' => 'The profile photo could not be uploaded. Please try another JPG, PNG, or WebP image.',
+            ]);
+        }
+
+        return $path;
+    }
+
+    public function profilePhotoUrl(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'data:') || filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        $encodedPath = implode('/', array_map('rawurlencode', explode('/', $path)));
+
+        return rtrim(config('komuniedad.url'), '/').'/storage/v1/object/public/profile-photos/'.$encodedPath;
+    }
+
     public function activityImage(array $activity): string
     {
         $title = strtolower(($activity['title'] ?? '').' '.($activity['categories']['name'] ?? ''));
@@ -234,9 +275,9 @@ class Community
         }
         if ($table === 'profiles') {
             return session('demo_profiles', [
-                ['user_id' => 'demo-senior', 'full_name' => 'Maria Santos', 'role' => 'senior', 'account_status' => 'active', 'contact_number' => ''],
-                ['user_id' => 'demo-coordinator', 'full_name' => 'Alex Reyes', 'role' => 'coordinator', 'account_status' => 'active', 'contact_number' => ''],
-                ['user_id' => 'demo-admin', 'full_name' => 'Sam Cruz', 'role' => 'admin', 'account_status' => 'active', 'contact_number' => '']]);
+                ['user_id' => 'demo-senior', 'full_name' => 'Maria Santos', 'role' => 'senior', 'account_status' => 'active', 'contact_number' => '', 'avatar_path' => null],
+                ['user_id' => 'demo-coordinator', 'full_name' => 'Alex Reyes', 'role' => 'coordinator', 'account_status' => 'active', 'contact_number' => '', 'avatar_path' => null],
+                ['user_id' => 'demo-admin', 'full_name' => 'Sam Cruz', 'role' => 'admin', 'account_status' => 'active', 'contact_number' => '', 'avatar_path' => null]]);
         }
         if ($table === 'announcements') {
             return session('demo_announcements', [['announcement_id' => 'notice-1', 'title' => 'Welcome to KomuniEdad', 'message' => 'Explore community activities and find something you enjoy. Your coordinator is here to help.', 'activity_id' => null, 'posted_at' => now()->toIso8601String(), 'archived_at' => null]]);
