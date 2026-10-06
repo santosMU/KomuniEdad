@@ -3,7 +3,7 @@
 @section('content')
 
 @php
-    $portal = app(AppServicesCommunity::class);
+    $portal = app(\App\Services\Community::class);
     $photoUrl = $portal->profilePhotoUrl($profile['avatar_path'] ?? null);
     $initial = strtoupper(substr($profile['full_name'] ?? 'M', 0, 1));
 @endphp
