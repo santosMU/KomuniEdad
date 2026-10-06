@@ -116,7 +116,9 @@ begin
         requirements=coalesce(payload->>'requirements',''),
         status=new_status,
         is_free=new_is_free,
-        fee=new_fee
+        fee=new_fee,
+        image=payload->>'image',
+        image_url=payload->>'image_url'
     where activities.activity_id=target
     returning activities.activity_id into result;
 
@@ -152,12 +154,13 @@ begin
 
     insert into public.activities(
       category_id,coordinator_id,title,description,venue,start_at,end_at,cutoff_at,
-      capacity,requirements,status,is_free,fee
+      capacity,requirements,status,is_free,fee,image,image_url
     )
     values(
       category,coordinator,trim(payload->>'title'),payload->>'description',payload->>'venue',
       (payload->>'start_at')::timestamptz,(payload->>'end_at')::timestamptz,(payload->>'cutoff_at')::timestamptz,
-      (payload->>'capacity')::int,coalesce(payload->>'requirements',''),new_status,new_is_free,new_fee
+      (payload->>'capacity')::int,coalesce(payload->>'requirements',''),new_status,new_is_free,new_fee,
+      payload->>'image',payload->>'image_url'
     )
     returning activities.activity_id into result;
   end if;
@@ -346,6 +349,5 @@ revoke execute on function public.promote_waitlist(uuid,uuid) from public,anon,a
 revoke execute on function public.promote_after_capacity_increase() from public,anon,authenticated;
 revoke execute on function public.provision_profile() from public,anon,authenticated;
 
-alter function public.health_check() set search_path='';
 
 commit;
