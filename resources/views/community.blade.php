@@ -78,7 +78,9 @@
                 </div>
                 <div class="row g-3">
                     @foreach($past as $activity)
-                        @php($entry = $entries[$activity['activity_id']] ?? null)
+                        @php
+                            $entry = $entries[$activity['activity_id']] ?? null;
+                        @endphp
                         <div class="col-md-6 col-xl-4">
                             <article class="panel h-100 m-0">
                                 <span class="badge bg-secondary-subtle text-secondary mb-2">{{ ucfirst($activity['status']) }}</span>
