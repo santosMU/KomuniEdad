@@ -61,12 +61,7 @@
             display: none;
         }
         @media (max-width: 1024px) {
-
-            .menu-toggle {
-
-            /* Hide the hamburger menu button and sidebar */
             .senior-shell .menu-toggle {
-
                 display: none !important;
             }
             .senior-shell .sidebar {
@@ -102,7 +97,7 @@
             .portal-label {
                 display: none !important;
             }
-       
+        
             .topbar-end {
                 display: flex !important;
                 align-items: center !important;
@@ -180,8 +175,16 @@
 
     <div id="request-status" role="status" aria-live="polite" tabindex="-1" hidden></div>
     <main id="main" class="auth-main @yield('auth-main-class')">
-        @if(session('status'))<div class="alert alert-success" role="status">{{ session('status') }}</div>@endif
-        @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
+        @if(session('status'))
+            <div class="alert alert-success" role="status">{{ session('status') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger" role="alert">
+                @foreach($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
         @yield('content')
     </main>
 </div>
@@ -272,14 +275,24 @@
                         @csrf
                         <label for="demo-role">Preview as</label>
                         <select class="form-select" id="demo-role" name="role">
-                            @foreach(['senior','coordinator','admin'] as $r)<option @selected($currentRole===$r)>{{ $r }}</option>@endforeach
+                            @foreach(['senior','coordinator','admin'] as $r)
+                                <option @selected($currentRole === $r)>{{ $r }}</option>
+                            @endforeach
                         </select>
                         <button class="btn btn-outline-secondary">Switch role</button>
                     </form>
                 </div>
             @endif
-            @if(session('status'))<div class="alert alert-success" role="status">{{ session('status') }}</div>@endif
-            @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
+            @if(session('status'))
+                <div class="alert alert-success" role="status">{{ session('status') }}</div>
+            @endif
+            @if($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
             @yield('content')
         </main>
     </div>
