@@ -2,6 +2,13 @@ begin;
 
 -- Reconcile live payment and RPC behavior with the Phase 4 application.
 
+-- Frontend integration added optional activity imagery. Keep fresh databases
+-- aligned with the already-deployed production schema.
+alter table public.activities
+  add column if not exists image text,
+  add column if not exists image_url text;
+
+
 alter table public.enrollments drop constraint if exists enrollments_payment_status_check;
 alter table public.enrollments drop constraint if exists enrollment_payment_status_valid;
 
