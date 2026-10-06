@@ -349,7 +349,16 @@ class PortalController extends Controller
 
     public function announcements(Community $s)
     {
-        return view('announcements', ['announcements' => $s->table('announcements'), 'activities' => in_array($s->role(), ['coordinator', 'admin']) ? $this->activities($s) : [], 'demo' => $s->demo(), 'role' => $s->role()]);
+        $managedActivities = in_array($s->role(), ['coordinator', 'admin']) ? $this->activities($s) : [];
+        $activityDirectory = collect($s->activities())->keyBy('activity_id');
+
+        return view('announcements', [
+            'announcements' => $s->table('announcements'),
+            'activities' => $managedActivities,
+            'activityDirectory' => $activityDirectory,
+            'demo' => $s->demo(),
+            'role' => $s->role(),
+        ]);
     }
 
     public function announce(Request $r, Community $s)
@@ -428,9 +437,29 @@ class PortalController extends Controller
     {
         $this->staff($s);
         $rows = [];
+
         foreach ($this->activities($s) as $a) {
             $p = collect($this->participants($a['activity_id'], $s));
-            $rows[] = ['title' => $a['title'], 'category' => $a['categories']['name'] ?? 'Uncategorized', 'coordinator' => $a['coordinator_name'] ?? $a['coordinator_id'], 'confirmed' => $p->whereIn('status', ['confirmed', 'completed'])->count(), 'waitlisted' => $p->where('status', 'waitlisted')->count(), 'attended' => $p->whereStrict('attended', true)->count(), 'absent' => $p->whereStrict('attended', false)->count(), 'unrecorded' => $p->whereIn('status', ['confirmed', 'completed'])->whereNull('attended')->count()];
+            $registered = $p->whereIn('status', ['confirmed', 'completed']);
+            $attended = $p->whereStrict('attended', true)->count();
+
+            $rows[] = [
+                'title' => $a['title'],
+                'category' => trim($a['categories']['name'] ?? 'Uncategorized'),
+                'coordinator' => $a['coordinator_name'] ?? $a['coordinator_id'],
+                'status' => $a['status'],
+                'capacity' => (int) $a['capacity'],
+                'confirmed' => $registered->count(),
+                'waitlisted' => $p->where('status', 'waitlisted')->count(),
+                'attended' => $attended,
+                'absent' => $p->whereStrict('attended', false)->count(),
+                'unrecorded' => $registered->whereNull('attended')->count(),
+                'paid' => ($a['is_free'] ?? true) ? 0 : $registered->where('payment_status', 'paid')->count(),
+                'unpaid' => ($a['is_free'] ?? true) ? 0 : $registered->where('payment_status', '!=', 'paid')->count(),
+                'is_free' => (bool) ($a['is_free'] ?? true),
+                'fee' => (float) ($a['fee'] ?? 0),
+                'attendance_rate' => $registered->count() > 0 ? round(($attended / $registered->count()) * 100) : 0,
+            ];
         }
 
         return view('reports', ['rows' => $rows, 'demo' => $s->demo()]);
