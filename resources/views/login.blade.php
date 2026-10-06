@@ -7,7 +7,7 @@
 @section('content')
 <style>
     .auth-topbar { display: none !important; }
-    
+   
     html, body {
         height: 100vh;
         overflow: hidden;
@@ -186,14 +186,28 @@
 </style>
 
 <div class="detail-panel login-panel" style="text-align: center;">
+
     <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 24px;">
-        <img src="/images/logo.png" alt="KomuniEdad Logo" class="login-logo">
+        <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
         <span class="login-brand-name">KomuniEdad</span>
     </div>
 
+    <!-- Integrated Error / Status Alert -->
+    @if (session('status') || session('error') || $errors->any())
+        <div class="alert alert-danger mb-3 py-2 px-3 text-center rounded-3" style="font-size: 14px; background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;">
+            @if (session('status'))
+                {{ session('status') }}
+            @elseif (session('error'))
+                {{ session('error') }}
+            @else
+                Please sign in again.
+            @endif
+        </div>
+    @endif
+
     <form method="post" action="/login" style="text-align: left;">
         @csrf
-        
+       
         <label for="email" class="form-label login-label">Email address</label>
         <input class="form-control mb-3 login-input" id="email" name="email" type="email" autocomplete="username" value="{{ old('email') }}" required autofocus>
 
@@ -213,11 +227,11 @@
 
         <button class="btn btn-primary w-100 login-btn">Sign in</button>
     </form>
-    
+   
     <p class="mb-0 login-footer">Need an account? <a href="/register" style="font-weight: 600; color: var(--green);">Create a senior account</a></p>
 
     <div class="login-support">
-        <p style="margin: 0;">Need a hand signing in? Contact your coordinator at <strong style="color: var(--ink);">(02) 8123-4567</strong> or email <strong style="color: var(--ink);">support@komuniedad.com</strong>.</p>
+        <p style="margin: 0;">Need help? Contact your coordinator at <strong style="color: var(--ink);">(02) 8123-4567</strong> or email <strong style="color: var(--ink);">support@komuniedad.com</strong>.</p>
     </div>
 </div>
 

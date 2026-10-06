@@ -28,14 +28,24 @@ class CommunityController extends Controller
         $query = $r->string('q')->toString();
         $mine = $r->boolean('mine');
         $status = $r->string('status')->toString();
-        $activities = array_filter($s->activities(), fn ($a) => (! $category || ($a['categories']['name'] ?? '') === $category) && (! $query || str_contains(strtolower($a['title'].' '.$a['venue']), strtolower($query))) && (! $mine || collect($enrollments)->contains(fn ($e) => $e['activity_id'] === $a['activity_id'] && $e['status'] !== 'cancelled')));
+       
+        $activities = array_filter($s->activities(), fn ($a) =>
+            (! $category ||
+                ($a['category_id'] ?? '') === $category ||
+                ($a['categories']['category_id'] ?? '') === $category ||
+                strcasecmp($a['categories']['name'] ?? '', $category) === 0
+            ) &&
+            (! $query || str_contains(strtolower($a['title'].' '.$a['venue']), strtolower($query))) &&
+            (! $mine || collect($enrollments)->contains(fn ($e) => $e['activity_id'] === $a['activity_id'] && $e['status'] !== 'cancelled'))
+        );
+
         $activities = array_map(function ($a) {
-            if (in_array($a['status'], ['open', 'full'])) {
+            if (in_array(strtolower($a['status']), ['open', 'full'])) {
                 $a['status'] = $a['confirmed'] >= $a['capacity'] ? 'full' : 'open';
             }
             return $a;
         }, $activities);
-        $activities = array_filter($activities, fn ($a) => ! in_array($a['status'], ['draft', 'archived']) && (! $status || $a['status'] === $status));
+        $activities = array_filter($activities, fn ($a) => ! in_array(strtolower($a['status']), ['draft', 'archived']) && (! $status || strtolower($a['status']) === $status));
 
         if ($r->expectsJson()) {
             return response()->json([
@@ -52,7 +62,7 @@ class CommunityController extends Controller
     {
         $activity = collect($s->activities())->firstWhere('activity_id', $id);
         abort_unless($activity, 404);
-        if ($s->role() === 'senior' && in_array($activity['status'], ['draft', 'archived'])) {
+        if ($s->role() === 'senior' && in_array(strtolower($activity['status']), ['draft', 'archived'])) {
             abort_unless(collect($s->ownEnrollments())->contains('activity_id', $id), 404);
         }
 
@@ -66,9 +76,17 @@ class CommunityController extends Controller
             $a = collect($s->activities())->firstWhere('activity_id', $id);
             abort_unless($a, 404);
             $entries = $s->enrollments();
-            if (! in_array($a['status'], ['open', 'full']) || Carbon::parse($a['cutoff_at'])->isPast()) {
+
+            $status = strtolower($a['status'] ?? '');
+            
+            if (! in_array($status, ['open', 'full'])) {
                 throw ValidationException::withMessages(['enrollment' => 'Registration is closed.']);
             }
+
+            if (! empty($a['cutoff_at']) && Carbon::parse($a['cutoff_at'])->isPast()) {
+                throw ValidationException::withMessages(['enrollment' => 'Registration is closed.']);
+            }
+            
             if (collect($s->ownEnrollments())->contains(fn ($e) => $e['activity_id'] === $id && $e['status'] !== 'cancelled')) {
                 throw ValidationException::withMessages(['enrollment' => 'You already joined this activity.']);
             }
@@ -88,7 +106,8 @@ class CommunityController extends Controller
                     if ($activity['activity_id'] === $id) {
                         $activity['confirmed']++;
                     }
-                }session(['demo_activities' => $activities]);
+                }
+                session(['demo_activities' => $activities]);
             }
         } else {
             $s->api('POST', '/rest/v1/rpc/enroll_in_activity', ['target' => $id]);
@@ -105,9 +124,13 @@ class CommunityController extends Controller
             $found = false;
             $promote = null;
             foreach ($entries as &$e) {
-                if ($e['enrollment_id'] === $id && $e['senior_id'] === 'demo-senior' && in_array($e['status'], ['pending', 'confirmed', 'waitlisted'])) {
+                if ($e['enrollment_id'] === $id && $e['senior_id'] === 'demo-senior' && in_array(strtolower($e['status']), ['pending', 'confirmed', 'waitlisted'])) {
                     $a = collect($s->activities())->firstWhere('activity_id', $e['activity_id']);
-                    if (! $a || ! in_array($a['status'], ['open', 'full']) || Carbon::parse($a['cutoff_at'])->isPast()) {
+                    $status = strtolower($a['status'] ?? '');
+                    if (! $a || ! in_array($status, ['open', 'full'])) {
+                        throw ValidationException::withMessages(['enrollment' => 'Withdrawal is closed.']);
+                    }
+                    if (! empty($a['cutoff_at']) && Carbon::parse($a['cutoff_at'])->isPast()) {
                         throw ValidationException::withMessages(['enrollment' => 'Withdrawal is closed.']);
                     }
                     $promote = $e['status'] === 'confirmed' ? $e['activity_id'] : null;

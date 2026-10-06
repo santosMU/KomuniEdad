@@ -94,13 +94,10 @@ class Community
     public function activities(): array
     {
         if (! $this->demo()) {
-            if ($this->activityCache !== null) {
-                return $this->activityCache;
-            }
+            $counts = collect($this->api('POST', '/rest/v1/rpc/activity_counts'))->keyBy('activity_id');
+            $coordinators = collect($this->api('POST', '/rest/v1/rpc/coordinator_directory'))->keyBy('user_id');
 
-            $this->activityCache = $this->api('POST', '/rest/v1/rpc/activity_directory');
-
-            return $this->activityCache;
+            return array_map(fn ($a) => $a + ['confirmed' => $counts[$a['activity_id']]['confirmed'] ?? 0, 'coordinator_name' => $coordinators[$a['coordinator_id']]['full_name'] ?? 'Community coordinator'], $this->api('GET', '/rest/v1/activities', ['select' => '*,categories(name)', 'order' => 'start_at.asc']));
         }
         if (session()->has('demo_activities')) {
             return session('demo_activities');
@@ -114,6 +111,29 @@ class Community
         session(['demo_activities' => $activities]);
 
         return $activities;
+    }
+
+    public function uploadImage($file): ?string
+    {
+        if (!$file) return null;
+       
+        $path = 'activities/' . uniqid() . '_' . $file->getClientOriginalName();
+        $response = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))
+            ->withHeaders([
+                'apikey' => config('komuniedad.key'),
+                'Authorization' => 'Bearer ' . ($this->accessToken() ?: config('komuniedad.key')),
+                'Content-Type' => $file->getMimeType(),
+            ])
+            ->timeout(15)
+            ->send('POST', '/storage/v1/object/activities/' . $path, [
+                'body' => file_get_contents($file->getRealPath())
+            ]);
+
+        if ($response->failed()) {
+            return null;
+        }
+
+        return rtrim(config('komuniedad.url'), '/') . '/storage/v1/object/public/activities/' . $path;
     }
 
     public function activityImage(array $activity): string

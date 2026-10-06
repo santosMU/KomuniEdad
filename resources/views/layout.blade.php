@@ -41,12 +41,12 @@
             position: relative !important;
             transform: none !important;
             direction: ltr !important;
-            box-sizing: border-box !important; /* Ensures padding is contained within 100vh */
+            box-sizing: border-box !important;
         }
     </style>
 
     <style>
-        /* Fixes Chrome DevTools iPad emulation rendering bug (mirrored/ghosted repaint) */
+        /* Fixes rendering bugs */
         .topbar, .sidebar-backdrop {
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
@@ -61,7 +61,6 @@
             display: none;
         }
         @media (max-width: 1024px) {
-            /* Hide the hamburger menu button and sidebar */
             .senior-shell .menu-toggle {
                 display: none !important;
             }
@@ -69,7 +68,6 @@
                 display: none !important;
             }
 
-            /* Style the mobile topbar: Logo + Name on left, Date on right */
             .topbar {
                 display: flex !important;
                 justify-content: space-between !important;
@@ -100,7 +98,6 @@
                 display: none !important;
             }
         
-            /* Force topbar-end and date to be visible */
             .topbar-end {
                 display: flex !important;
                 align-items: center !important;
@@ -116,7 +113,6 @@
                 display: none !important;
             }
 
-            /* Mobile Bottom Navigation Bar Styles */
             .mobile-bottom-nav {
                 position: fixed;
                 bottom: 0;
@@ -179,8 +175,16 @@
 
     <div id="request-status" role="status" aria-live="polite" tabindex="-1" hidden></div>
     <main id="main" class="auth-main @yield('auth-main-class')">
-        @if(session('status'))<div class="alert alert-success" role="status">{{ session('status') }}</div>@endif
-        @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
+        @if(session('status'))
+            <div class="alert alert-success" role="status">{{ session('status') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger" role="alert">
+                @foreach($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
         @yield('content')
     </main>
 </div>
@@ -196,36 +200,37 @@
         </div>
        <nav aria-label="Main navigation">
             @if($currentRole==='senior')
-                <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover activities</a>
-                <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1">My activities</a>
+                <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover Activities</a>
+                <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1">My Activities</a>
                 <a class="nav-item {{ request()->is('history') ? 'selected' : '' }}" href="/history">Participation history</a>
             @else
-                <a class="nav-item {{ request()->is('workspace*') ? 'selected' : '' }}" href="/workspace">Program workspace</a>
+                <a class="nav-item {{ request()->is('workspace*') ? 'selected' : '' }}" href="/workspace">Program Workspace</a>
                 <a class="nav-item {{ request()->is('reports') ? 'selected' : '' }}" href="/reports">Participation reports</a>
             @endif
             <a class="nav-item {{ request()->is('announcements') ? 'selected' : '' }}" href="/announcements">Announcements</a>
             <a class="nav-item {{ request()->is('profile') ? 'selected' : '' }}" href="/profile">My profile</a>
-            <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help">Help & FAQ</a>
+            @if($currentRole === 'senior')
+                <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help">Help & FAQ</a>
+            @endif
             @if($currentRole==='admin')
                 <a class="nav-item {{ request()->is('administration*') ? 'selected' : '' }}" href="/administration">Administration</a>
             @endif
         </nav>
 
         <div class="sidebar-bottom">
-            <div class="help-card">
-                <span class="help-symbol" aria-hidden="true">♡</span>
-                <strong>A little help goes a long way.</strong>
-                <p>Need a hand joining an activity? Ask your community coordinator.</p>
-            </div>
-            <div class="member">
-                <span class="avatar">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
+            <div class="member mb-3">
+                <span class="avatar bg-success text-white d-flex align-items-center justify-content-center fw-bold">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
-                    <strong>{{ $demo ? 'Demo ' . ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
-                    <small>{{ ucfirst($currentRole) }} {{ $demo ? '· Demo' : '' }}</small>
+                    <strong>{{ $demo ? 'Demo'.ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
                 </div>
             </div>
             @if(!$demo && $portal->accessToken())
-                <form method="post" action="/logout">@csrf<button class="btn btn-link">Sign out</button></form>
+                <form method="post" action="/logout" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center gap-2 px-3 py-2 fw-semibold rounded-pill w-100" style="font-size: 0.85rem;">
+                        <i class="bi bi-box-arrow-right"></i> Sign out
+                    </button>
+                </form>
             @endif
         </div>
     </aside>
@@ -239,11 +244,19 @@
                     <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
                     <span class="menu-label">Menu</span>
                 </button>
-                <a class="topbar-brand" href="/" aria-label="KomuniEdad home">
+               <a class="topbar-brand" href="/" aria-label="KomuniEdad home">
                     <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
                     <strong>KomuniEdad</strong>
                 </a>
-                <span class="portal-label">Senior Citizen Community Portal</span>
+                <span class="portal-label">
+                    @if($currentRole === 'coordinator')
+                        Community Coordinator Portal
+                    @elseif($currentRole === 'admin')
+                        System Administration Portal
+                    @else
+                        Senior Citizen Community Portal
+                    @endif
+                </span>
             </div>
             <div class="topbar-end">
                 @if(!$demo && $portal->accessToken())
@@ -262,19 +275,29 @@
                         @csrf
                         <label for="demo-role">Preview as</label>
                         <select class="form-select" id="demo-role" name="role">
-                            @foreach(['senior','coordinator','admin'] as $r)<option @selected($currentRole===$r)>{{ $r }}</option>@endforeach
+                            @foreach(['senior','coordinator','admin'] as $r)
+                                <option @selected($currentRole === $r)>{{ $r }}</option>
+                            @endforeach
                         </select>
                         <button class="btn btn-outline-secondary">Switch role</button>
                     </form>
                 </div>
             @endif
-            @if(session('status'))<div class="alert alert-success" role="status">{{ session('status') }}</div>@endif
-            @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
+            @if(session('status'))
+                <div class="alert alert-success" role="status">{{ session('status') }}</div>
+            @endif
+            @if($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
             @yield('content')
         </main>
     </div>
 
-    <!-- Mobile Bottom Navigation Bar (Visible only on smaller phone screens) -->
+    <!-- Mobile Bottom Navigation Bar -->
     @if($currentRole === 'senior')
     <nav class="mobile-bottom-nav" aria-label="Mobile bottom navigation">
         <a href="/" class="{{ request()->is('/') && !request()->boolean('mine') ? 'active' : '' }}">
@@ -297,5 +320,19 @@
     @endif
 </div>
 @endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert-success');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    });
+</script>
+
 </body>
 </html>
