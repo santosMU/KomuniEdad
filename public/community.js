@@ -190,6 +190,20 @@
         if (event.target.setCustomValidity) event.target.setCustomValidity('');
         event.target.form?.querySelectorAll('[data-date-validation]').forEach(el => el.setCustomValidity(''));
         if (event.target.closest?.('#activity-form')) syncActivityPreview();
+
+        if (event.target.matches?.('[data-participant-search]')) {
+            const term = event.target.value.trim().toLowerCase();
+            const cards = [...document.querySelectorAll('[data-participant-name]')];
+            let visible = 0;
+            cards.forEach(card => {
+                const match = !term || (card.dataset.participantName || '').includes(term);
+                card.hidden = !match;
+                if (match) visible++;
+            });
+            const empty = document.querySelector('[data-participant-empty]');
+            if (empty) empty.hidden = visible !== 0;
+        }
+
         const form = event.target.closest('[data-activity-search]');
         if (form && event.target.name === 'q') {
             searchRequest?.abort();
