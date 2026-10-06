@@ -311,16 +311,41 @@ class PortalController extends Controller
 
     public function updateProfile(Request $r, Community $s)
     {
-        $d = $r->validate(['full_name' => 'required|string|max:120', 'contact_number' => 'nullable|string|max:30', 'birthdate' => 'nullable|date|before_or_equal:today', 'address' => 'nullable|string|max:500']);
+        $d = $r->validate([
+            'full_name' => 'required|string|max:120',
+            'contact_number' => 'nullable|string|max:30',
+            'birthdate' => 'nullable|date|before_or_equal:today',
+            'address' => 'nullable|string|max:500',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $photo = $r->file('profile_photo');
+        unset($d['profile_photo']);
+
         if ($s->demo()) {
             $p = collect($s->table('profiles'))->firstWhere('user_id', 'demo-'.$s->role());
+            if ($photo) {
+                $d['avatar_path'] = 'data:'.$photo->getMimeType().';base64,'.base64_encode(file_get_contents($photo->getRealPath()));
+            }
             $this->saveDemo('profiles', 'user_id', array_merge($p, $d), $s);
             session(['demo_senior' => $d]);
         } else {
+            if ($photo) {
+                $d['avatar_path'] = $s->uploadProfilePhoto($photo, (string) session('profile.user_id'));
+            }
+
             $s->rpc('update_own_profile', ['payload' => $d]);
+
+            $profile = session('profile', []);
+            $profile['full_name'] = $d['full_name'];
+            $profile['contact_number'] = $d['contact_number'] ?? null;
+            if (array_key_exists('avatar_path', $d)) {
+                $profile['avatar_path'] = $d['avatar_path'];
+            }
+            session(['profile' => $profile, 'profile_verified_at' => time()]);
         }
 
-        return back()->with('status', 'Profile updated.');
+        return back()->with('status', $photo ? 'Profile and photo updated.' : 'Profile updated.');
     }
 
     public function history(Community $s)
