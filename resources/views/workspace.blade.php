@@ -74,7 +74,10 @@
                             <div>
                                 <div class="fw-bold text-dark">{{ $a['title'] }}</div>
                                 <div class="text-muted small mb-1">{{ $a['venue'] }}</div>
-                                <span class="badge bg-secondary bg-opacity-75 text-white" style="font-size: 0.7rem;">{{ $a['categories']['name'] ?? 'Community' }}</span>
+                                <span class="badge bg-secondary bg-opacity-75 text-white" style="font-size: 0.7rem;">{{ trim($a['categories']['name'] ?? 'Community') }}</span>
+                                <span class="badge {{ ($a['is_free'] ?? true) ? 'bg-light text-secondary' : 'bg-warning-subtle text-dark' }}" style="font-size: 0.7rem;">
+                                    {{ ($a['is_free'] ?? true) ? 'Free' : '₱'.number_format((float)($a['fee'] ?? 0),2).' cash' }}
+                                </span>
                             </div>
                         </div>
                     </td>
@@ -92,7 +95,7 @@
                     <td class="py-3 text-end px-3">
                         <div class="d-inline-flex gap-2">
                             <a href="/workspace/{{ $a['activity_id'] }}/edit" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">Edit</a>
-                            <a href="/workspace/{{ $a['activity_id'] }}/participants" class="btn btn-outline-primary btn-sm px-3 fw-semibold">Participants</a>
+                            <a href="/workspace/{{ $a['activity_id'] }}/participants" class="btn btn-outline-primary btn-sm px-3 fw-semibold">Participants ({{ (int)($a['confirmed'] ?? 0) + (int)($a['waitlisted'] ?? 0) }})</a>
                         </div>
                     </td>
                 </tr>
@@ -120,7 +123,7 @@
             <img src="{{ $src }}" class="card-img-top object-fit-cover" style="height: 150px;" alt="">
             <div class="p-3 d-flex flex-column flex-grow-1">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="badge bg-secondary" style="font-size: 0.75rem;">{{ $a['categories']['name'] ?? 'Community' }}</span>
+                    <span class="badge bg-secondary" style="font-size: 0.75rem;">{{ trim($a['categories']['name'] ?? 'Community') }}</span>
                     <span class="badge {{ $a['status'] === 'open' ? 'bg-success' : 'bg-warning text-dark' }} text-uppercase" style="font-size: 0.7rem;">{{ ucfirst($a['status']) }}</span>
                 </div>
                 <h3 class="fs-6 fw-bold text-dark mb-1">{{ $a['title'] }}</h3>
@@ -129,10 +132,11 @@
                     <div><strong>Schedule:</strong> {{ \Carbon\Carbon::parse($a['start_at'])->format('M j, Y • g:i A') }}</div>
                     <div><strong>Venue:</strong> {{ $a['venue'] }}</div>
                     <div><strong>Slots:</strong> {{ $a['confirmed'] ?? 0 }} / {{ $a['capacity'] }}</div>
+                    <div><strong>Payment:</strong> {{ ($a['is_free'] ?? true) ? 'Free' : '₱'.number_format((float)($a['fee'] ?? 0),2).' cash onsite' }}</div>
                 </div>
                 <div class="d-flex gap-2 pt-2 border-top">
                     <a href="/workspace/{{ $a['activity_id'] }}/edit" class="btn btn-outline-secondary btn-sm flex-fill fw-semibold">Edit</a>
-                    <a href="/workspace/{{ $a['activity_id'] }}/participants" class="btn btn-primary btn-sm flex-fill fw-semibold">Participants</a>
+                    <a href="/workspace/{{ $a['activity_id'] }}/participants" class="btn btn-primary btn-sm flex-fill fw-semibold">Participants ({{ (int)($a['confirmed'] ?? 0) + (int)($a['waitlisted'] ?? 0) }})</a>
                 </div>
             </div>
         </div>
