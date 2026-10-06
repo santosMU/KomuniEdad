@@ -10,10 +10,10 @@
     <div class="d-flex align-items-center gap-3">
         <!-- View Toggle (Ideas 1-3) -->
         <div class="btn-group shadow-sm" role="group" aria-label="Workspace view toggle">
-            <button type="button" class="btn btn-outline-success btn-sm px-3 active text-nowrap" id="btn-table" onclick="switchView('table')">
+            <button type="button" class="btn btn-outline-success btn-sm px-3 active text-nowrap" id="btn-table" data-workspace-view="table">
                 <i class="bi bi-table me-1"></i> Table
             </button>
-            <button type="button" class="btn btn-outline-success btn-sm px-3 text-nowrap" id="btn-grid" onclick="switchView('grid')">
+            <button type="button" class="btn btn-outline-success btn-sm px-3 text-nowrap" id="btn-grid" data-workspace-view="grid">
                 <i class="bi bi-grid-3x3-gap me-1"></i> Card Grid (Senior View)
             </button>
         </div>
@@ -65,7 +65,7 @@
                     $img = $a['image_url'] ?? $a['image'] ?? null;
                     $src = $img
                         ? (str_starts_with($img, 'data:') ? $img : (filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('storage/' . $img)))
-                        : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80';
+                        : 'https://images.pexels.com/photos/19524029/pexels-photo-19524029.jpeg?auto=compress&cs=tinysrgb&w=150';
                 @endphp
                 <tr>
                     <td class="py-3 px-3">
@@ -113,7 +113,7 @@
         $img = $a['image_url'] ?? $a['image'] ?? null;
         $src = $img
             ? (str_starts_with($img, 'data:') ? $img : (filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('storage/' . $img)))
-            : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80';
+            : 'https://images.pexels.com/photos/19524029/pexels-photo-19524029.jpeg?auto=compress&cs=tinysrgb&w=600';
     @endphp
     <div class="col-md-6 col-xl-4">
         <div class="card shadow-sm border-0 rounded-3 overflow-hidden bg-light h-100 d-flex flex-column">
@@ -142,31 +142,4 @@
     @endforelse
 </div>
 
-<script>
-function switchView(view) {
-    const tableContainer = document.getElementById('view-table-container');
-    const gridContainer = document.getElementById('view-grid-container');
-    const btnTable = document.getElementById('btn-table');
-    const btnGrid = document.getElementById('btn-grid');
-
-    if (view === 'grid') {
-        tableContainer.style.display = 'none';
-        gridContainer.style.display = 'flex';
-        btnGrid.classList.add('active');
-        btnTable.classList.remove('active');
-        localStorage.setItem('workspace_view', 'grid');
-    } else {
-        tableContainer.style.display = 'block';
-        gridContainer.style.display = 'none';
-        btnTable.classList.add('active');
-        btnGrid.classList.remove('active');
-        localStorage.setItem('workspace_view', 'table');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const savedView = localStorage.getItem('workspace_view') || 'table';
-    switchView(savedView);
-});
-</script>
 @endsection
