@@ -50,6 +50,22 @@
         box-sizing: border-box !important;
     }
 
+    .login-image-banner {
+        width: 100%;
+        height: 128px;
+        overflow: hidden;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        background: #dfe8dc;
+    }
+
+    .login-image-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
     .login-logo {
         width: 76px !important;
         height: 76px !important;
@@ -184,6 +200,9 @@
 </style>
 
 <div class="detail-panel login-panel" style="text-align: center;">
+    <div class="login-image-banner" aria-hidden="true">
+        <img src="https://images.pexels.com/photos/5637706/pexels-photo-5637706.jpeg?auto=compress&cs=tinysrgb&w=900" alt="">
+    </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 36px;">
         <img src="/images/logo.png" alt="KomuniEdad Logo" class="login-logo">
         <span class="login-brand-name">Create a senior account</span>
@@ -215,7 +234,7 @@
     <p class="mb-0 login-footer">Already have an account? <a href="/login" style="font-weight: 600; color: var(--green);">Sign in</a></p>
 
     <div class="login-support">
-        <p style="margin: 0;">Need a hand signing up? Contact your coordinator at <strong style="color: var(--ink);">(02) 8123-4567</strong> or email <strong style="color: var(--ink);">support@komuniedad.com</strong>.</p>
+        <p style="margin: 0;">Need help creating an account? Ask your community coordinator or organization administrator for assistance.</p>
     </div>
 </div>
 
