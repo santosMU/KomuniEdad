@@ -126,62 +126,6 @@
         </form>
         <p id="search-status" role="status" aria-live="polite"></p>
         <div id="activity-results">@include('activity-results')</div>
-
-        <!-- Activity Grid List -->
-        <div class="row g-3 mt-3">
-            @forelse($activities as $activity)
-                @php
-                    $actId = is_array($activity) ? ($activity['activity_id'] ?? $activity['id'] ?? '') : ($activity->activity_id ?? $activity->id ?? '');
-                    $actStatus = is_array($activity) ? ($activity['status'] ?? 'Open') : ($activity->status ?? 'Open');
-                    $actTitle = is_array($activity) ? ($activity['title'] ?? '') : ($activity->title ?? '');
-                    $actDesc = is_array($activity) ? ($activity['description'] ?? '') : ($activity->description ?? '');
-                    $actStart = is_array($activity) ? ($activity['start_at'] ?? $activity['date'] ?? '') : ($activity->start_at ?? '');
-                    $actVenue = is_array($activity) ? ($activity['venue'] ?? '') : ($activity->venue ?? '');
-                   
-                    $img = is_array($activity) ? ($activity['image'] ?? $activity['imageurl'] ?? null) : ($activity->image ?? $activity->image_url ?? null);
-                    $actImage = $img
-                        ? (str_starts_with($img, 'data:') ? $img : (filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('storage/' . $img)))
-                        : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80';
-                   
-                    $catObj = is_array($activity) ? ($activity['categories'] ?? $activity['category'] ?? null) : ($activity->categories ?? $activity->category ?? null);
-                    $actCatName = is_array($catObj) ? ($catObj['name'] ?? 'General') : (is_object($catObj) ? ($catObj->name ?? 'General') : 'General');
-                @endphp
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="card shadow-sm border-0 rounded-3 overflow-hidden bg-light h-100 d-flex flex-column">
-                        <img src="{{ $actImage }}" class="card-img-top" style="height: 140px; object-fit: cover;" alt="{{ $actTitle }}">
-                        <div class="p-3 d-flex flex-column h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <span class="badge bg-secondary mb-1">{{ $actCatName }}</span>
-                                <span class="badge {{ strtolower($actStatus) === 'open' ? 'bg-success' : 'bg-warning text-dark' }}">
-                                    {{ ucfirst($actStatus) }}
-                                </span>
-                            </div>
-                           
-                            <h3 class="fs-6 fw-bold text-dark mb-1">{{ $actTitle }}</h3>
-                            <p class="text-muted small mb-2">{{ $actDesc }}</p>
-                           
-                            <!-- Schedule and Venue -->
-                            <div class="small text-secondary mb-3">
-                                <div><strong>Schedule:</strong> {{ $actStart ? \Carbon\Carbon::parse($actStart)->format('M d, Y • h:i A') : 'TBD' }}</div>
-                                <div><strong>Venue:</strong> {{ $actVenue }}</div>
-                            </div>
-
-                            <!-- Button pushed to bottom using mt-auto -->
-                            <a href="{{ url('/activities/' . $actId) }}" class="btn btn-primary btn-sm fw-bold py-2 w-100 mt-auto">
-                                View details & enroll
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12">
-                    <div class="text-center py-5 text-muted">
-                        <p class="small mb-0">No activities found.</p>
-                    </div>
-                </div>
-            @endforelse
-        </div>
     @endif
 </div>
 
