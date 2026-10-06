@@ -50,7 +50,7 @@
                     <span class="badge {{ $urgent ? 'bg-warning-subtle text-dark' : 'bg-success-subtle text-success' }}">
                         {{ $n['archived_at'] ? 'Archived' : ($urgent ? 'Important update' : 'Community update') }}
                     </span>
-                    <span>{{ CarbonCarbon::parse($n['posted_at'])->timezone(config('app.timezone'))->format('M j, Y') }}</span>
+                    <span>{{ \Carbon\Carbon::parse($n['posted_at'])->timezone(config('app.timezone'))->format('M j, Y') }}</span>
                 </div>
 
                 <h2 class="fs-4 mb-2">{{ $n['title'] }}</h2>
