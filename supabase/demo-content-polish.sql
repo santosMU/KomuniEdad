@@ -6,7 +6,7 @@ begin;
 update public.categories
 set name='Health & Wellness',
     description='Gentle movement, healthy routines, and everyday well-being'
-where trim(name)='Health';
+where name like 'Health%';
 
 insert into public.categories(name,description,is_active)
 values
