@@ -159,6 +159,7 @@
     $demo = $portal->demo();
     $guestPage = request()->is('login', 'register');
     $currentRole = $guestPage ? null : $portal->role();
+    $sidebarPhoto = $guestPage ? null : $portal->profilePhotoUrl(session('profile.avatar_path'));
 @endphp
 <body class="{{ $guestPage ? 'auth-page' : '' }} @yield('body-class')">
 <a class="skip" href="#main">Skip to content</a>
@@ -219,7 +220,13 @@
 
         <div class="sidebar-bottom">
             <div class="member mb-3">
-                <span class="avatar bg-success text-white d-flex align-items-center justify-content-center fw-bold">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
+                <span class="avatar bg-success text-white d-flex align-items-center justify-content-center fw-bold overflow-hidden">
+                    @if($sidebarPhoto)
+                        <img src="{{ $sidebarPhoto }}" alt="" class="profile-avatar-img">
+                    @else
+                        {{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}
+                    @endif
+                </span>
                 <div>
                     <strong>{{ $demo ? 'Demo'.ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
                 </div>
