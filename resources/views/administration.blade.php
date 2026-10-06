@@ -133,7 +133,7 @@
                         $action = ucwords(str_replace(['.','_'], ' ', $log['action_type']));
                     @endphp
                     <tr>
-                        <td>{{ CarbonCarbon::parse($log['created_at'])->timezone(config('app.timezone'))->format('M j, g:i A') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($log['created_at'])->timezone(config('app.timezone'))->format('M j, g:i A') }}</td>
                         <td>{{ $actor }}</td>
                         <td>{{ $action }}</td>
                         <td>{{ ucfirst($log['target_type']) }}</td>
