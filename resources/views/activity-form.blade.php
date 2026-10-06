@@ -22,12 +22,12 @@
 
             <div class="wide">
                 <label for="image">Banner image file</label>
-                <input id="image" class="form-control" type="file" name="image" accept="image/*" onchange="previewImage(event)">
+                <input id="image" class="form-control" type="file" name="image" accept="image/*">
             </div>
 
             <div>
                 <label for="category_id">Category</label>
-                <select id="category_id" class="form-select" name="category_id" required onchange="updatePreviewCategory()">
+                <select id="category_id" class="form-select" name="category_id" required>
                     @foreach($categories as $c)
                         @if($c['is_active'])
                             <option value="{{ $c['category_id'] }}" data-name="{{ $c['name'] }}" @selected(old('category_id', $activity['category_id'] ?? '') === $c['category_id'])>{{ $c['name'] }}</option>
@@ -55,7 +55,7 @@
 
             <div>
                 <label for="is_free">Payment</label>
-                <select class="form-select" id="is_free" name="is_free" data-payment-mode onchange="toggleFeeVisibility()">
+                <select class="form-select" id="is_free" name="is_free" data-payment-mode>
                     <option value="1" @selected((string)old('is_free', ($activity['is_free'] ?? true) ? 1 : 0) === '1')>Free activity</option>
                     <option value="0" @selected((string)old('is_free', ($activity['is_free'] ?? true) ? 1 : 0) === '0')>Cash payment required</option>
                 </select>
@@ -68,7 +68,7 @@
        
             <div>
                 <label for="status">Status</label>
-                <select class="form-select" id="status" name="status" onchange="updatePreviewStatus()">
+                <select class="form-select" id="status" name="status">
                     @foreach(isset($activity) && $activity ? ['draft', 'open', 'completed', 'cancelled', 'archived'] : ['draft', 'open'] as $status)
                         <option @selected(old('status', $activity['status'] ?? 'draft') === $status)>{{ $status }}</option>
                     @endforeach
@@ -106,7 +106,7 @@
                     $existingImg = $activity['image_url'] ?? $activity['image'] ?? null;
                     $previewSrc = $existingImg 
                         ? (str_starts_with($existingImg, 'data:') ? $existingImg : (filter_var($existingImg, FILTER_VALIDATE_URL) ? $existingImg : asset('storage/' . $existingImg))) 
-                        : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80';
+                        : app(\App\Services\Community::class)->activityImage($activity ?? []);
                 @endphp
                 <img id="preview-img" src="{{ $previewSrc }}" class="card-img-top" style="height: 140px; object-fit: cover;" alt="Preview Banner">
                
@@ -128,65 +128,4 @@
     </div>
 </div>
 
-<script>
-function toggleFeeVisibility() {
-    const isFree = document.getElementById('is_free').value === '1';
-    const feeWrapper = document.getElementById('fee-wrapper');
-    const feeInput = document.getElementById('fee');
-    if (isFree) {
-        feeWrapper.style.display = 'none';
-        feeInput.value = '0';
-    } else {
-        feeWrapper.style.display = '';
-    }
-}
-
-function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function(){
-        document.getElementById('preview-img').src = reader.result;
-    };
-    if(event.target.files[0]) {
-        reader.readAsDataURL(event.target.files[0]);
-    }
-}
-
-function updatePreviewCategory() {
-    const select = document.getElementById('category_id');
-    const opt = select.options[select.selectedIndex];
-    document.getElementById('preview-category').textContent = opt ? opt.text : 'General';
-}
-
-function updatePreviewStatus() {
-    const status = document.getElementById('status').value;
-    const badge = document.getElementById('preview-status');
-    badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-    badge.className = 'badge ' + (status.toLowerCase() === 'open' ? 'bg-success' : 'bg-warning text-dark');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    toggleFeeVisibility();
-    updatePreviewCategory();
-    updatePreviewStatus();
-
-    // Live text binding
-    document.getElementById('title').addEventListener('input', e => document.getElementById('preview-title').textContent = e.target.value || 'Activity title');
-    document.getElementById('description').addEventListener('input', e => document.getElementById('preview-desc').textContent = e.target.value || 'Description will appear here...');
-    document.getElementById('venue').addEventListener('input', e => document.getElementById('preview-venue').textContent = e.target.value || 'Venue location');
-    document.getElementById('start_at').addEventListener('input', e => {
-        if(e.target.value) {
-            const d = new Date(e.target.value);
-            document.getElementById('preview-schedule').textContent = d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) + ' • ' + d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-        } else {
-            document.getElementById('preview-schedule').textContent = 'TBD';
-        }
-    });
-
-    // Trigger initial values if editing
-    document.getElementById('title').dispatchEvent(new Event('input'));
-    document.getElementById('description').dispatchEvent(new Event('input'));
-    document.getElementById('venue').dispatchEvent(new Event('input'));
-    document.getElementById('start_at').dispatchEvent(new Event('input'));
-});
-</script>
 @endsection
