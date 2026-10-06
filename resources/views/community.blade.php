@@ -94,8 +94,41 @@
             @endforeach
         </div>
 
+        <form class="filters mb-3" method="get" action="/" data-activity-search>
+            @if(request('mine'))<input type="hidden" name="mine" value="1">@endif
+            <div class="search-field">
+                <label for="activity-search">Search activities</label>
+                <input id="activity-search" name="q" class="form-control" maxlength="160" value="{{ $query ?? '' }}" placeholder="Activity name or venue">
+            </div>
+            <div>
+                <label for="activity-category">Category</label>
+                <select id="activity-category" name="category" class="form-select">
+                    <option value="">All categories</option>
+                    @foreach($categories as $c)
+                        @php
+                            $cName = is_array($c) ? ($c['name'] ?? '') : ($c->name ?? '');
+                        @endphp
+                        <option value="{{ $cName }}" @selected(request('category') === $cName)>{{ $cName }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="activity-status">Status</label>
+                <select id="activity-status" name="status" class="form-select">
+                    <option value="">All statuses</option>
+                    @foreach(['open','full','ongoing','completed','cancelled'] as $state)
+                        <option value="{{ $state }}" @selected(request('status') === $state)>{{ ucfirst($state) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button class="btn btn-primary align-self-end" type="submit">Search</button>
+            <button class="btn btn-outline-secondary align-self-end" type="button" data-clear-search>Clear</button>
+        </form>
+        <p id="search-status" role="status" aria-live="polite"></p>
+        <div id="activity-results">@include('activity-results')</div>
+
         <!-- Activity Grid List -->
-        <div class="row g-3">
+        <div class="row g-3 mt-3">
             @forelse($activities as $activity)
                 @php
                     $actId = is_array($activity) ? ($activity['activity_id'] ?? $activity['id'] ?? '') : ($activity->activity_id ?? $activity->id ?? '');
@@ -114,17 +147,6 @@
                     $actCatName = is_array($catObj) ? ($catObj['name'] ?? 'General') : (is_object($catObj) ? ($catObj->name ?? 'General') : 'General');
                 @endphp
 
-    <form class="filters" method="get" action="/" data-activity-search>
-        @if($mine)<input type="hidden" name="mine" value="1">@endif
-        <div class="search-field"><label for="activity-search">Search activities</label><input id="activity-search" name="q" class="form-control" maxlength="160" value="{{ $query }}" placeholder="Activity name or venue"></div>
-        <div><label for="activity-category">Category</label><select id="activity-category" name="category" class="form-select"><option value="">All categories</option>@foreach($categories as $c)<option value="{{ $c['name'] }}" @selected($category===$c['name'])>{{ $c['name'] }}</option>@endforeach</select></div>
-        <div><label for="activity-status">Status</label><select id="activity-status" name="status" class="form-select"><option value="">All statuses</option>@foreach(['open','full','ongoing','completed','cancelled'] as $state)<option value="{{ $state }}" @selected($status===$state)>{{ ucfirst($state) }}</option>@endforeach</select></div>
-        <button class="btn btn-primary align-self-end" type="submit">Search</button><button class="btn btn-outline-secondary align-self-end" type="button" data-clear-search>Clear</button>
-    </form>
-    <p id="search-status" role="status" aria-live="polite"></p>
-    <div id="activity-results">@include('activity-results')</div>
-</section>
-
                 <div class="col-md-6 col-lg-4">
                     <div class="card shadow-sm border-0 rounded-3 overflow-hidden bg-light h-100 d-flex flex-column">
                         <img src="{{ $actImage }}" class="card-img-top" style="height: 140px; object-fit: cover;" alt="{{ $actTitle }}">
@@ -139,7 +161,7 @@
                             <h3 class="fs-6 fw-bold text-dark mb-1">{{ $actTitle }}</h3>
                             <p class="text-muted small mb-2">{{ $actDesc }}</p>
                            
-                            <!-- Schedule and Venue grouped tightly without mt-auto -->
+                            <!-- Schedule and Venue -->
                             <div class="small text-secondary mb-3">
                                 <div><strong>Schedule:</strong> {{ $actStart ? \Carbon\Carbon::parse($actStart)->format('M d, Y • h:i A') : 'TBD' }}</div>
                                 <div><strong>Venue:</strong> {{ $actVenue }}</div>
