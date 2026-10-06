@@ -1,0 +1,34 @@
+
+> test:db
+> node supabase/tests/domain.mjs
+
+PASS: all migrations, safe provisioning, staff ownership, category/activity CRUD, capacity, duplicates, waitlists, RLS, attendance, feedback eligibility/uniqueness, profile safety, announcements, verification, audit, cutoff, staff walk-ins and capacity/cancellation, private helper permissions.
+PASS: capacity increase promotes existing eligible waitlist before a newer registration.
+PASS: cash-only payments, unpaid attendance block, paid attendance, and payment audit.
+PASS DB-01: SQLI-06/07/08 activity text stored literally
+PASS DB-02: SQLI-04/05 profile text and role allowlist
+PASS DB-03: AUTHZ-17 enrollment RLS hides another senior
+PASS DB-04: AUTHZ-18 cross-senior withdrawal denied
+PASS DB-05: AUTHZ-19 cross-senior feedback denied
+PASS DB-06: AUTHZ-11 cross-coordinator edit denied
+PASS DB-07: AUTHZ-12 cross-coordinator roster denied
+PASS DB-08: AUTHZ-13 cross-coordinator attendance denied
+PASS DB-09: AUTHZ-14 cross-coordinator payment denied
+PASS DB-10: AUTHZ-15 cross-coordinator enrollment denied
+PASS DB-11: AUTHZ-09 coordinator category mutation denied
+PASS DB-12: SQLI-09/10 announcement text literal
+PASS DB-13: AUTHZ-16 cannot retarget another coordinator announcement
+PASS DB-14: SQLI-12 enrollment reason literal and audited
+PASS DB-15: FR-27 unpaid attendance gate
+PASS DB-16: SQLI-13 attendance text literal
+PASS DB-17: AUTHZ-25 administrator correction persists audit
+PASS DB-18: SQLI-11 feedback literal persisted
+PASS DB-19: SQLI-14 UUID rejects quote marker
+PASS DB-20: disabled account cannot mutate
+PASS DB-21: disabled account sees no activities
+PASS DB-22: anonymous RPC denied
+PASS DB-23: anonymous profile read denied
+PASS DB-24: direct RPC capacity upper bound
+PASS DB-25: direct RPC requirements upper bound
+PASS DB-26: direct RPC fee upper bound
+Phase 4 database checks: 26 passed. Local PGlite with auth.uid shim; not hosted Auth or concurrent multi-connection evidence.

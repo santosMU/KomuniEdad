@@ -1,0 +1,205 @@
+Command: & C:\xampp\php\php.exe artisan test --no-ansi
+Date: 2026-09-29
+Exit code: 0
+
+   PASS  Tests\Feature\CommunityTest
+  ✓ search and category filter                                                                                   0.23s  
+  ✓ enrollment duplicate and withdrawal                                                                          0.03s  
+  ✓ full activity uses waitlist                                                                                  0.01s  
+  ✓ invalid activity and enrollment are not found                                                                0.02s  
+  ✓ live requires authentication                                                                                 0.01s  
+  ✓ invalid live token is rejected                                                                               0.04s  
+  ✓ live enrollment calls authenticated rpc                                                                      0.02s  
+
+   PASS  Tests\Feature\ConsistencyTest
+  ✓ other seniors records are private and do not block enrollment                                                0.04s  
+  ✓ logout clears session when supabase is unavailable                                                           0.02s  
+  ✓ demo published activity cannot return to draft                                                               0.03s  
+  ✓ coordinator cannot retarget another coordinators notice                                                      0.03s  
+  ✓ disabled demo account cannot access protected pages                                                          0.02s  
+  ✓ closed activities do not advertise available registration                                                    0.02s  
+  ✓ full filter uses current seat counts                                                                         0.02s  
+
+   PASS  Tests\Feature\InteractiveTest
+  ✓ fetch search returns filtered data and escaped cards                                                         0.03s  
+  ✓ fetch enrollment and withdrawal persist and refresh counts                                                   0.03s  
+  ✓ staff json validation and save                                                                               0.03s  
+  ✓ json guest and staff authorization                                                                           0.02s  
+  ✓ temporary service failure preserves session                                                                  0.02s  
+  ✓ staff seat counts and repeat confirmation                                                                    0.02s  
+  ✓ withdrawal promotes waitlisted demo participant                                                              0.02s  
+  ✓ publishable key is not sent as a user bearer token                                                           0.02s  
+  ✓ signup endpoint does not receive existing user bearer                                                        0.02s  
+  ✓ live login sets dedicated auth cookie                                                                        0.02s  
+  ✓ cookie authenticated user can see and use logout                                                             0.02s  
+  ✓ ajax redirects are same origin relative paths                                                                0.02s  
+
+   PASS  Tests\Feature\Phase4AuthenticationTest
+  ✓ a u t h 01 valid login                                                                                       0.02s  
+  ✓ invalid login with data set " a u t h-02"                                                                    0.01s  
+  ✓ invalid login with data set " a u t h-03"                                                                    0.02s  
+  ✓ invalid login with data set " a u t h-04"                                                                    0.01s  
+  ✓ invalid login with data set " a u t h-05"                                                                    0.02s  
+  ✓ invalid login with data set " a u t h-06"                                                                    0.02s  
+  ✓ a u t h 07 logout                                                                                            0.02s  
+  ✓ a u t h 08 protected after logout                                                                            0.02s  
+  ✓ a u t h 09 missing token json                                                                                0.02s  
+  ✓ invalid or expired token with data set " a u t h-10"                                                         0.02s  
+  ✓ invalid or expired token with data set " a u t h-11"                                                         0.02s  
+  ✓ a u t h 12 disabled account                                                                                  0.02s  
+  ✓ a u t h 13 login rotates session                                                                             0.02s  
+  ✓ a u t h 14 logout rotates csrf                                                                               0.02s  
+  ✓ throttle with data set " a u t h-15"                                                                         0.02s  
+  ✓ throttle with data set " a u t h-16"                                                                         0.02s  
+  ✓ a u t h 17 password minimum                                                                                  0.01s  
+  ✓ a u t h 18 password confirmation                                                                             0.02s  
+  ✓ a u t h 19 registration metadata                                                                             0.01s  
+  ✓ a u t h 20 error is safe                                                                                     0.02s  
+  ✓ cookie properties with data set " a u t h-21"                                                                0.03s  
+  ✓ cookie properties with data set " a u t h-22"                                                                0.03s  
+  ✓ cookie properties with data set " a u t h-23"                                                                0.02s  
+  ✓ cookie properties with data set " a u t h-24"                                                                0.02s  
+
+   PASS  Tests\Feature\Phase4AuthorizationTest
+  ✓ role and owner matrix with data set " a u t h z-01"                                                          0.04s  
+  ✓ role and owner matrix with data set " a u t h z-02"                                                          0.01s  
+  ✓ role and owner matrix with data set " a u t h z-03"                                                          0.01s  
+  ✓ role and owner matrix with data set " a u t h z-04"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-05"                                                          0.03s  
+  ✓ role and owner matrix with data set " a u t h z-06"                                                          0.04s  
+  ✓ role and owner matrix with data set " a u t h z-07"                                                          0.03s  
+  ✓ role and owner matrix with data set " a u t h z-08"                                                          0.03s  
+  ✓ role and owner matrix with data set " a u t h z-09"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-10"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-11"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-12"                                                          0.03s  
+  ✓ role and owner matrix with data set " a u t h z-13"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-14"                                                          0.03s  
+  ✓ role and owner matrix with data set " a u t h z-15"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-21"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-24"                                                          0.02s  
+  ✓ role and owner matrix with data set " a u t h z-26"                                                          0.02s  
+  ✓ a u t h z 16 cannot retarget notice                                                                          0.02s  
+  ✓ a u t h z 17 private history                                                                                 0.02s  
+  ✓ a u t h z 18 private withdrawal                                                                              0.02s  
+  ✓ a u t h z 19 private feedback                                                                                0.02s  
+  ✓ a u t h z 20 unpublished details                                                                             0.02s  
+  ✓ a u t h z 22 admin manages user                                                                              0.01s  
+  ✓ a u t h z 23 admin manages category                                                                          0.02s  
+  ✓ a u t h z 27 registration stays senior                                                                       0.02s  
+  ✓ a u t h z 28 profile cannot promote                                                                          0.02s  
+  ✓ a u t h z 29 disabled                                                                                        0.02s  
+  ✓ a u t h z 30 guest                                                                                           0.03s  
+
+   PASS  Tests\Feature\Phase4FunctionalTest
+  ✓ f u n c 10 search controls are reachable                                                                     0.05s  
+  ✓ f u n c 04 profile links to history and announcements                                                        0.02s  
+  ✓ f u n c 07 optional requirements do not break detail                                                         0.02s  
+  ✓ f u n c 09 complete local role workflow                                                                      0.08s  
+
+   PASS  Tests\Feature\Phase4InjectionTest
+  ✓ s q l i 01 login                                                                                             0.03s  
+  ✓ s q l i 02 search                                                                                            0.02s  
+  ✓ s q l i 03 category                                                                                          0.02s  
+  ✓ text is stored literally with data set " s q l i-04"                                                         0.02s  
+  ✓ text is stored literally with data set " s q l i-05"                                                         0.02s  
+  ✓ text is stored literally with data set " s q l i-06"                                                         0.02s  
+  ✓ text is stored literally with data set " s q l i-07"                                                         0.01s  
+  ✓ text is stored literally with data set " s q l i-08"                                                         0.01s  
+  ✓ text is stored literally with data set " s q l i-09"                                                         0.01s  
+  ✓ text is stored literally with data set " s q l i-10"                                                         0.02s  
+  ✓ s q l i 11 feedback                                                                                          0.01s  
+  ✓ s q l i 12 enrollment reason                                                                                 0.01s  
+  ✓ s q l i 13 attendance remarks                                                                                0.01s  
+  ✓ s q l i 14 ids                                                                                               0.01s  
+
+   PASS  Tests\Feature\Phase4IntegrityTest
+  ✓ c s r f 01 missing and invalid tokens                                                                        0.04s  
+  ✓ c s r f 02 correct fetch header                                                                              0.01s  
+  ✓ safe upstream error with data set " e r r o r-01"                                                            0.01s  
+  ✓ safe upstream error with data set " e r r o r-02"                                                            0.01s  
+  ✓ safe upstream error with data set " e r r o r-03"                                                            0.01s  
+  ✓ e r r o r 04 connection failure                                                                              0.01s  
+  ✓ h y p 02 profile forms are not nested                                                                        0.01s  
+  ✓ h y p 04 security headers                                                                                    0.02s  
+  ✓ h y p 04 auth controls work with external scripts only                                                       0.02s  
+  ✓ a u t h 25 configured limiter survives application restarts                                                  0.16s  
+  ✓ e r r o r 05 redirect cannot be protocol relative                                                            0.02s  
+  ✓ e r r o r 06 malformed id never reaches rpc                                                                  0.01s  
+  ✓ e r r o r 07 unauthorized and validation errors are safe                                                     0.02s  
+
+   PASS  Tests\Feature\Phase4ValidationTest
+  ✓ rejects invalid field with data set " v a l-01"                                                              0.03s  
+  ✓ rejects invalid field with data set " v a l-02"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-03"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-04"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-05"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-06"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-07"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-08"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-09"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-10"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-11"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-12"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-13"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-14"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-15"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-16"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-17"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-18"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-19"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-20"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-21"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-22"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-23"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-24"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-25"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-26"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-27"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-31"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-32"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-33"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-34"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-35"                                                              0.01s  
+  ✓ v a l 28 nonexistent activity                                                                                0.01s  
+  ✓ v a l 29 nonexistent enrollment                                                                              0.01s  
+  ✓ v a l 30 malformed uuid                                                                                      0.01s  
+
+   PASS  Tests\Feature\Phase4XssTest
+  ✓ activity encoding with data set " x s s-01"                                                                  0.03s  
+  ✓ activity encoding with data set " x s s-02"                                                                  0.01s  
+  ✓ activity encoding with data set " x s s-03"                                                                  0.01s  
+  ✓ activity encoding with data set " x s s-04"                                                                  0.01s  
+  ✓ announcement encoding with data set " x s s-05"                                                              0.01s  
+  ✓ announcement encoding with data set " x s s-06"                                                              0.01s  
+  ✓ profile attribute encoding with data set " x s s-07"                                                         0.01s  
+  ✓ profile attribute encoding with data set " x s s-08"                                                         0.01s  
+  ✓ x s s 09 feedback is not executable                                                                          0.01s  
+  ✓ x s s 10 reflected search                                                                                    0.01s  
+  ✓ x s s 11 json markup                                                                                         0.01s  
+  ✓ x s s 12 validation error encoding                                                                           0.01s  
+  ✓ x s s 13 status encoding                                                                                     0.01s  
+
+   PASS  Tests\Feature\PortalTest
+  ✓ senior cannot access staff or admin pages                                                                    0.03s  
+  ✓ coordinator pages render and admin is denied                                                                 0.03s  
+  ✓ admin pages render                                                                                           0.01s  
+  ✓ profile update does not allow role escalation                                                                0.02s  
+  ✓ demo switch is unavailable in live mode                                                                      0.01s  
+  ✓ activity validation and save                                                                                 0.02s  
+  ✓ registration only sends senior profile metadata                                                              0.01s  
+  ✓ feedback requires completed attendance                                                                       0.01s  
+  ✓ announcement is saved and escaped                                                                            0.02s  
+  ✓ database rpc scalar response is supported                                                                    0.01s  
+  ✓ login and register are public pages without authenticated navigation                                         0.01s  
+  ✓ demo registration and login work end to end                                                                  0.02s  
+  ✓ demo registration rejects invalid and duplicate accounts                                                     0.02s  
+  ✓ live registration never inherits admin session or auto signs in                                              0.01s  
+  ✓ live registration explains default smtp restriction                                                          0.01s  
+  ✓ live registration explains profile trigger failure                                                           0.01s  
+  ✓ paid activity is explicitly cash only and attendance waits for payment                                       0.02s  
+
+  Tests:    175 passed (603 assertions)
+  Duration: 3.90s
+
+

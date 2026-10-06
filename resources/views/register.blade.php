@@ -29,6 +29,7 @@
 
     .login-main-override {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
@@ -184,7 +185,7 @@
 
 <div class="detail-panel login-panel" style="text-align: center;">
     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 36px;">
-        <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
+        <img src="/images/logo.png" alt="KomuniEdad Logo" class="login-logo">
         <span class="login-brand-name">Create a senior account</span>
     </div>
    
@@ -204,7 +205,7 @@
         <input class="form-control mb-4 login-input" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required>
 
         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 34px;">
-            <input type="checkbox" id="showPassword" onclick="togglePassword()" class="login-checkbox">
+            <input type="checkbox" id="showPassword" data-show-password class="login-checkbox">
             <label for="showPassword" class="login-checkbox-label">Show passwords</label>
         </div>
 
@@ -218,13 +219,4 @@
     </div>
 </div>
 
-<script>
-function togglePassword() {
-    var p1 = document.getElementById("password");
-    var p2 = document.getElementById("password_confirmation");
-    var type = p1.type === "password" ? "text" : "password";
-    p1.type = type;
-    p2.type = type;
-}
-</script>
 @endsection

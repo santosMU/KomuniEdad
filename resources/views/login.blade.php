@@ -29,6 +29,7 @@
 
     .login-main-override {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
@@ -185,8 +186,13 @@
 </style>
 
 <div class="detail-panel login-panel" style="text-align: center;">
+
     <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 20px;">
         <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 24px;">
+        <img src="/images/logo.png" alt="KomuniEdad Logo" class="login-logo">
+
         <span class="login-brand-name">KomuniEdad</span>
     </div>
 
@@ -218,7 +224,7 @@
                 <label for="remember" class="login-checkbox-label">Remember me on this device</label>
             </div>
             <div style="display: flex; align-items: center; gap: 14px;">
-                <input type="checkbox" id="showPassword" onclick="togglePassword()" class="login-checkbox">
+                <input type="checkbox" id="showPassword" data-show-password class="login-checkbox">
                 <label for="showPassword" class="login-checkbox-label">Show password</label>
             </div>
         </div>
@@ -233,10 +239,4 @@
     </div>
 </div>
 
-<script>
-function togglePassword() {
-    var p = document.getElementById("password");
-    p.type = p.type === "password" ? "text" : "password";
-}
-</script>
 @endsection

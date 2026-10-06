@@ -10,6 +10,10 @@ class Community
 {
     public const AUTH_COOKIE = 'komuniedad_access';
 
+    private ?array $activityCache = null;
+    private ?array $enrollmentCache = null;
+    private array $tableCache = [];
+
     public function accessToken(): ?string
     {
         return session('access_token') ?: request()->cookie(self::AUTH_COOKIE);
@@ -93,21 +97,7 @@ class Community
             $counts = collect($this->api('POST', '/rest/v1/rpc/activity_counts'))->keyBy('activity_id');
             $coordinators = collect($this->api('POST', '/rest/v1/rpc/coordinator_directory'))->keyBy('user_id');
 
-            $rawActivities = $this->api('GET', '/rest/v1/activities', ['select' => '*,categories(name)', 'order' => 'start_at.asc']);
-
-            return array_map(function ($a) use ($counts, $coordinators) {
-                // Normalize category relationship if returned as an array
-                $cat = $a['categories'] ?? null;
-                if (is_array($cat) && array_key_exists(0, $cat)) {
-                    $cat = $cat[0];
-                }
-                $a['categories'] = $cat;
-
-                return $a + [
-                    'confirmed' => $counts[$a['activity_id']]['confirmed'] ?? 0, 
-                    'coordinator_name' => $coordinators[$a['coordinator_id']]['full_name'] ?? 'Community coordinator'
-                ];
-            }, $rawActivities);
+            return array_map(fn ($a) => $a + ['confirmed' => $counts[$a['activity_id']]['confirmed'] ?? 0, 'coordinator_name' => $coordinators[$a['coordinator_id']]['full_name'] ?? 'Community coordinator'], $this->api('GET', '/rest/v1/activities', ['select' => '*,categories(name)', 'order' => 'start_at.asc']));
         }
         if (session()->has('demo_activities')) {
             return session('demo_activities');
@@ -182,7 +172,18 @@ class Community
 
     public function enrollments(): array
     {
-        return $this->demo() ? session('demo_enrollments', []) : $this->api('GET', '/rest/v1/enrollments', ['select' => '*', 'senior_id' => 'eq.'.session('profile.user_id')]);
+        if ($this->demo()) {
+            return session('demo_enrollments', []);
+        }
+
+        if ($this->enrollmentCache === null) {
+            $this->enrollmentCache = $this->api('GET', '/rest/v1/enrollments', [
+                'select' => '*',
+                'senior_id' => 'eq.'.session('profile.user_id'),
+            ]);
+        }
+
+        return $this->enrollmentCache;
     }
 
     public function ownEnrollments(): array
@@ -218,7 +219,12 @@ class Community
     public function table(string $table, array $filters = []): array
     {
         if (! $this->demo()) {
-            return $this->api('GET', '/rest/v1/'.$table, ['select' => '*'] + $filters);
+            $key = $table.'|'.http_build_query($filters);
+            if (! array_key_exists($key, $this->tableCache)) {
+                $this->tableCache[$key] = $this->api('GET', '/rest/v1/'.$table, ['select' => '*'] + $filters);
+            }
+
+            return $this->tableCache[$key];
         }
         if ($table === 'categories') {
             return session('demo_categories', array_map(fn ($c) => ['category_id' => strtolower($c), 'name' => $c, 'description' => 'Community '.strtolower($c).' activities', 'is_active' => true], ['Health', 'Wellness', 'Social', 'Learning', 'Community']));

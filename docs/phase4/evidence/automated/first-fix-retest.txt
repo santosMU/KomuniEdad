@@ -1,0 +1,77 @@
+
+   PASS  Tests\Feature\Phase4AuthenticationTest
+  ✓ a u t h 01 valid login                                                                                       0.16s  
+  ✓ invalid login with data set " a u t h-02"                                                                    0.01s  
+  ✓ invalid login with data set " a u t h-03"                                                                    0.01s  
+  ✓ invalid login with data set " a u t h-04"                                                                    0.01s  
+  ✓ invalid login with data set " a u t h-05"                                                                    0.01s  
+  ✓ invalid login with data set " a u t h-06"                                                                    0.01s  
+  ✓ a u t h 07 logout                                                                                            0.01s  
+  ✓ a u t h 08 protected after logout                                                                            0.01s  
+  ✓ a u t h 09 missing token json                                                                                0.01s  
+  ✓ invalid or expired token with data set " a u t h-10"                                                         0.01s  
+  ✓ invalid or expired token with data set " a u t h-11"                                                         0.01s  
+  ✓ a u t h 12 disabled account                                                                                  0.01s  
+  ✓ a u t h 13 login rotates session                                                                             0.01s  
+  ✓ a u t h 14 logout rotates csrf                                                                               0.01s  
+  ✓ throttle with data set " a u t h-15"                                                                         0.02s  
+  ✓ throttle with data set " a u t h-16"                                                                         0.02s  
+  ✓ a u t h 17 password minimum                                                                                  0.01s  
+  ✓ a u t h 18 password confirmation                                                                             0.01s  
+  ✓ a u t h 19 registration metadata                                                                             0.01s  
+  ✓ a u t h 20 error is safe                                                                                     0.01s  
+  ✓ cookie properties with data set " a u t h-21"                                                                0.01s  
+  ✓ cookie properties with data set " a u t h-22"                                                                0.01s  
+  ✓ cookie properties with data set " a u t h-23"                                                                0.01s  
+  ✓ cookie properties with data set " a u t h-24"                                                                0.01s  
+
+   PASS  Tests\Feature\Phase4IntegrityTest
+  ✓ c s r f 01 missing and invalid tokens                                                                        0.05s  
+  ✓ c s r f 02 correct fetch header                                                                              0.01s  
+  ✓ safe upstream error with data set " e r r o r-01"                                                            0.01s  
+  ✓ safe upstream error with data set " e r r o r-02"                                                            0.01s  
+  ✓ safe upstream error with data set " e r r o r-03"                                                            0.01s  
+  ✓ e r r o r 04 connection failure                                                                              0.01s  
+  ✓ h y p 02 profile forms are not nested                                                                        0.08s  
+  ✓ h y p 04 security headers                                                                                    0.03s  
+
+   PASS  Tests\Feature\Phase4ValidationTest
+  ✓ rejects invalid field with data set " v a l-01"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-02"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-03"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-04"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-05"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-06"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-07"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-08"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-09"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-10"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-11"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-12"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-13"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-14"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-15"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-16"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-17"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-18"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-19"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-20"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-21"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-22"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-23"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-24"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-25"                                                              0.02s  
+  ✓ rejects invalid field with data set " v a l-26"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-27"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-31"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-32"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-33"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-34"                                                              0.01s  
+  ✓ rejects invalid field with data set " v a l-35"                                                              0.01s  
+  ✓ v a l 28 nonexistent activity                                                                                0.01s  
+  ✓ v a l 29 nonexistent enrollment                                                                              0.01s  
+  ✓ v a l 30 malformed uuid                                                                                      0.01s  
+
+  Tests:    67 passed (218 assertions)
+  Duration: 1.29s
+

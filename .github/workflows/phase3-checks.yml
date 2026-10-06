@@ -1,9 +1,10 @@
-name: Phase 3 checks
+name: Phase 3 and 4 checks
 
 on:
   push:
     branches:
       - feature/laravel-phase3
+      - feature/laravel-phase4
   pull_request:
 
 jobs:
@@ -19,6 +20,9 @@ jobs:
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist
+
+      - name: Audit PHP dependencies
+        run: composer audit
 
       - name: Prepare Laravel
         run: |
@@ -44,6 +48,9 @@ jobs:
 
       - name: Install database test dependencies
         run: npm ci
+
+      - name: Audit production JavaScript dependencies
+        run: npm audit --omit=dev
 
       - name: Run database tests
         run: npm run test:db

@@ -179,7 +179,7 @@ class CommunityController extends Controller
         $cookie = cookie(
             Community::AUTH_COOKIE,
             $a['access_token'],
-            2628000, // 5 years in minutes
+            0, // Session-only unless Auth supplies a trusted token lifetime.
             '/',
             config('session.domain'),
             (bool) config('session.secure', false),
@@ -187,6 +187,11 @@ class CommunityController extends Controller
             false,
             config('session.same_site', 'lax')
         );
+
+        if (isset($a['expires_in']) && is_numeric($a['expires_in'])) {
+            $seconds = min((int) $a['expires_in'], max(1, (int) config('session.lifetime', 120)) * 60);
+            $cookie = $cookie->withExpires(time() + max(1, $seconds - 30));
+        }
 
         return redirect('/')->withCookie($cookie);
     }

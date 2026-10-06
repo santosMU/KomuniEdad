@@ -1,0 +1,27 @@
+
+   FAIL  Tests\Feature\Phase4IntegrityTest
+  ⨯ e r r o r 05 redirect cannot be protocol relative                                                            0.24s  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Phase4IntegrityTest > e r r o r 05 redirect cannot be protocol relative                        
+  Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'/external.example/path'
++'//external.example/path'
+
+  at tests\Feature\Phase4IntegrityTest.php:65
+     61▕     }
+     62▕     public function test_ERROR_05_redirect_cannot_be_protocol_relative(): void
+     63▕     {
+     64▕         $this->postJson('/profile', ['full_name' => 'Synthetic Senior'], ['Referer' => 'https://example.test//external.example/path'])
+  ➜  65▕             ->assertOk()->assertJsonPath('redirect', '/external.example/path');
+     66▕     }
+     67▕     public function test_ERROR_06_malformed_id_never_reaches_rpc(): void
+     68▕     {
+     69▕         $this->live();
+
+
+  Tests:    1 failed (2 assertions)
+  Duration: 0.42s
+

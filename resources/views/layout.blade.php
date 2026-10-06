@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="/images/logo.png">
     <link rel="stylesheet" href="/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="/community.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="/community.js" defer></script>
     <style>
@@ -61,10 +61,15 @@
             display: none;
         }
         @media (max-width: 1024px) {
+
             .menu-toggle {
+
+            /* Hide the hamburger menu button and sidebar */
+            .senior-shell .menu-toggle {
+
                 display: none !important;
             }
-            .sidebar {
+            .senior-shell .sidebar {
                 display: none !important;
             }
 
@@ -181,7 +186,7 @@
     </main>
 </div>
 @else
-<div class="app-shell" data-app-shell>
+<div class="app-shell {{ $currentRole === 'senior' ? 'senior-shell' : 'staff-shell' }}" data-app-shell>
     <aside class="sidebar" id="site-sidebar" aria-label="Community navigation">
         <div class="sidebar-header" style="margin-bottom: 24px;">
             <a class="brand" href="/">

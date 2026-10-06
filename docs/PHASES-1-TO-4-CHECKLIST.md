@@ -1,9 +1,10 @@
 # KomuniEdad — Master Requirements and Submission Checklist: Phases 1–4
 
-**Updated for Phase 3**  
-**Branch reviewed:** `feature/laravel-phase3`  
+**Updated through Phase 4**  
+**Branch reviewed:** `feature/laravel-phase4`  
 **Date:** 29 September 2026  
-**Commit reviewed:** `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`  
+**Phase 4 tested source/evidence baseline:** `a1ca211af34e685e758741603ec7c6f149061f54`  
+**Phase 3 historical baseline:** `751570be6c474ea41bfeca9e1300c8cbdf4f59a4`  
 **Stack:** Laravel 12, Blade, Bootstrap 5.3.8, JavaScript/Fetch, Supabase Auth, Supabase PostgreSQL
 
 ---
@@ -33,7 +34,7 @@ Do not mark an unexecuted security or usability test as passed.
 | **Phase 1 — Proposal** | Core proposal, requirements, architecture and database planning exist. | Final consistency, client/policy confirmations, approval/submission evidence. |
 | **Phase 2 — Backend & Database** | Laravel workflows, Supabase Auth, RLS/RPC, roles, hosted sample data and live authentication are working. Seven database migrations are now present, including locked-ownership, auth-profile repair and cash-payment support. | Hosted verification of the newest migrations, full live authorization/concurrency checks and remaining policy confirmation. |
 | **Phase 3 — Frontend & API** | Responsive Blade UI, JavaScript/Fetch, JSON responses, no-reload search/forms and live Supabase integration are implemented. Mobile navigation/profile/auth screens, help content, CI checks and deployment configuration were further refined through the current branch head. | Final screenshots, browser Network evidence, current-head test output, contribution records and demo rehearsal. |
-| **Phase 4 — Security & Testing** | Some validation, role, XSS and workflow tests already exist. | Formal security, SQL injection, authorization, usability, bug log, report and evidence. |
+| **Phase 4 — Security & Testing** | Local security, validation, injection, authentication, authorization, XSS and FR-01..27 regression packages are complete and committed; ZAP passive evidence and bug/retest documentation exist. | Hosted deployment/Supabase verification, shared-cache throttling, concurrent/live checks, remaining browser evidence, three human testers and leader ratings. |
 
 ---
 
@@ -292,97 +293,34 @@ Do not mark an unexecuted security or usability test as passed.
 
 ---
 
-# Phase 4 — Security and Testing
+# Phase 4 - Security and Testing
 
-Use only the authorized development/test environment and synthetic accounts.
+Updated 2026-09-29. See [full Phase 4 report](phase4/SECURITY-AND-TESTING-REPORT.md). Phase 1-3 sections retain their earlier status; they were not re-audited here.
 
-## A. Input validation
+- [x] LOCAL: VAL-01..35 validation checks passed.
+- [x] LOCAL: SQLI-01..14 harmless injection checks passed.
+- [x] LOCAL/MOCKED: AUTH-01..24 and AUTH-25 persistent-cache test passed.
+- [x] LOCAL: AUTHZ-01..30 mapped to PHP and PostgreSQL ownership checks.
+- [x] LOCAL: XSS-01..13 encoding tests and stored/reflected browser examples.
+- [x] LOCAL: actual CSRF middleware and safe-error tests passed.
+- [x] LOCAL: 175 PHP cases / 603 assertions and 26 additional DB checks passed; existing DB suite also passed.
+- [x] LOCAL: JS syntax, Composer audit and npm production audit passed.
+- [x] LOCAL: FR-01..27 mapped to executed assertions with explicit coverage limits.
+- [x] SCANNER: hosted initial and local before/retest sanitized ZAP reports recorded.
+- [x] LOCAL DEMO: discovery screenshots at 375, 768 and 1366px; validation/search/XSS evidence saved.
+- [x] DOCUMENTED: source audit, test-case tables, functional matrix, bug log, evidence register and testing summary.
+- [x] PREPARED: usability plan/results form and member-contribution template.
+- [ ] DEPLOYMENT: configure shared serverless cache and verify throttling across requests/instances.
+- [ ] SUPABASE: review/apply migration 008 and capture hosted constraint evidence.
+- [ ] LIVE SYNTHETIC: complete hosted Auth, RLS, persistence and role workflows.
+- [ ] LIVE/CONCURRENT: test simultaneous capacity requests and reconcile report counts.
+- [ ] BROWSER: finish staff drawer, full keyboard/zoom, full role workflow and real-phone checks.
+- [ ] HUMAN: obtain genuine feedback from at least three testers.
+- [ ] LEADER: complete contribution ratings.
+- [x] RELEASE SOURCE: final local source/evidence baseline committed and pushed as `a1ca211af34e685e758741603ec7c6f149061f54`; GitHub Actions run 51 passed.
+- [ ] RELEASE DEPLOYMENT: record deployed Phase 4 identity and repeat the hosted passive scan after deployment.
 
-- [ ] **PENDING** — Test blank and whitespace-only inputs.
-- [ ] **PENDING** — Test malformed emails.
-- [ ] **PENDING** — Test excessive field lengths.
-- [ ] **PENDING** — Test unexpected characters.
-- [ ] **PENDING** — Test zero/negative/fractional capacities.
-- [ ] **PENDING** — Test invalid date combinations.
-- [ ] **PENDING** — Test invalid status/rating values.
-- [ ] **PENDING** — Test forged/nonexistent record IDs.
-- [ ] **PENDING** — Record expected vs actual result for every case.
-
-## B. SQL injection
-
-- [ ] **PENDING** — Test login/search/writable fields using non-destructive SQL injection strings.
-- [ ] **PENDING** — Test literal values such as:
-  - `' OR '1'='1`
-  - `' OR 1=1 --`
-- [ ] **PENDING** — Verify there is no authentication bypass.
-- [ ] **PENDING** — Verify there is no unintended data exposure.
-- [ ] **PENDING** — Verify no raw database errors are disclosed.
-- [ ] **PENDING** — Document parameterized/RPC-based query handling and its limits.
-
-## C. Authentication
-
-- [ ] **PENDING** — Valid login.
-- [ ] **PENDING** — Wrong password.
-- [ ] **PENDING** — Nonexistent account.
-- [ ] **PENDING** — Empty login fields.
-- [ ] **PENDING** — Logout followed by protected URL access.
-- [x] **TESTED LOCALLY** — Invalid token rejection.
-- [ ] **PENDING** — Expired token handling.
-- [ ] **PENDING** — Disabled account handling.
-- [ ] **PENDING** — Login rate-limit behavior.
-
-## D. Authorization
-
-- [x] **TESTED LOCALLY** — Senior cannot access staff/admin pages.
-- [x] **TESTED LOCALLY** — Coordinator cannot access administration.
-- [x] **TESTED LOCALLY** — Admin pages render under the admin role.
-- [x] **TESTED LOCALLY** — Registration metadata cannot self-assign admin role.
-- [ ] **PENDING** — Hosted Coordinator A versus Coordinator B ownership isolation test.
-- [ ] **PENDING** — Direct-object/IDOR tests using modified record IDs.
-- [ ] **PENDING** — Verify senior cannot access another senior's private participation data.
-- [ ] **PENDING** — Verify coordinator cannot edit another coordinator's assigned activity.
-
-## E. XSS and output encoding
-
-- [x] **TESTED LOCALLY** — Stored announcement `<script>` marker is escaped.
-- [x] **TESTED LOCALLY** — JSON activity result rendering uses escaped Blade output.
-- [ ] **PENDING** — Test XSS payloads in all major writable text fields.
-- [ ] **PENDING** — Test reflected search values.
-- [ ] **PENDING** — Verify rendered pages do not execute injected HTML/JS.
-- [ ] **PENDING** — Record before/after evidence.
-
-## F. Functional / regression testing
-
-- [ ] **PENDING** — Complete end-to-end senior workflow.
-- [ ] **PENDING** — Complete end-to-end coordinator workflow.
-- [ ] **PENDING** — Complete end-to-end administrator workflow.
-- [ ] **PENDING** — Live enrollment persistence test.
-- [ ] **PENDING** — Live withdrawal/waitlist promotion test.
-- [ ] **PENDING** — Live attendance test.
-- [ ] **PENDING** — Live feedback submission test.
-- [ ] **PENDING** — Reports/count reconciliation.
-- [ ] **PENDING** — Regression test after each confirmed bug fix.
-
-## G. Usability testing
-
-- [ ] **PENDING** — Recruit representative testers where required.
-- [ ] **PENDING** — Record device/browser used.
-- [ ] **PENDING** — Observe core task completion.
-- [ ] **PENDING** — Record navigation/form difficulties.
-- [ ] **PENDING** — Record accessibility/readability comments.
-- [ ] **PENDING** — Apply reasonable fixes and retest.
-- [ ] **PENDING** — Summarize usability results in the Phase 4 report.
-
-## Phase 4 deliverables
-
-- [ ] **PENDING** — Security & Testing Report.
-- [ ] **PENDING** — Test-case table.
-- [ ] **PENDING** — Security evidence/screenshots.
-- [ ] **PENDING** — Bug log.
-- [ ] **PENDING** — Retest evidence for fixed bugs.
-- [ ] **PENDING** — Usability feedback summary.
-- [ ] **PENDING** — Final testing summary.
-- [ ] **PENDING** — Member contribution/rating records.
+Phase 4 is partially complete. No full completion claim until manual and hosted requirements are evidenced.
 
 ---
 

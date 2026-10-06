@@ -1,0 +1,5 @@
+Command: npm.cmd audit --omit=dev
+Date: 2026-09-29
+Exit code: 0
+found 0 vulnerabilities
+
