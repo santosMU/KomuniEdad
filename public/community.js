@@ -180,6 +180,7 @@
         if (member) document.querySelector('.member').replaceWith(member);
         const mobileNav = page.querySelector('.mobile-bottom-nav');
         if (mobileNav) document.querySelector('.mobile-bottom-nav')?.replaceWith(mobileNav);
+        initMergedUi();
         main.setAttribute('tabindex', '-1');
         main.focus({ preventScroll: true });
 
@@ -188,6 +189,7 @@
     document.addEventListener('input', event => {
         if (event.target.setCustomValidity) event.target.setCustomValidity('');
         event.target.form?.querySelectorAll('[data-date-validation]').forEach(el => el.setCustomValidity(''));
+        if (event.target.closest?.('#activity-form')) syncActivityPreview();
         const form = event.target.closest('[data-activity-search]');
         if (form && event.target.name === 'q') {
             searchRequest?.abort();
@@ -197,6 +199,11 @@
         }
     });
     document.addEventListener('click', event => {
+        const workspaceView = event.target.closest('[data-workspace-view]');
+        if (workspaceView) {
+            setWorkspaceView(workspaceView.dataset.workspaceView);
+            return;
+        }
         const sidebarToggle = event.target.closest('[data-sidebar-toggle]');
         if (sidebarToggle) {
             const isOpen = sidebarBreakpoint.matches ? shell?.classList.contains('sidebar-open') : !shell?.classList.contains('sidebar-desktop-collapsed');
@@ -228,6 +235,98 @@
             document.querySelector('[data-sidebar-toggle]')?.focus({ preventScroll: true });
         }
     });
+
+    function setWorkspaceView(view) {
+        const tableContainer = document.getElementById('view-table-container');
+        const gridContainer = document.getElementById('view-grid-container');
+        const btnTable = document.getElementById('btn-table');
+        const btnGrid = document.getElementById('btn-grid');
+        if (!tableContainer || !gridContainer || !btnTable || !btnGrid) return;
+
+        const grid = view === 'grid';
+        tableContainer.style.display = grid ? 'none' : 'block';
+        gridContainer.style.display = grid ? 'flex' : 'none';
+        btnGrid.classList.toggle('active', grid);
+        btnTable.classList.toggle('active', !grid);
+        try { localStorage.setItem('workspace_view', grid ? 'grid' : 'table'); } catch {}
+    }
+
+    function initWorkspaceView() {
+        if (!document.getElementById('view-table-container')) return;
+        let saved = 'table';
+        try { saved = localStorage.getItem('workspace_view') || 'table'; } catch {}
+        setWorkspaceView(saved);
+    }
+
+    function syncActivityPreview() {
+        const form = document.getElementById('activity-form');
+        if (!form) return;
+
+        const isFree = form.elements.namedItem('is_free');
+        const fee = form.elements.namedItem('fee');
+        const feeWrapper = document.getElementById('fee-wrapper');
+        if (isFree && fee && feeWrapper) {
+            const free = isFree.value === '1';
+            feeWrapper.style.display = free ? 'none' : '';
+            if (free) fee.value = '0';
+        }
+
+        const category = form.elements.namedItem('category_id');
+        const previewCategory = document.getElementById('preview-category');
+        if (category && previewCategory) {
+            previewCategory.textContent = category.options?.[category.selectedIndex]?.text || 'General';
+        }
+
+        const status = form.elements.namedItem('status');
+        const previewStatus = document.getElementById('preview-status');
+        if (status && previewStatus) {
+            const value = status.value || 'draft';
+            previewStatus.textContent = value.charAt(0).toUpperCase() + value.slice(1);
+            previewStatus.className = 'badge ' + (value.toLowerCase() === 'open' ? 'bg-success' : 'bg-warning text-dark');
+        }
+
+        const bindings = [
+            ['title', 'preview-title', 'Activity title'],
+            ['description', 'preview-desc', 'Description will appear here...'],
+            ['venue', 'preview-venue', 'Venue location'],
+        ];
+        bindings.forEach(([name, id, fallback]) => {
+            const field = form.elements.namedItem(name);
+            const preview = document.getElementById(id);
+            if (field && preview) preview.textContent = field.value || fallback;
+        });
+
+        const start = form.elements.namedItem('start_at');
+        const schedule = document.getElementById('preview-schedule');
+        if (start && schedule) {
+            if (start.value) {
+                const d = new Date(start.value);
+                schedule.textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    + ' • ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                schedule.textContent = 'TBD';
+            }
+        }
+    }
+
+    function initTransientAlerts() {
+        document.querySelectorAll('.alert-success:not([data-auto-hide-bound])').forEach(alert => {
+            alert.dataset.autoHideBound = '1';
+            window.setTimeout(() => {
+                if (!alert.isConnected) return;
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                window.setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    }
+
+    function initMergedUi() {
+        initWorkspaceView();
+        syncActivityPreview();
+        initTransientAlerts();
+    }
+
     function syncPaymentFields(scope = document) {
         scope.querySelectorAll('[data-payment-mode]').forEach(select => {
             const fee = select.form?.querySelector('[data-payment-fee]');
@@ -248,6 +347,18 @@
         const form = event.target.closest('[data-activity-search]');
         if (form) search(form);
         if (event.target.matches?.('[data-payment-mode]')) syncPaymentFields(event.target.form || document);
+        if (event.target.closest?.('#activity-form')) {
+            if (event.target.matches?.('input[type="file"][name="image"]')) {
+                const file = event.target.files?.[0];
+                const preview = document.getElementById('preview-img');
+                if (file && preview) {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', () => { preview.src = String(reader.result || ''); }, { once: true });
+                    reader.readAsDataURL(file);
+                }
+            }
+            syncActivityPreview();
+        }
     });
     document.addEventListener('submit', async event => {
         const form = event.target;
@@ -306,4 +417,5 @@
             }
         }
     });
+    initMergedUi();
 })();
