@@ -3,10 +3,10 @@
     @forelse($activities as $a)
         @php
             $entry = collect($enrollments ?? [])->first(fn($e) => $e['activity_id'] === $a['activity_id'] && $e['status'] !== 'cancelled');
-            
+           
             $img = $a['image'] ?? $a['image_url'] ?? null;
-            $imgSrc = $img 
-                ? (str_starts_with($img, 'data:') ? $img : (filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('storage/' . $img))) 
+            $imgSrc = $img
+                ? (str_starts_with($img, 'data:') ? $img : (filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('storage/' . $img)))
                 : $portal->activityImage($a);
         @endphp
         <article class="activity-card">
@@ -30,7 +30,7 @@
                 <h3><a href="/activities/{{ $a['activity_id'] }}">{{ $a['title'] }}</a></h3>
                 <p class="schedule">{{ \Carbon\Carbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('D, M j · g:i A') }}</p>
                 <p class="venue">{{ $a['venue'] }}</p>
-                <p class="payment-note">{{ ($a['is_free'] ?? true) ? 'Free activity' : '₱'.number_format((float)($a['fee'] ?? 0), 2).' cash payment' }}</p>
+                <p class="payment-note">{{ ($a['isfree'] ?? true) ? 'Free activity' : '₱'.number_format((float)($a['fee'] ?? 0), 2).' cash payment' }}</p>
                 <a class="card-action" href="/activities/{{ $a['activity_id'] }}">View activity <span aria-hidden="true">→</span></a>
             </div>
         </article>
