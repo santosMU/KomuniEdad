@@ -204,6 +204,19 @@
             if (empty) empty.hidden = visible !== 0;
         }
 
+        if (event.target.matches?.('[data-admin-user-search]')) {
+            const term = event.target.value.trim().toLowerCase();
+            const rows = [...document.querySelectorAll('[data-admin-user]')];
+            let visible = 0;
+            rows.forEach(row => {
+                const match = !term || (row.dataset.adminUser || '').includes(term);
+                row.hidden = !match;
+                if (match) visible++;
+            });
+            const empty = document.querySelector('[data-admin-user-empty]');
+            if (empty) empty.hidden = visible !== 0;
+        }
+
         const form = event.target.closest('[data-activity-search]');
         if (form && event.target.name === 'q') {
             searchRequest?.abort();
