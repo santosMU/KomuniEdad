@@ -32,7 +32,7 @@
                     <h2 class="fs-4 mb-1">{{ $a['title'] ?? 'Past activity' }}</h2>
                     @if($a)
                         <p class="text-muted mb-1">
-                            {{ CarbonCarbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('M j, Y · g:i A') }}
+                            {{ \Carbon\Carbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('M j, Y · g:i A') }}
                             · {{ $a['venue'] }}
                         </p>
                     @endif
