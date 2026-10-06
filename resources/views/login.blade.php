@@ -50,6 +50,22 @@
         box-sizing: border-box !important;
     }
 
+    .login-image-banner {
+        width: 100%;
+        height: 128px;
+        overflow: hidden;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        background: #dfe8dc;
+    }
+
+    .login-image-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
     .login-logo {
         width: 64px !important;
         height: 64px !important;
@@ -186,6 +202,9 @@
 </style>
 
 <div class="detail-panel login-panel" style="text-align: center;">
+    <div class="login-image-banner" aria-hidden="true">
+        <img src="https://images.pexels.com/photos/5637706/pexels-photo-5637706.jpeg?auto=compress&cs=tinysrgb&w=900" alt="">
+    </div>
 
     <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 24px;">
         <img src="{{ asset('images/logo.png') }}" alt="KomuniEdad Logo" class="login-logo">
@@ -214,15 +233,9 @@
         <label for="password" class="form-label login-label">Password</label>
         <input class="form-control mb-3 login-input" id="password" name="password" type="password" autocomplete="current-password" required>
 
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <input type="checkbox" id="remember" name="remember" class="login-checkbox" {{ old('remember') ? 'checked' : '' }}>
-                <label for="remember" class="login-checkbox-label">Remember me on this device</label>
-            </div>
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <input type="checkbox" id="showPassword" data-show-password class="login-checkbox">
-                <label for="showPassword" class="login-checkbox-label">Show password</label>
-            </div>
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 24px;">
+            <input type="checkbox" id="showPassword" data-show-password class="login-checkbox">
+            <label for="showPassword" class="login-checkbox-label">Show password</label>
         </div>
 
         <button class="btn btn-primary w-100 login-btn">Sign in</button>
@@ -231,7 +244,7 @@
     <p class="mb-0 login-footer">Need an account? <a href="/register" style="font-weight: 600; color: var(--green);">Create a senior account</a></p>
 
     <div class="login-support">
-        <p style="margin: 0;">Need help? Contact your coordinator at <strong style="color: var(--ink);">(02) 8123-4567</strong> or email <strong style="color: var(--ink);">support@komuniedad.com</strong>.</p>
+        <p style="margin: 0;">Need help signing in? Ask your community coordinator or organization administrator for assistance.</p>
     </div>
 </div>
 

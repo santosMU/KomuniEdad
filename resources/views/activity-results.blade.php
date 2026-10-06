@@ -50,15 +50,18 @@
                     <h3><a href="/activities/{{ $a['activity_id'] }}">{{ $a['title'] }}</a></h3>
                     <p class="schedule">{{ \Carbon\Carbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('D, M j · g:i A') }}</p>
                     <p class="venue">{{ $a['venue'] }}</p>
-                    <p class="payment-note">{{ ($a['is_free'] ?? true) ? 'Free activity' : '₱'.number_format((float) ($a['fee'] ?? 0), 2).' cash payment' }}</p>
-                    <a class="card-action" href="/activities/{{ $a['activity_id'] }}">View activity <span aria-hidden="true">→</span></a>
+                    <p class="payment-note">{{ ($a['is_free'] ?? true) ? 'Free activity' : '₱'.number_format((float) ($a['fee'] ?? 0), 2).' cash payment onsite' }}</p>
+                    <a class="card-action" href="/activities/{{ $a['activity_id'] }}">
+                        {{ $entry ? 'View my enrollment' : 'View details & enroll' }}
+                        <span aria-hidden="true">→</span>
+                    </a>
                 </div>
             </article>
         @endforeach
     @else
         <div class="empty-state">
             <h3>{{ ($mine ?? false) ? 'Your calendar is ready for something good.' : 'No activities found.' }}</h3>
-            <p>{{ ($mine ?? false) ? 'Explore an activity and join when you are ready.' : 'Try another category or search term.' }}</p>
+            <p>{{ ($mine ?? false) ? 'Explore an activity and join when you are ready.' : 'Try another search or choose a different category.' }}</p>
             <a href="/" class="btn btn-primary">Explore all activities</a>
         </div>
     @endif
