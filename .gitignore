@@ -27,3 +27,6 @@ Thumbs.db
 /.env.vercel
 
 /.vercel/
+/storage/phase4-tools/
+/storage/phase4-private/
+/jbrofuzz/

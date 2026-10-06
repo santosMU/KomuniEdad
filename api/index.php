@@ -8,8 +8,8 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | Vercel's deployed application filesystem is read-only. Laravel runtime
-| files therefore use /tmp, while sessions use encrypted cookies and logs
-| are sent to stderr.
+| files therefore use /tmp. Shared session/cache state is stored in the
+| Supabase PostgreSQL database already connected to the Vercel project.
 |
 */
 
@@ -28,6 +28,34 @@ foreach ([
     }
 }
 
+// Accept either Laravel-style names or the variable names created by the
+// Vercel Supabase integration. This avoids requiring a second database setup.
+$dbUrl = getenv('DB_URL')
+    ?: getenv('POSTGRES_URL')
+    ?: getenv('POSTGRES_PRISMA_URL')
+    ?: null;
+
+$supabaseUrl = getenv('SUPABASE_URL')
+    ?: getenv('NEXT_PUBLIC_SUPABASE_URL')
+    ?: null;
+
+$supabaseAnonKey = getenv('SUPABASE_ANON_KEY')
+    ?: getenv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    ?: getenv('SUPABASE_PUBLISHABLE_KEY')
+    ?: null;
+
+$dbConfigured = (bool) $dbUrl || (
+    (getenv('DB_CONNECTION') ?: '') !== ''
+    && (getenv('DB_HOST') ?: '') !== ''
+    && (getenv('DB_DATABASE') ?: '') !== ''
+    && (getenv('DB_USERNAME') ?: '') !== ''
+    && (getenv('DB_PASSWORD') ?: '') !== ''
+);
+
+$sessionDriver = $dbConfigured
+    ? 'database'
+    : (getenv('SESSION_DRIVER') ?: 'cookie');
+
 $serverless = [
     'LARAVEL_STORAGE_PATH' => $storagePath,
     'APP_CONFIG_CACHE' => $runtimePath.'/bootstrap/cache/config.php',
@@ -36,14 +64,61 @@ $serverless = [
     'APP_ROUTES_CACHE' => $runtimePath.'/bootstrap/cache/routes.php',
     'APP_SERVICES_CACHE' => $runtimePath.'/bootstrap/cache/services.php',
     'VIEW_COMPILED_PATH' => $storagePath.'/framework/views',
-    'CACHE_STORE' => 'array',
-    'SESSION_DRIVER' => 'cookie',
+    'APP_ENV' => 'production',
+    'APP_DEBUG' => 'false',
+    'KOMUNIEDAD_DEMO' => 'false',
+    'SESSION_DRIVER' => $sessionDriver,
+    'SESSION_TABLE' => getenv('SESSION_TABLE') ?: 'sessions',
     'SESSION_ENCRYPT' => 'true',
     'SESSION_SECURE_COOKIE' => 'true',
+    'SESSION_HTTP_ONLY' => 'true',
+    'SESSION_SAME_SITE' => 'lax',
+    'SESSION_PATH' => '/',
     'LOG_CHANNEL' => 'stderr',
     'LOG_STACK' => 'stderr',
-    'APP_DEBUG' => 'false',
 ];
+
+if (! getenv('APP_URL')) {
+    $productionHost = getenv('VERCEL_PROJECT_PRODUCTION_URL') ?: 'komuni-edad.vercel.app';
+    $serverless['APP_URL'] = str_starts_with($productionHost, 'http')
+        ? $productionHost
+        : 'https://'.$productionHost;
+}
+
+if ($dbConfigured) {
+    $serverless['DB_CONNECTION'] = getenv('DB_CONNECTION') ?: 'pgsql';
+
+    if ($dbUrl) {
+        $serverless['DB_URL'] = $dbUrl;
+    }
+
+    if (($serverless['DB_CONNECTION'] ?? '') === 'pgsql' && ! getenv('DB_SSLMODE')) {
+        $serverless['DB_SSLMODE'] = 'require';
+    }
+
+    $serverless['CACHE_STORE'] = 'database';
+    $serverless['CACHE_LIMITER'] = 'database';
+    $serverless['DB_CACHE_TABLE'] = getenv('DB_CACHE_TABLE') ?: 'cache';
+    $serverless['DB_CACHE_LOCK_TABLE'] = getenv('DB_CACHE_LOCK_TABLE') ?: 'cache_locks';
+} elseif (! getenv('CACHE_STORE')) {
+    // Public pages can still boot without a DB, but authenticated production
+    // traffic requires shared database-backed session state.
+    $serverless['CACHE_STORE'] = 'array';
+}
+
+if ($supabaseUrl && ! getenv('SUPABASE_URL')) {
+    $serverless['SUPABASE_URL'] = $supabaseUrl;
+}
+
+if ($supabaseAnonKey && ! getenv('SUPABASE_ANON_KEY')) {
+    $serverless['SUPABASE_ANON_KEY'] = $supabaseAnonKey;
+}
+
+// A host-only cookie requires no Domain attribute at all. An empty Domain
+// attribute can be rejected by browsers, which would create a fresh Laravel
+// session on every request and make every CSRF token fail with HTTP 419.
+putenv('SESSION_DOMAIN');
+unset($_ENV['SESSION_DOMAIN'], $_SERVER['SESSION_DOMAIN']);
 
 foreach ($serverless as $key => $value) {
     putenv($key.'='.$value);

@@ -134,7 +134,8 @@
     }
     const localUrl = target => {
         const parsed = new URL(target || location.href, location.origin);
-        return new URL(parsed.pathname + parsed.search + parsed.hash, location.origin);
+        const path = '/' + parsed.pathname.replace(/^[\/\\]+/, '');
+        return new URL(path + parsed.search + parsed.hash, location.origin);
     };
 
     async function updatePage(target) {
@@ -177,6 +178,8 @@
         if (nav) document.querySelector('.sidebar nav').replaceWith(nav);
         const member = page.querySelector('.member');
         if (member) document.querySelector('.member').replaceWith(member);
+        const mobileNav = page.querySelector('.mobile-bottom-nav');
+        if (mobileNav) document.querySelector('.mobile-bottom-nav')?.replaceWith(mobileNav);
         main.setAttribute('tabindex', '-1');
         main.focus({ preventScroll: true });
 
@@ -237,6 +240,11 @@
     }
     syncPaymentFields();
     document.addEventListener('change', event => {
+        if (event.target.matches?.('[data-show-password]')) {
+            event.target.form?.querySelectorAll('input[name="password"], input[name="password_confirmation"]').forEach(input => {
+                input.type = event.target.checked ? 'text' : 'password';
+            });
+        }
         const form = event.target.closest('[data-activity-search]');
         if (form) search(form);
         if (event.target.matches?.('[data-payment-mode]')) syncPaymentFields(event.target.form || document);

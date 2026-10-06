@@ -29,7 +29,7 @@ class JsonFormResponse
             return '/';
         }
 
-        $path = $parts['path'] ?? '/';
+        $path = '/'.ltrim(str_replace('\\', '/', $parts['path'] ?? '/'), '/');
         $query = isset($parts['query']) ? '?'.$parts['query'] : '';
 
         return ($path !== '' ? $path : '/').$query;

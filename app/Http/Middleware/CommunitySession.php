@@ -22,6 +22,14 @@ class CommunitySession
             abort_if($r->expectsJson(), 401, 'Please sign in to continue.');
             return redirect('/login');
         }
+        $cachedProfile = session('profile');
+        $verifiedAt = (int) session('profile_verified_at', 0);
+        if (is_array($cachedProfile) && ($cachedProfile['account_status'] ?? null) === 'active' && time() - $verifiedAt < 60) {
+            $r->attributes->set('verified_profile', $cachedProfile);
+
+            return $next($r);
+        }
+
         try {
             $u = $s->api('GET', '/auth/v1/user');
             $p = $s->api('GET', '/rest/v1/profiles', ['select' => '*', 'user_id' => 'eq.'.$u['id']]);
@@ -37,7 +45,7 @@ class CommunitySession
             return redirect('/login')->withErrors(['account' => 'Please sign in again.']);
         }
         abort_unless(isset($p[0]) && $p[0]['account_status'] === 'active', 403);
-        session(['profile' => $p[0]]);
+        session(['profile' => $p[0], 'profile_verified_at' => time()]);
         $r->attributes->set('verified_profile', $p[0]);
 
         return $next($r);

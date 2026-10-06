@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="/images/logo.png">
     <link rel="stylesheet" href="/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="/community.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="/community.js" defer></script>
     <style>
@@ -32,7 +33,7 @@
             overflow: hidden !important;
             position: relative !important;
         }
-        .workspace {
+       .workspace {
             flex: 1 !important;
             height: 100vh !important;
             overflow-y: auto !important;
@@ -40,10 +41,7 @@
             position: relative !important;
             transform: none !important;
             direction: ltr !important;
-        }
-        /* Neutralize any accidental CSS scaling or flipping from community.css */
-        .app-shell *, .workspace * {
-            backface-visibility: hidden;
+            box-sizing: border-box !important; /* Ensures padding is contained within 100vh */
         }
     </style>
 
@@ -56,6 +54,107 @@
         .app-shell, .workspace, main, header {
             transform: none !important;
             filter: none !important;
+        }
+
+        /* Mobile & Tablet Bottom Navigation Bar & Topbar Styles */
+        .mobile-bottom-nav {
+            display: none;
+        }
+        @media (max-width: 1024px) {
+            /* Hide the hamburger menu button and sidebar */
+            .senior-shell .menu-toggle {
+                display: none !important;
+            }
+            .senior-shell .sidebar {
+                display: none !important;
+            }
+
+            /* Style the mobile topbar: Logo + Name on left, Date on right */
+            .topbar {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 0 16px !important;
+            }
+            .topbar-start {
+                display: flex !important;
+                align-items: center !important;
+            }
+            .topbar-brand {
+                display: flex !important;
+                align-items: center;
+                gap: 6px;
+                text-decoration: none;
+            }
+            .topbar-brand img {
+                width: 38px !important;
+                height: auto;
+                margin: 0 !important;
+            }
+            .topbar-brand strong {
+                font-size: 16px;
+                color: #245c48;
+                font-weight: 700;
+            }
+            .portal-label {
+                display: none !important;
+            }
+        
+            /* Force topbar-end and date to be visible */
+            .topbar-end {
+                display: flex !important;
+                align-items: center !important;
+            }
+            .topbar-end .today {
+                display: inline-block !important;
+                visibility: visible !important;
+                font-size: 12px !important;
+                color: #4a5568 !important;
+                font-weight: 600 !important;
+            }
+            .mobile-signout {
+                display: none !important;
+            }
+
+            /* Mobile Bottom Navigation Bar Styles */
+            .mobile-bottom-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background: #ffffff;
+                border-top: 2px solid #e2e8f0;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1050;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            }
+            .mobile-bottom-nav a {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: #4a5568;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 600;
+                padding: 8px 0;
+            }
+            .mobile-bottom-nav a.active {
+                color: #245c48;
+                background: #f0fdf4;
+            }
+            .mobile-bottom-nav .nav-icon {
+                font-size: 24px;
+                margin-bottom: 2px;
+            }
+            .workspace {
+                padding-bottom: 70px !important;
+                box-sizing: border-box !important;
+            }
         }
     </style>
 </head>
@@ -86,7 +185,7 @@
     </main>
 </div>
 @else
-<div class="app-shell" data-app-shell>
+<div class="app-shell {{ $currentRole === 'senior' ? 'senior-shell' : 'staff-shell' }}" data-app-shell>
     <aside class="sidebar" id="site-sidebar" aria-label="Community navigation">
         <div class="sidebar-header" style="margin-bottom: 24px;">
             <a class="brand" href="/">
@@ -121,7 +220,7 @@
             <div class="member">
                 <span class="avatar">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
-                    <strong>{{ $demo?'Demo'.ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
+                    <strong>{{ $demo ? 'Demo ' . ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
                     <small>{{ ucfirst($currentRole) }} {{ $demo ? '· Demo' : '' }}</small>
                 </div>
             </div>
@@ -173,9 +272,29 @@
             @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
             @yield('content')
         </main>
-
-        <footer>KomuniEdad <span>Made for connection. Built around you.</span></footer>
     </div>
+
+    <!-- Mobile Bottom Navigation Bar (Visible only on smaller phone screens) -->
+    @if($currentRole === 'senior')
+    <nav class="mobile-bottom-nav" aria-label="Mobile bottom navigation">
+        <a href="/" class="{{ request()->is('/') && !request()->boolean('mine') ? 'active' : '' }}">
+            <i class="nav-icon bi bi-house-door-fill" aria-hidden="true"></i>
+            <span>Discover</span>
+        </a>
+        <a href="/?mine=1" class="{{ request()->boolean('mine') ? 'active' : '' }}">
+            <i class="nav-icon bi bi-calendar-check-fill" aria-hidden="true"></i>
+            <span>My Activities</span>
+        </a>
+        <a href="/help" class="{{ request()->is('help') ? 'active' : '' }}">
+            <i class="nav-icon bi bi-question-circle-fill" aria-hidden="true"></i>
+            <span>Help & FAQ</span>
+        </a>
+        <a href="/profile" class="{{ request()->is('profile') ? 'active' : '' }}">
+            <i class="nav-icon bi bi-person-fill" aria-hidden="true"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+    @endif
 </div>
 @endif
 </body>

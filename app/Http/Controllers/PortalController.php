@@ -104,6 +104,7 @@ class PortalController extends Controller
             'fee' => 'nullable|numeric|min:0|max:100000',
         ]);
         $d['is_free'] = $r->has('is_free') ? $r->boolean('is_free') : true;
+        $d['requirements'] = $d['requirements'] ?? '';
         $d['fee'] = $d['is_free'] ? 0.0 : round((float) ($d['fee'] ?? 0), 2);
         if (! $d['is_free'] && $d['fee'] <= 0) {
             throw ValidationException::withMessages(['fee' => 'Enter the cash amount collected for this activity.']);
@@ -344,6 +345,7 @@ class PortalController extends Controller
     {
         $this->staff($s);
         $d = $r->validate(['title' => 'required|string|max:160', 'message' => 'required|string|max:5000', 'activity_id' => 'nullable|string', 'announcement_id' => 'nullable|string', 'archived' => 'nullable|boolean']);
+        $d['activity_id'] = $d['activity_id'] ?? null;
         if ($s->role() === 'coordinator') {
             abort_unless($d['activity_id'] ?? null, 403);
             $this->activity($d['activity_id'], $s);
@@ -401,6 +403,7 @@ class PortalController extends Controller
     {
         $this->admin($s);
         $d = $r->validate(['name' => 'required|string|max:80', 'description' => 'nullable|string|max:1000', 'is_active' => 'required|boolean', 'category_id' => 'nullable|string']);
+        $d['description'] = $d['description'] ?? '';
         if ($s->demo()) {
             $this->saveDemo('categories', 'category_id', array_merge($d, ['category_id' => $d['category_id'] ?? (string) Str::uuid(), 'is_active' => (bool) $d['is_active']]), $s);
         } else {
