@@ -85,12 +85,12 @@ class PortalController extends Controller
     public function save(Request $r, Community $s, ?string $id = null)
     {
         $this->staff($s);
-        if ($id) {
-            $this->activity($id, $s);
-        }
+        $old = $id ? $this->activity($id, $s) : null;
+
         $d = $r->validate([
             'title' => 'required|string|max:160',
             'description' => 'required|string|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'venue' => 'required|string|max:200',
             'category_id' => 'required|string',
             'coordinator_id' => 'nullable|string',
@@ -103,6 +103,17 @@ class PortalController extends Controller
             'is_free' => 'nullable|boolean',
             'fee' => 'nullable|numeric|min:0|max:100000',
         ]);
+
+        // Handle image upload: Convert to Base64 string to store directly in the database
+        if ($r->hasFile('image')) {
+            $file = $r->file('image');
+            $d['image'] = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+            $d['image_url'] = null;
+        } else {
+            $d['image'] = $old['image'] ?? null;
+            $d['image_url'] = $old['image_url'] ?? null;
+        }
+
         $d['is_free'] = $r->has('is_free') ? $r->boolean('is_free') : true;
         $d['fee'] = $d['is_free'] ? 0.0 : round((float) ($d['fee'] ?? 0), 2);
         if (! $d['is_free'] && $d['fee'] <= 0) {
@@ -124,7 +135,7 @@ class PortalController extends Controller
                 $d['coordinator_id'] = 'demo-coordinator';
             }
             if ($old && $d['capacity'] < $old['confirmed']) {
-                throw ValidationException::withMessages(['capacity' => 'Capacity cannot be lower than allocated seats.']);
+                throw ValidationException::withMessages(['capacity' => 'Capacity cannot be lower than allocated slots.']);
             }
             if (! $old && ! in_array($d['status'], ['draft', 'open'])) {
                 throw ValidationException::withMessages(['status' => 'Create activities as draft or open.']);
@@ -457,8 +468,6 @@ class PortalController extends Controller
             return redirect('/login')->with('status', 'Demo senior account created. Sign in with the email and password just entered.');
         }
 
-        // Public registration always creates a Senior account. Any existing
-        // authenticated staff/admin session is cleared before the signup request.
         $r->session()->forget(['access_token', 'profile']);
         Cookie::queue(Cookie::forget(Community::AUTH_COOKIE));
 

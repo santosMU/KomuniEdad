@@ -97,7 +97,7 @@
             .portal-label {
                 display: none !important;
             }
-        
+       
             .topbar-end {
                 display: flex !important;
                 align-items: center !important;
@@ -192,16 +192,18 @@
         </div>
        <nav aria-label="Main navigation">
             @if($currentRole==='senior')
-                <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover activities</a>
-                <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1">My activities</a>
+                <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover Activities</a>
+                <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1">My Activities</a>
                 <a class="nav-item {{ request()->is('history') ? 'selected' : '' }}" href="/history">Participation history</a>
             @else
-                <a class="nav-item {{ request()->is('workspace*') ? 'selected' : '' }}" href="/workspace">Program workspace</a>
+                <a class="nav-item {{ request()->is('workspace*') ? 'selected' : '' }}" href="/workspace">Program Workspace</a>
                 <a class="nav-item {{ request()->is('reports') ? 'selected' : '' }}" href="/reports">Participation reports</a>
             @endif
             <a class="nav-item {{ request()->is('announcements') ? 'selected' : '' }}" href="/announcements">Announcements</a>
             <a class="nav-item {{ request()->is('profile') ? 'selected' : '' }}" href="/profile">My profile</a>
-            <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help">Help & FAQ</a>
+            @if($currentRole === 'senior')
+                <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help">Help & FAQ</a>
+            @endif
             @if($currentRole==='admin')
                 <a class="nav-item {{ request()->is('administration*') ? 'selected' : '' }}" href="/administration">Administration</a>
             @endif
@@ -211,8 +213,7 @@
             <div class="member mb-3">
                 <span class="avatar bg-success text-white d-flex align-items-center justify-content-center fw-bold">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
-                    <strong>{{ $demo ? 'Demo ' . ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
-
+                    <strong>{{ $demo ? 'Demo'.ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
                 </div>
             </div>
             @if(!$demo && $portal->accessToken())
@@ -301,5 +302,19 @@
     @endif
 </div>
 @endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert-success');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    });
+</script>
+
 </body>
 </html>
