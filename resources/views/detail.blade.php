@@ -17,6 +17,7 @@
     $entry = collect($enrollments ?? [])->first(
         fn ($e) => $e['activity_id'] === $activity['activity_id'] && $e['status'] !== 'cancelled'
     );
+    $coordinatorPhoto = $portal->profilePhotoUrl($activity['coordinator_avatar_path'] ?? null);
 @endphp
 
 <div class="container py-3" style="max-width: 800px;">
@@ -69,9 +70,24 @@
                 </div>
             </div>
 
-            <div class="alert alert-light border border-success border-opacity-25 text-success mb-4">
+            <div class="alert alert-light border border-success border-opacity-25 text-success mb-3">
                 <strong>What to bring / Notes:</strong>
                 {{ !empty($activity['requirements']) ? $activity['requirements'] : 'No special requirements.' }}
+            </div>
+
+            <div class="coordinator-card mb-4">
+                <div class="coordinator-avatar" aria-hidden="true">
+                    @if($coordinatorPhoto)
+                        <img src="{{ $coordinatorPhoto }}" alt="">
+                    @else
+                        <span>{{ strtoupper(substr($activity['coordinator_name'] ?? 'C', 0, 1)) }}</span>
+                    @endif
+                </div>
+                <div>
+                    <div class="small text-muted fw-semibold text-uppercase">Your coordinator</div>
+                    <strong>{{ $activity['coordinator_name'] ?? 'Community coordinator' }}</strong>
+                    <p class="small text-muted mb-0">This coordinator manages registration and activity updates.</p>
+                </div>
             </div>
 
             <div class="d-grid gap-2">
