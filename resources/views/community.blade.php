@@ -116,7 +116,7 @@
         </nav>
 
         <form class="filters senior-discovery-filters mb-3" method="get" action="/" data-activity-search>
-            @if(request('category'))<input type="hidden" name="category" value="{{ request('category') }}">@endif
+            <input type="hidden" name="category" value="{{ request('category') }}">
             <div class="search-field">
                 <label for="activity-search">Search activities</label>
                 <input id="activity-search" name="q" class="form-control" maxlength="160" value="{{ $query ?? '' }}" placeholder="Search by activity or venue">
