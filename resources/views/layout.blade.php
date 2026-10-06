@@ -212,11 +212,7 @@
         </nav>
 
         <div class="sidebar-bottom">
-            <div class="help-card">
-                <span class="help-symbol" aria-hidden="true">♡</span>
-                <strong>A little help goes a long way.</strong>
-                <p>Need a hand joining an activity? Ask your community coordinator.</p>
-            </div>
+        
             <div class="member">
                 <span class="avatar">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
