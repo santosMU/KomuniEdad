@@ -41,12 +41,12 @@
             position: relative !important;
             transform: none !important;
             direction: ltr !important;
-            box-sizing: border-box !important; /* Ensures padding is contained within 100vh */
+            box-sizing: border-box !important;
         }
     </style>
 
     <style>
-        /* Fixes Chrome DevTools iPad emulation rendering bug (mirrored/ghosted repaint) */
+        /* Fixes rendering bugs */
         .topbar, .sidebar-backdrop {
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
@@ -61,7 +61,6 @@
             display: none;
         }
         @media (max-width: 1024px) {
-            /* Hide the hamburger menu button and sidebar */
             .menu-toggle {
                 display: none !important;
             }
@@ -69,7 +68,6 @@
                 display: none !important;
             }
 
-            /* Style the mobile topbar: Logo + Name on left, Date on right */
             .topbar {
                 display: flex !important;
                 justify-content: space-between !important;
@@ -100,7 +98,6 @@
                 display: none !important;
             }
         
-            /* Force topbar-end and date to be visible */
             .topbar-end {
                 display: flex !important;
                 align-items: center !important;
@@ -116,7 +113,6 @@
                 display: none !important;
             }
 
-            /* Mobile Bottom Navigation Bar Styles */
             .mobile-bottom-nav {
                 position: fixed;
                 bottom: 0;
@@ -212,16 +208,20 @@
         </nav>
 
         <div class="sidebar-bottom">
-        
-            <div class="member">
-                <span class="avatar">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
+            <div class="member mb-3">
+                <span class="avatar bg-success text-white d-flex align-items-center justify-content-center fw-bold">{{ strtoupper(substr(session('profile.full_name','Demo member'),0,1)) }}</span>
                 <div>
                     <strong>{{ $demo ? 'Demo ' . ucfirst($currentRole) : session('profile.full_name','Welcome') }}</strong>
-                    <small>{{ ucfirst($currentRole) }} {{ $demo ? '· Demo' : '' }}</small>
+
                 </div>
             </div>
             @if(!$demo && $portal->accessToken())
-                <form method="post" action="/logout">@csrf<button class="btn btn-link">Sign out</button></form>
+                <form method="post" action="/logout" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center gap-2 px-3 py-2 fw-semibold rounded-pill w-100" style="font-size: 0.85rem;">
+                        <i class="bi bi-box-arrow-right"></i> Sign out
+                    </button>
+                </form>
             @endif
         </div>
     </aside>
@@ -235,11 +235,19 @@
                     <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
                     <span class="menu-label">Menu</span>
                 </button>
-                <a class="topbar-brand" href="/" aria-label="KomuniEdad home">
+               <a class="topbar-brand" href="/" aria-label="KomuniEdad home">
                     <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
                     <strong>KomuniEdad</strong>
                 </a>
-                <span class="portal-label">Senior Citizen Community Portal</span>
+                <span class="portal-label">
+                    @if($currentRole === 'coordinator')
+                        Community Coordinator Portal
+                    @elseif($currentRole === 'admin')
+                        System Administration Portal
+                    @else
+                        Senior Citizen Community Portal
+                    @endif
+                </span>
             </div>
             <div class="topbar-end">
                 @if(!$demo && $portal->accessToken())
@@ -270,7 +278,7 @@
         </main>
     </div>
 
-    <!-- Mobile Bottom Navigation Bar (Visible only on smaller phone screens) -->
+    <!-- Mobile Bottom Navigation Bar -->
     @if($currentRole === 'senior')
     <nav class="mobile-bottom-nav" aria-label="Mobile bottom navigation">
         <a href="/" class="{{ request()->is('/') && !request()->boolean('mine') ? 'active' : '' }}">
