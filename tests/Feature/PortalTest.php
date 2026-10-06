@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\Community;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class PortalTest extends TestCase
@@ -230,6 +231,39 @@ class PortalTest extends TestCase
             'enrollment_id' => $enrollment['enrollment_id'],
             'attended' => 1,
         ])->assertRedirect();
+    }
+
+
+    public function test_profile_photo_upload_uses_authenticated_owned_storage_path(): void
+    {
+        config([
+            'komuniedad.demo' => false,
+            'komuniedad.url' => 'https://example.test',
+            'komuniedad.key' => 'publishable-key',
+        ]);
+
+        Http::fake([
+            'https://example.test/storage/v1/object/profile-photos/*' => Http::response([], 200),
+        ]);
+
+        $userId = '00000000-0000-4000-8000-000000000001';
+        $file = UploadedFile::fake()->create('avatar.jpg', 100, 'image/jpeg');
+
+        $this->withSession(['access_token' => 'user-access-token']);
+
+        $path = app(Community::class)->uploadProfilePhoto($file, $userId);
+
+        $this->assertSame($userId.'/avatar', $path);
+        $this->assertSame(
+            'https://example.test/storage/v1/object/public/profile-photos/'.$userId.'/avatar',
+            app(Community::class)->profilePhotoUrl($path)
+        );
+
+        Http::assertSent(fn ($request) =>
+            $request->url() === 'https://example.test/storage/v1/object/profile-photos/'.$userId.'/avatar'
+            && $request->hasHeader('Authorization', 'Bearer user-access-token')
+            && $request->hasHeader('x-upsert', 'true')
+        );
     }
 
 }
