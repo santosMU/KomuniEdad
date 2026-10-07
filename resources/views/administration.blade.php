@@ -14,7 +14,7 @@
     <div>
         <p class="eyebrow mb-1">ADMINISTRATION</p>
         <h1 class="mb-1">Community administration</h1>
-        <p class="intro mb-0">Manage accounts, senior verification, categories, and privileged activity records.</p>
+        <p class="intro mb-0">Manage accounts, senior verification, system settings, categories, and privileged activity records.</p>
     </div>
 </div>
 
@@ -24,6 +24,43 @@
     <div><strong>{{ $pendingVerification }}</strong><span>Pending verification</span></div>
     <div><strong>{{ collect($categories)->where('is_active',true)->count() }}</strong><span>Active categories</span></div>
 </div>
+
+
+<section class="panel">
+    <div class="section-heading mb-3">
+        <div>
+            <p class="eyebrow mb-1">SYSTEM SETTINGS</p>
+            <h2 class="fs-5 mb-1">Senior verification policy</h2>
+            <p class="text-muted mb-0">Control whether a senior account must be verified before it can enroll in an activity or receive a promoted waitlist seat.</p>
+        </div>
+        <span class="badge {{ ($settings['require_verification'] ?? false) ? 'text-bg-success' : 'text-bg-secondary' }}">
+            {{ ($settings['require_verification'] ?? false) ? 'Verification required' : 'Verification optional' }}
+        </span>
+    </div>
+
+    <div class="alert alert-warning mb-3" role="note">
+        <strong>Important:</strong> Turning this on does not remove existing enrollments. It applies to new enrollment attempts and waitlist promotions. Seniors can be verified in the Users and verification section below.
+    </div>
+
+    <form class="form-grid" method="post" action="/administration/settings">
+        @csrf
+        <div>
+            <label for="require-verification">Enrollment verification requirement</label>
+            <select class="form-select" name="require_verification" id="require-verification" required>
+                <option value="0" @selected(!($settings['require_verification'] ?? false))>Verification optional</option>
+                <option value="1" @selected($settings['require_verification'] ?? false)>Require verified senior account</option>
+            </select>
+        </div>
+        <div>
+            <label for="settings-reason">Reason for change</label>
+            <input class="form-control" name="reason" id="settings-reason" required minlength="3" maxlength="500" placeholder="Required for the audit log">
+        </div>
+        <div class="wide d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <small class="text-muted">Only administrators can change this policy. Every change is recorded in the audit log.</small>
+            <button class="btn btn-primary" type="submit">Save system settings</button>
+        </div>
+    </form>
+</section>
 
 <section class="panel">
     <div class="section-heading mb-3">
