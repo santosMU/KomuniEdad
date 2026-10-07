@@ -4,9 +4,9 @@
 
 <div class="section-heading align-items-end">
     <div>
-        <p class="eyebrow mb-1">ANNOUNCEMENTS</p>
-        <h1 class="mb-1">Community updates</h1>
-        <p class="intro mb-0">Important reminders, schedule changes, and activity news.</p>
+        <p class="eyebrow mb-1">{{ $role === 'senior' ? 'UPDATES' : 'ANNOUNCEMENTS' }}</p>
+        <h1 class="mb-1">{{ $role === 'senior' ? 'Updates for you' : 'Community updates' }}</h1>
+        <p class="intro mb-0">{{ $role === 'senior' ? 'Check here for important reminders, schedule changes, and activity news.' : 'Important reminders, schedule changes, and activity news.' }}</p>
     </div>
 </div>
 
