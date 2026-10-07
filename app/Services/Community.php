@@ -143,14 +143,20 @@ class Community
     {
         abort_unless($this->accessToken(), 401, 'Please sign in again.');
 
-        $path = $userId.'/avatar';
+        $extension = match ($file->getMimeType()) {
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            default => 'jpg',
+        };
+        $version = now()->format('YmdHisv').'-'.bin2hex(random_bytes(4));
+        $path = $userId.'/avatar-'.$version.'.'.$extension;
+
         $response = Http::baseUrl(rtrim(config('komuniedad.url'), '/'))
             ->withHeaders([
                 'apikey' => config('komuniedad.key'),
                 'Authorization' => 'Bearer '.$this->accessToken(),
                 'Content-Type' => $file->getMimeType(),
-                'Cache-Control' => 'max-age=0, must-revalidate',
-                'x-upsert' => 'true',
+                'Cache-Control' => 'public, max-age=31536000, immutable',
             ])
             ->timeout(15)
             ->send('POST', '/storage/v1/object/profile-photos/'.$path, [
