@@ -316,7 +316,7 @@ class PortalController extends Controller
             'contact_number' => 'nullable|string|max:30',
             'birthdate' => 'nullable|date|before_or_equal:today',
             'address' => 'nullable|string|max:500',
-            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048|dimensions:width=512,height=512',
         ]);
 
         $photo = $r->file('profile_photo');

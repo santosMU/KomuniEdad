@@ -92,6 +92,57 @@
             if (version === searchVersion) results.removeAttribute('aria-busy');
         }
     }
+    async function normalizedProfilePhoto(form) {
+        const input = form.querySelector('[data-profile-photo]');
+        const file = input?.files?.[0];
+        if (!file) return null;
+
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            throw Object.assign(new Error('Choose a JPG, PNG, or WebP profile photo.'), { status: 422 });
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            throw Object.assign(new Error('Choose a profile photo smaller than 10 MB.'), { status: 422 });
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        const image = new Image();
+        try {
+            await new Promise((resolve, reject) => {
+                image.onload = resolve;
+                image.onerror = () => reject(new Error('The selected image could not be read.'));
+                image.src = objectUrl;
+            });
+
+            const side = Math.min(image.naturalWidth, image.naturalHeight);
+            const sourceX = Math.floor((image.naturalWidth - side) / 2);
+            const sourceY = Math.floor((image.naturalHeight - side) / 2);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const context = canvas.getContext('2d', { alpha: false });
+            if (!context) throw new Error('The profile photo could not be prepared.');
+
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = 'high';
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, 512, 512);
+            context.drawImage(image, sourceX, sourceY, side, side, 0, 0, 512, 512);
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.82));
+            if (!blob) throw new Error('The profile photo could not be prepared.');
+
+            return new File([blob], 'profile-photo.jpg', {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+            });
+        } finally {
+            URL.revokeObjectURL(objectUrl);
+        }
+
+    }
+
     function clearErrors(form) {
         form.querySelectorAll('.field-error').forEach(el => el.remove());
         form.querySelectorAll('[aria-invalid]').forEach(el => {
@@ -569,6 +620,16 @@
         if (!form.reportValidity()) return;
         if (form.dataset.confirm && !window.confirm(form.dataset.confirm)) return;
         const body = new FormData(form);
+        const profilePhoto = form.querySelector('[data-profile-photo]');
+        if (profilePhoto?.files?.[0]) {
+            try {
+                body.set('profile_photo', await normalizedProfilePhoto(form));
+            } catch (error) {
+                notice(error.message || 'The profile photo could not be prepared.', true);
+                profilePhoto.focus();
+                return;
+            }
+        }
         const buttons = [...form.querySelectorAll('button[type="submit"], button:not([type])')];
         form.dataset.busy = 'true';
         mutationBusy = true;

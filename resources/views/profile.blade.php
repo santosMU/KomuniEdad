@@ -35,8 +35,8 @@
             </div>
             <div>
                 <label class="form-label fw-bold mb-1" for="profile_photo">Profile photo (optional)</label>
-                <input class="form-control" type="file" name="profile_photo" id="profile_photo" accept="image/jpeg,image/png,image/webp">
-                <p class="small text-muted mb-0 mt-1">JPG, PNG, or WebP. Maximum 2 MB. Uploading a new photo replaces the current one.</p>
+                <input class="form-control" type="file" name="profile_photo" id="profile_photo" accept="image/jpeg,image/png,image/webp" data-profile-photo>
+                <p class="small text-muted mb-0 mt-1">JPG, PNG, or WebP. The app crops the center to a square, resizes it to 512 × 512, and compresses it before upload.</p>
             </div>
         </div>
 

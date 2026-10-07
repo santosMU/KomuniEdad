@@ -149,6 +149,7 @@ class Community
                 'apikey' => config('komuniedad.key'),
                 'Authorization' => 'Bearer '.$this->accessToken(),
                 'Content-Type' => $file->getMimeType(),
+                'Cache-Control' => 'max-age=0, must-revalidate',
                 'x-upsert' => 'true',
             ])
             ->timeout(15)
