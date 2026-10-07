@@ -266,4 +266,28 @@ class PortalTest extends TestCase
         );
     }
 
+
+    public function test_admin_reports_render_charts_filters_and_csv_export(): void
+    {
+        $this->withSession(['demo_role' => 'admin'])
+            ->get('/reports')
+            ->assertOk()
+            ->assertSee('data-report-chart', false)
+            ->assertSee('name="from"', false)
+            ->assertSee('name="to"', false)
+            ->assertSee('Export CSV');
+
+        $response = $this->get('/reports/export?status=open');
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
+        $this->assertStringContainsString('attachment;', (string) $response->headers->get('content-disposition'));
+    }
+
+    public function test_coordinator_cannot_export_admin_report_csv(): void
+    {
+        $this->withSession(['demo_role' => 'coordinator'])
+            ->get('/reports/export')
+            ->assertForbidden();
+    }
+
 }
