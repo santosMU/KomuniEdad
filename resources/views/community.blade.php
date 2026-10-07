@@ -118,8 +118,8 @@
         </nav>
 
         @if(!empty($availableTags))
-            <div class="activity-tag-filters mb-3" aria-label="Filter activities by tag">
-                <span class="activity-tag-filter-label">Tags:</span>
+            <div class="activity-tag-filters mb-3" aria-label="Filter activities by interest">
+                <span class="activity-tag-filter-label">Interests:</span>
                 @foreach($availableTags as $activityTag)
                     <a
                         href="/?tag={{ urlencode($activityTag) }}{{ request('category') ? '&category='.urlencode(request('category')) : '' }}{{ request('q') ? '&q='.urlencode(request('q')) : '' }}"
@@ -128,7 +128,7 @@
                     </a>
                 @endforeach
                 @if(request('tag'))
-                    <a href="/{{ request('category') ? '?category='.urlencode(request('category')) : '' }}" class="activity-tag-clear">Clear tag</a>
+                    <a href="/{{ request('category') ? '?category='.urlencode(request('category')) : '' }}" class="activity-tag-clear">Clear</a>
                 @endif
             </div>
         @endif
