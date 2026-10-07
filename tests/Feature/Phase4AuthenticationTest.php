@@ -58,6 +58,28 @@ class Phase4AuthenticationTest extends Phase4TestCase
         $this->withSession(['sentinel' => true]); $id = session()->getId();
         $this->post('/login', $this->registration())->assertRedirect('/'); $this->assertNotSame($id, session()->getId());
     }
+    public function test_login_clears_cached_identity_from_previous_account(): void
+    {
+        $this->authReply(['access_token' => 'admin-token', 'expires_in' => 3600]);
+
+        $this->withSession([
+            'profile' => [
+                'user_id' => 'previous-senior',
+                'full_name' => 'Previous Senior',
+                'role' => 'senior',
+                'account_status' => 'active',
+            ],
+            'profile_verified_at' => time(),
+            'profile_token_hash' => hash('sha256', 'previous-token'),
+        ]);
+
+        $this->post('/login', $this->registration())
+            ->assertRedirect('/')
+            ->assertSessionMissing('profile')
+            ->assertSessionMissing('profile_verified_at')
+            ->assertSessionMissing('profile_token_hash');
+    }
+
     public function test_AUTH_14_logout_rotates_csrf(): void
     {
         $this->live(); $this->withSession(['_token' => 'synthetic-old-csrf', 'sentinel' => true]);
