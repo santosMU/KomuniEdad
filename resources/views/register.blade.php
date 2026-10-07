@@ -1,241 +1,97 @@
 @extends('layout')
 @section('title', 'Create a senior account')
-
-@section('auth-shell-class', 'login-shell-override')
-@section('auth-main-class', 'login-main-override')
+@section('auth-shell-class', 'auth-page-shell')
+@section('auth-main-class', 'auth-page-main')
 
 @section('content')
-<style>
-    .auth-topbar { display: none !important; }
-    
-    html, body {
-        height: 100vh;
-        overflow: hidden;
-        margin: 0;
-        background: var(--paper);
-    }
-
-    .login-shell-override {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-height: 100vh !important;
-        width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: var(--paper) !important;
-    }
-
-    .login-main-override {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 100% !important;
-        max-width: none !important;
-        padding: 24px !important;
-        margin: 0 !important;
-    }
-
-    .detail-panel.login-panel {
-        width: 100%;
-        max-width: 480px !important;
-        margin: auto !important;
-        background: #ffffff !important;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        box-shadow: 0 12px 36px rgba(35, 62, 56, 0.08) !important;
-        border-radius: 18px !important;
-        padding: 36px !important;
-        box-sizing: border-box !important;
-    }
-
-    .login-image-banner {
-        width: 100%;
-        height: 128px;
-        overflow: hidden;
-        border-radius: 14px;
-        margin-bottom: 22px;
-        background: #dfe8dc;
-    }
-
-    .login-image-banner img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .login-logo {
-        width: 76px !important;
-        height: 76px !important;
-        object-fit: contain;
-    }
-
-    .login-brand-name {
-        font-size: 26px !important;
-        font-weight: 750;
-        letter-spacing: -1px;
-        color: var(--ink);
-    }
-
-    .login-label {
-        font-weight: 600;
-        color: var(--ink);
-        font-size: 15px;
-    }
-
-    .form-control.login-input,
-    .form-control.login-input:focus,
-    .form-control.login-input:active,
-    .form-control.login-input:-webkit-autofill {
-        min-height: 48px !important;
-        font-size: 16px !important;
-    }
-
-    input[type="password"]::-ms-reveal,
-    input[type="password"]::-ms-clear,
-    input[type="password"]::-webkit-credentials-auto-fill-button,
-    input[type="password"]::-webkit-strong-password-auto-fill-button {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }
-
-    .login-checkbox {
-        width: 22px !important;
-        height: 22px !important;
-        cursor: pointer;
-        accent-color: var(--green);
-    }
-
-    .login-checkbox-label {
-        margin: 0;
-        font-weight: 500;
-        font-size: 15px;
-        color: var(--ink);
-        cursor: pointer;
-    }
-
-    .login-btn {
-        min-height: 48px !important;
-        font-size: 16px !important;
-    }
-
-    .login-footer {
-        text-align: center;
-        font-size: 15px;
-        margin-top: 24px;
-    }
-
-    .login-support {
-        margin-top: 22px;
-        padding-top: 18px;
-        border-top: 1px solid var(--line);
-        font-size: 13px;
-        color: var(--muted);
-        text-align: center;
-        line-height: 1.5;
-    }
-
-    @media (min-width: 768px) and (max-width: 1200px) {
-        .detail-panel.login-panel {
-            max-width: 980px !important;
-            padding: 70px 96px !important;
-            border-radius: 32px !important;
-        }
-        .login-logo {
-            width: 150px !important;
-            height: 150px !important;
-        }
-        .login-brand-name {
-            font-size: 48px !important;
-        }
-        .login-label {
-            font-size: 26px !important;
-        }
-        .form-control.login-input,
-        .form-control.login-input:focus,
-        .form-control.login-input:active,
-        .form-control.login-input:-webkit-autofill,
-        .form-control.login-input:-webkit-autofill:hover,
-        .form-control.login-input:-webkit-autofill:focus {
-            min-height: 74px !important;
-            font-size: 26px !important;
-            padding: 18px 28px !important;
-            -webkit-text-fill-color: var(--ink) !important;
-        }
-        .login-checkbox {
-            width: 36px !important;
-            height: 36px !important;
-        }
-        .login-checkbox-label {
-            font-size: 24px !important;
-        }
-        .login-btn {
-            min-height: 76px !important;
-            font-size: 26px !important;
-            margin-top: 20px !important;
-        }
-        .login-footer {
-            font-size: 24px !important;
-            margin-top: 36px !important;
-        }
-        .login-support {
-            font-size: 22px !important;
-            margin-top: 32px !important;
-            padding-top: 26px !important;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .detail-panel.login-panel {
-            border: none !important;
-            box-shadow: none !important;
-            background: transparent !important;
-            padding: 10px 16px !important;
-            max-width: 100% !important;
-        }
-    }
-</style>
-
-<div class="detail-panel login-panel" style="text-align: center;">
-    <div class="login-image-banner" aria-hidden="true">
-        <img src="https://images.pexels.com/photos/5637706/pexels-photo-5637706.jpeg?auto=compress&cs=tinysrgb&w=900" alt="">
-    </div>
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 36px;">
-        <img src="/images/logo.png" alt="KomuniEdad Logo" class="login-logo">
-        <span class="login-brand-name">Create a senior account</span>
-    </div>
-   
-    <form method="post" action="/register" style="text-align: left;">
-        @csrf
-       
-        <label for="full_name" class="form-label login-label">Full name</label>
-        <input class="form-control mb-4 login-input" id="full_name" name="full_name" type="text" autocomplete="name" value="{{ old('full_name') }}" required>
-
-        <label for="email" class="form-label login-label">Email address</label>
-        <input class="form-control mb-4 login-input" id="email" name="email" type="email" autocomplete="username" value="{{ old('email') }}" required>
-       
-        <label for="password" class="form-label login-label">Password (at least 12 characters)</label>
-        <input class="form-control mb-4 login-input" id="password" name="password" type="password" autocomplete="new-password" required>
-
-        <label for="password_confirmation" class="form-label login-label">Confirm password</label>
-        <input class="form-control mb-4 login-input" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required>
-
-        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 34px;">
-            <input type="checkbox" id="showPassword" data-show-password class="login-checkbox">
-            <label for="showPassword" class="login-checkbox-label">Show passwords</label>
+<div class="auth-card auth-card-register">
+    <section class="auth-form-panel" aria-labelledby="register-heading">
+        <div class="auth-brand auth-brand-desktop">
+            <img src="{{ asset('images/logo.png') }}" alt="" class="auth-logo">
+            <strong>KomuniEdad</strong>
         </div>
 
-        <button class="btn btn-primary w-100 login-btn">Create account</button>
-    </form>
-   
-    <p class="mb-0 login-footer">Already have an account? <a href="/login" style="font-weight: 600; color: var(--green);">Sign in</a></p>
+        <div class="auth-copy">
+            <h1 id="register-heading">Create your account</h1>
+            <p>Join KomuniEdad and stay connected.</p>
+        </div>
 
-    <div class="login-support">
-        <p style="margin: 0;">Need help creating an account? Ask your community coordinator or organization administrator for assistance.</p>
-    </div>
+        @if ($errors->any())
+            <div class="alert alert-danger auth-alert" role="alert">
+                Please check the information below.
+            </div>
+        @endif
+
+        <form method="post" action="/register" class="auth-form">
+            @csrf
+
+            <div>
+                <label for="full_name">Full name</label>
+                <div class="auth-input-wrap">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                    <input class="form-control auth-input" id="full_name" name="full_name" type="text" autocomplete="name" value="{{ old('full_name') }}" placeholder="Enter your full name" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="email">Email address</label>
+                <div class="auth-input-wrap">
+                    <i class="bi bi-envelope" aria-hidden="true"></i>
+                    <input class="form-control auth-input" id="email" name="email" type="email" autocomplete="username" value="{{ old('email') }}" placeholder="Enter your email address" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <div class="auth-input-wrap">
+                    <i class="bi bi-lock" aria-hidden="true"></i>
+                    <input class="form-control auth-input" id="password" name="password" type="password" autocomplete="new-password" placeholder="At least 12 characters" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="password_confirmation">Confirm password</label>
+                <div class="auth-input-wrap">
+                    <i class="bi bi-lock" aria-hidden="true"></i>
+                    <input class="form-control auth-input" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" placeholder="Enter your password again" required>
+                </div>
+            </div>
+
+            <label class="auth-check" for="showPassword">
+                <input type="checkbox" id="showPassword" data-show-password>
+                <span>Show passwords</span>
+            </label>
+
+            <button class="btn btn-primary auth-primary-btn" type="submit">
+                Create account
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </form>
+
+        <div class="auth-divider" aria-hidden="true"><span>or</span></div>
+
+        <a href="/login" class="btn auth-secondary-btn">Already have an account? Sign in</a>
+
+        <p class="auth-help">Need help creating an account? Ask your community coordinator.</p>
+    </section>
+
+    <aside class="auth-hero auth-hero-register" aria-label="KomuniEdad community">
+        <picture>
+            <source media="(max-width: 767px)" srcset="https://images.pexels.com/photos/17289959/pexels-photo-17289959.jpeg?auto=compress&cs=tinysrgb&w=900">
+            <img src="https://images.pexels.com/photos/9710828/pexels-photo-9710828.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Older adults spending time together">
+        </picture>
+
+        <div class="auth-hero-shade" aria-hidden="true"></div>
+
+        <div class="auth-brand auth-brand-mobile">
+            <img src="{{ asset('images/logo.png') }}" alt="" class="auth-logo">
+            <strong>KomuniEdad</strong>
+        </div>
+
+        <div class="auth-hero-copy">
+            <h2>Join your community.</h2>
+            <p>Find activities, learn something new, and enjoy time with others.</p>
+        </div>
+    </aside>
 </div>
-
 @endsection
