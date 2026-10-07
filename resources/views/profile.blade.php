@@ -40,7 +40,7 @@
                     <span class="profile-photo-file-name" data-profile-photo-name>No new photo selected</span>
                     <input class="visually-hidden" type="file" name="profile_photo" id="profile_photo" accept="image/jpeg,image/png,image/webp" data-profile-photo>
                 </div>
-                <p class="small text-muted mb-0 mt-2">Choose a clear photo of yourself. You can change it anytime.</p>
+                <p class="small text-muted mb-0 mt-2">Choose a JPG, PNG, or WebP photo up to 10 MB. You can change it anytime.</p>
             </div>
         </div>
 
