@@ -718,5 +718,24 @@
             }
         }
     });
+
+    let activityDiscussionTimer;
+    async function refreshActivityDiscussion() {
+        const section = document.querySelector('[data-discussion]');
+        const list = section?.querySelector('[data-discussion-list]');
+        if (!section || !list || document.hidden) return;
+        try {
+            const data = await request(section.dataset.discussionUrl);
+            if (section.isConnected) list.innerHTML = data.html;
+        } catch {}
+    }
+    function initActivityDiscussion() {
+        clearInterval(activityDiscussionTimer);
+        activityDiscussionTimer = null;
+        if (!document.querySelector('[data-discussion]')) return;
+        refreshActivityDiscussion();
+        activityDiscussionTimer = window.setInterval(refreshActivityDiscussion, 8000);
+    }
+    initActivityDiscussion();
     initMergedUi();
 })();
