@@ -348,10 +348,175 @@
         });
     }
 
+    function drawReportChart(canvas) {
+        if (!(canvas instanceof HTMLCanvasElement)) return;
+
+        let chart;
+        try {
+            chart = JSON.parse(canvas.dataset.chart || '{}');
+        } catch {
+            return;
+        }
+
+        const labels = Array.isArray(chart.labels) ? chart.labels : [];
+        const series = Array.isArray(chart.series) ? chart.series : [];
+        if (!labels.length || !series.length) {
+            const context = canvas.getContext('2d');
+            context?.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+
+        const cssWidth = Math.max(320, Math.floor(canvas.parentElement?.clientWidth || canvas.clientWidth || 640));
+        const cssHeight = 320;
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.style.width = cssWidth + 'px';
+        canvas.style.height = cssHeight + 'px';
+        canvas.width = Math.floor(cssWidth * ratio);
+        canvas.height = Math.floor(cssHeight * ratio);
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+        const style = getComputedStyle(document.documentElement);
+        const ink = style.getPropertyValue('--ink').trim() || '#243029';
+        const muted = style.getPropertyValue('--muted').trim() || '#6b756f';
+        const line = style.getPropertyValue('--line').trim() || '#dce2dc';
+        const primary = style.getPropertyValue('--green').trim() || '#245c48';
+        const secondary = '#9a6a20';
+
+        const colors = [primary, secondary];
+        const values = series.flatMap(item => Array.isArray(item.values) ? item.values.map(Number) : []);
+        const maxValue = Math.max(1, ...values.filter(Number.isFinite));
+        const max = Math.max(1, Math.ceil(maxValue * 1.15));
+
+        const left = 50;
+        const right = 18;
+        const top = 28;
+        const bottom = labels.length > 6 ? 74 : 54;
+        const width = cssWidth - left - right;
+        const height = cssHeight - top - bottom;
+
+        ctx.font = '12px system-ui, sans-serif';
+        ctx.textBaseline = 'middle';
+
+        for (let i = 0; i <= 4; i++) {
+            const y = top + height - (height * i / 4);
+            const value = Math.round(max * i / 4);
+            ctx.strokeStyle = line;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(left, y);
+            ctx.lineTo(left + width, y);
+            ctx.stroke();
+            ctx.fillStyle = muted;
+            ctx.textAlign = 'right';
+            ctx.fillText(String(value), left - 8, y);
+        }
+
+        const type = canvas.dataset.chartType || 'bar';
+        const groupWidth = width / Math.max(labels.length, 1);
+
+        if (type === 'line') {
+            series.forEach((item, seriesIndex) => {
+                const data = Array.isArray(item.values) ? item.values.map(Number) : [];
+                ctx.strokeStyle = colors[seriesIndex % colors.length];
+                ctx.fillStyle = colors[seriesIndex % colors.length];
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                data.forEach((value, index) => {
+                    const x = left + groupWidth * index + groupWidth / 2;
+                    const y = top + height - (Math.max(0, value) / max * height);
+                    if (index === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                data.forEach((value, index) => {
+                    const x = left + groupWidth * index + groupWidth / 2;
+                    const y = top + height - (Math.max(0, value) / max * height);
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            });
+        } else {
+            const innerWidth = Math.min(groupWidth * 0.72, 64);
+            const barWidth = Math.max(4, innerWidth / Math.max(series.length, 1));
+
+            labels.forEach((_, labelIndex) => {
+                series.forEach((item, seriesIndex) => {
+                    const value = Number(item.values?.[labelIndex] || 0);
+                    const h = Math.max(0, value) / max * height;
+                    const groupLeft = left + groupWidth * labelIndex + (groupWidth - innerWidth) / 2;
+                    const x = groupLeft + seriesIndex * barWidth;
+                    const y = top + height - h;
+                    ctx.fillStyle = colors[seriesIndex % colors.length];
+                    ctx.fillRect(x, y, Math.max(2, barWidth - 2), h);
+                });
+            });
+        }
+
+        ctx.fillStyle = ink;
+        ctx.textAlign = 'center';
+        labels.forEach((label, index) => {
+            const x = left + groupWidth * index + groupWidth / 2;
+            const y = top + height + 18;
+            const text = String(label);
+            const shortened = text.length > 16 ? text.slice(0, 15) + '…' : text;
+            if (labels.length > 6) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(-Math.PI / 5);
+                ctx.textAlign = 'right';
+                ctx.fillText(shortened, 0, 0);
+                ctx.restore();
+            } else {
+                ctx.fillText(shortened, x, y);
+            }
+        });
+
+        let legendX = left;
+        const legendY = 12;
+        series.forEach((item, index) => {
+            ctx.fillStyle = colors[index % colors.length];
+            ctx.fillRect(legendX, legendY - 5, 11, 11);
+            ctx.fillStyle = ink;
+            ctx.textAlign = 'left';
+            const label = String(item.label || 'Series');
+            ctx.fillText(label, legendX + 17, legendY);
+            legendX += Math.max(92, ctx.measureText(label).width + 42);
+        });
+    }
+
+    let reportChartObserver;
+    function initReportCharts() {
+        const charts = [...document.querySelectorAll('[data-report-chart]')];
+        if (!charts.length) return;
+
+        charts.forEach(drawReportChart);
+
+        reportChartObserver?.disconnect();
+        if ('ResizeObserver' in window) {
+            reportChartObserver = new ResizeObserver(entries => {
+                entries.forEach(entry => {
+                    const canvas = entry.target.querySelector?.('[data-report-chart]');
+                    if (canvas) drawReportChart(canvas);
+                });
+            });
+            charts.forEach(chart => {
+                if (chart.parentElement) reportChartObserver.observe(chart.parentElement);
+            });
+        }
+    }
+
     function initMergedUi() {
         initWorkspaceView();
         syncActivityPreview();
         initTransientAlerts();
+        initReportCharts();
     }
 
     function syncPaymentFields(scope = document) {
