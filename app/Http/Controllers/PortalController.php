@@ -468,7 +468,16 @@ class PortalController extends Controller
     {
         $this->admin($s);
 
-        return view('administration', ['users' => $s->table('profiles'), 'seniors' => collect($s->table('senior_profiles'))->keyBy('user_id'), 'categories' => $s->table('categories'), 'logs' => $s->table('audit_logs', ['order' => 'created_at.desc', 'limit' => 100]), 'demo' => $s->demo()]);
+        $settings = $s->table('settings')[0] ?? ['id' => true, 'require_verification' => false];
+
+        return view('administration', [
+            'users' => $s->table('profiles'),
+            'seniors' => collect($s->table('senior_profiles'))->keyBy('user_id'),
+            'categories' => $s->table('categories'),
+            'settings' => $settings,
+            'logs' => $s->table('audit_logs', ['order' => 'created_at.desc', 'limit' => 100]),
+            'demo' => $s->demo(),
+        ]);
     }
 
     public function user(Request $r, string $id, Community $s)
@@ -493,6 +502,37 @@ class PortalController extends Controller
         }
 
         return back()->with('status', 'Account updated.');
+    }
+
+    public function systemSettings(Request $r, Community $s)
+    {
+        $this->admin($s);
+
+        $d = $r->validate([
+            'require_verification' => 'required|boolean',
+            'reason' => 'required|string|min:3|max:500',
+        ]);
+
+        $requireVerification = (bool) $d['require_verification'];
+
+        if ($s->demo()) {
+            session(['demo_settings' => [[
+                'id' => true,
+                'require_verification' => $requireVerification,
+            ]]]);
+        } else {
+            $s->rpc('update_system_settings', [
+                'new_require_verification' => $requireVerification,
+                'reason' => $d['reason'],
+            ]);
+        }
+
+        return back()->with(
+            'status',
+            $requireVerification
+                ? 'System settings updated. Verified senior accounts are now required for enrollment.'
+                : 'System settings updated. Senior verification is no longer required for enrollment.'
+        );
     }
 
     public function category(Request $r, Community $s)

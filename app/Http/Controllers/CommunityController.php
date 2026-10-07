@@ -134,6 +134,13 @@ class CommunityController extends Controller
             if (collect($s->ownEnrollments())->contains(fn ($e) => $e['activity_id'] === $id && $e['status'] !== 'cancelled')) {
                 throw ValidationException::withMessages(['enrollment' => 'You already joined this activity.']);
             }
+
+            $requiresVerification = (bool) (($s->table('settings')[0]['require_verification'] ?? false));
+            $verification = collect($s->table('senior_profiles'))->firstWhere('user_id', 'demo-senior')['verification_status'] ?? 'pending';
+            if ($requiresVerification && $verification !== 'verified') {
+                throw ValidationException::withMessages(['enrollment' => 'Account verification is required.']);
+            }
+
             $state = $a['confirmed'] < $a['capacity'] ? 'confirmed' : 'waitlisted';
             $entries[] = [
                 'enrollment_id' => (string) Str::uuid(),
