@@ -250,7 +250,15 @@ class Community
             $count = fn ($rows) => collect($rows)->filter(fn ($e) => $e['activity_id'] === $activity['activity_id'] && in_array($e['status'], ['confirmed', 'completed']))->count();
             $activity['confirmed'] = max(0, $activity['confirmed'] + $count($after) - $count($before));
             if ($activity['activity_id'] === $promoteActivity && in_array($activity['status'], ['open', 'full', 'ongoing'])) {
-                $waiting = collect($after)->filter(fn ($e) => $e['activity_id'] === $promoteActivity && $e['status'] === 'waitlisted' && $e['enrollment_id'] !== $excluded)->sortBy('enrolled_at');
+                $requiresVerification = (bool) (($this->table('settings')[0]['require_verification'] ?? false));
+                $seniorProfiles = collect($this->table('senior_profiles'))->keyBy('user_id');
+                $waiting = collect($after)->filter(function ($e) use ($promoteActivity, $excluded, $requiresVerification, $seniorProfiles) {
+                    if ($e['activity_id'] !== $promoteActivity || $e['status'] !== 'waitlisted' || $e['enrollment_id'] === $excluded) {
+                        return false;
+                    }
+                    return ! $requiresVerification
+                        || (($seniorProfiles[$e['senior_id']]['verification_status'] ?? 'pending') === 'verified');
+                })->sortBy('enrolled_at');
                 foreach ($waiting as $key => $entry) {
                     if ($activity['confirmed'] >= $activity['capacity']) break;
                     $after[$key]['status'] = 'confirmed';
@@ -288,6 +296,9 @@ class Community
         }
         if ($table === 'announcements') {
             return session('demo_announcements', [['announcement_id' => 'notice-1', 'title' => 'Welcome to KomuniEdad', 'message' => 'Explore community activities and find something you enjoy. Your coordinator is here to help.', 'activity_id' => null, 'posted_at' => now()->toIso8601String(), 'archived_at' => null]]);
+        }
+        if ($table === 'settings') {
+            return session('demo_settings', [['id' => true, 'require_verification' => false]]);
         }
 
         return session('demo_'.$table, []);
