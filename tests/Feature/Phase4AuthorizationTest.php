@@ -74,4 +74,27 @@ class Phase4AuthorizationTest extends Phase4TestCase
         foreach (['/profile', '/workspace', '/administration', '/history', '/reports'] as $url) $this->getJson($url)->assertUnauthorized();
         $this->postJson('/administration/categories', ['name' => 'Forged'])->assertUnauthorized();
     }
+    public function test_AUTHZ_31_coordinator_cannot_delete_another_coordinators_notice(): void
+    {
+        $activities = app(Community::class)->activities();
+        $activities[1]['coordinator_id'] = 'other-coordinator';
+
+        $this->withSession([
+            'demo_role' => 'coordinator',
+            'demo_activities' => $activities,
+            'demo_announcements' => [[
+                'announcement_id' => 'other-notice',
+                'activity_id' => '2',
+                'title' => 'Other notice',
+                'message' => 'Other message',
+                'posted_at' => now()->toIso8601String(),
+                'archived_at' => null,
+            ]],
+        ])->postJson('/announcements/other-notice/delete')->assertNotFound();
+
+        $this->assertTrue(
+            collect(session('demo_announcements'))->contains('announcement_id', 'other-notice')
+        );
+    }
+
 }
