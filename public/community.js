@@ -311,7 +311,10 @@
         const button = event.target.closest('[data-clear-search]');
         if (!button) return;
         const form = button.closest('form');
-        for (const name of ['q', 'category', 'status']) form.elements.namedItem(name).value = '';
+        for (const name of ['q', 'category', 'status', 'tag']) {
+            const field = form.elements.namedItem(name);
+            if (field) field.value = '';
+        }
         search(form);
     });
     document.addEventListener('keydown', event => {
@@ -367,6 +370,31 @@
             const free = isFree.value === '1';
             feeWrapper.style.display = free ? 'none' : '';
             if (free) fee.value = '0';
+        }
+
+        const tagInput = form.elements.namedItem('tags');
+        const tagPreview = document.querySelector('[data-tag-preview]');
+        const cardTagPreview = document.getElementById('preview-tags');
+        if (tagInput) {
+            const tags = [...new Set(String(tagInput.value || '')
+                .split(',')
+                .map(tag => tag.trim().toLowerCase().replace(/\s+/g, ' '))
+                .filter(Boolean))]
+                .slice(0, 6);
+
+            const renderTags = (container, editable = false) => {
+                if (!container) return;
+                container.replaceChildren();
+                tags.forEach(tag => {
+                    const chip = document.createElement('span');
+                    chip.className = editable ? 'activity-tag activity-tag-edit-preview' : 'activity-tag';
+                    chip.textContent = '#' + tag;
+                    container.appendChild(chip);
+                });
+            };
+
+            renderTags(tagPreview, true);
+            renderTags(cardTagPreview);
         }
 
         const category = form.elements.namedItem('category_id');
