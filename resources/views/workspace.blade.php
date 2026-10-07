@@ -119,7 +119,7 @@
             : 'https://images.pexels.com/photos/19524029/pexels-photo-19524029.jpeg?auto=compress&cs=tinysrgb&w=600';
     @endphp
     <div class="col-md-6 col-xl-4">
-        <div class="card shadow-sm border-0 rounded-3 overflow-hidden bg-light h-100 d-flex flex-column">
+        <div class="card shadow-sm border-0 rounded-3 overflow-hidden bg-light h-100 d-flex flex-column clickable-card" data-card-href="/workspace/{{ $a['activity_id'] }}/edit" tabindex="0" role="link" aria-label="Edit {{ $a['title'] }}">
             <img src="{{ $src }}" class="card-img-top object-fit-cover" style="height: 150px;" alt="">
             <div class="p-3 d-flex flex-column flex-grow-1">
                 <div class="d-flex justify-content-between align-items-start mb-2">

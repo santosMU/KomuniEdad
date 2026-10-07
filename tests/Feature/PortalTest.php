@@ -290,4 +290,36 @@ class PortalTest extends TestCase
             ->assertForbidden();
     }
 
+
+    public function test_staff_can_delete_authorized_announcement_in_demo(): void
+    {
+        $this->withSession([
+            'demo_role' => 'coordinator',
+            'demo_announcements' => [[
+                'announcement_id' => 'notice-delete',
+                'title' => 'Temporary notice',
+                'message' => 'Temporary message',
+                'activity_id' => '1',
+                'posted_at' => now()->toIso8601String(),
+                'archived_at' => null,
+            ]],
+        ])->post('/announcements/notice-delete/delete')->assertRedirect();
+
+        $this->assertFalse(
+            collect(session('demo_announcements', []))->contains('announcement_id', 'notice-delete')
+        );
+    }
+
+    public function test_activity_cards_expose_full_card_navigation(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-card-href="/activities/1"', false);
+
+        $this->withSession(['demo_role' => 'coordinator'])
+            ->get('/workspace')
+            ->assertOk()
+            ->assertSee('data-card-href="/workspace/1/edit"', false);
+    }
+
 }

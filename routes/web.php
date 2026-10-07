@@ -54,6 +54,7 @@ Route::middleware([CommunitySession::class, \App\Http\Middleware\ValidateRecordI
     Route::post('/history/{id}/feedback', [Portal::class, 'feedback']);
     Route::get('/announcements', [Portal::class, 'announcements']);
     Route::post('/announcements', [Portal::class, 'announce']);
+    Route::post('/announcements/{id}/delete', [Portal::class, 'deleteAnnouncement']);
     Route::get('/administration', [Portal::class, 'administration']);
     Route::post('/administration/users/{id}', [Portal::class, 'user']);
     Route::post('/administration/categories', [Portal::class, 'category']);

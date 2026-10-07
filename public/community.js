@@ -284,6 +284,12 @@
         }
     });
     document.addEventListener('click', event => {
+        const card = event.target.closest('[data-card-href]');
+        if (card && !event.target.closest('a,button,input,select,textarea,summary,details,label,form')) {
+            location.assign(card.dataset.cardHref);
+            return;
+        }
+
         const workspaceView = event.target.closest('[data-workspace-view]');
         if (workspaceView) {
             setWorkspaceView(workspaceView.dataset.workspaceView);
@@ -309,6 +315,13 @@
         search(form);
     });
     document.addEventListener('keydown', event => {
+        const card = event.target.closest?.('[data-card-href]');
+        if (card && event.target === card && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            location.assign(card.dataset.cardHref);
+            return;
+        }
+
         if (event.key === 'Tab' && sidebarBreakpoint.matches && shell?.classList.contains('sidebar-open')) {
             const controls = [...sidebar.querySelectorAll('a[href],button:not([disabled]),select,input,[tabindex="0"]')].filter(el => el.getClientRects().length);
             const first = controls[0], last = controls[controls.length - 1];

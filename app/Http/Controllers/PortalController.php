@@ -413,6 +413,31 @@ class PortalController extends Controller
         return back()->with('status', 'Announcement saved.');
     }
 
+    public function deleteAnnouncement(string $id, Community $s)
+    {
+        $this->staff($s);
+
+        if ($s->demo()) {
+            $existing = collect($s->table('announcements'))->firstWhere('announcement_id', $id);
+            abort_unless($existing, 404);
+
+            if ($s->role() === 'coordinator') {
+                abort_unless($existing['activity_id'], 403);
+                $this->activity($existing['activity_id'], $s);
+            }
+
+            $remaining = array_values(array_filter(
+                $s->table('announcements'),
+                fn ($announcement) => $announcement['announcement_id'] !== $id
+            ));
+            session(['demo_announcements' => $remaining]);
+        } else {
+            $s->rpc('delete_announcement', ['target' => $id]);
+        }
+
+        return back()->with('status', 'Announcement deleted.');
+    }
+
     public function administration(Community $s)
     {
         $this->admin($s);
