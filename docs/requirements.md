@@ -6,7 +6,7 @@ Source: Group 4_KomuniEdad_Phase1_Documentation.pdf, revised 11 September 2026, 
 |---|---|---|
 | FR-01–03 Authentication and authorization | Supabase signup/password login, remote token verification, role checks, signout, SQL RLS | Hosted credentials/email flow not exercised here; no refresh-token flow |
 | FR-04 Profile | Own name/contact/birthdate/address form and allowlisted RPC | Email changes remain with Auth administration |
-| FR-05 Verification | Admin status form; optional database policy setting | Client policy must be confirmed; no document uploads |
+| FR-05 Verification and system policy | Admin verification-status management plus an admin-only, audited system setting that can require verified senior accounts before enrollment/waitlist promotion | No document uploads |
 | FR-06 Categories | Admin create/edit/activate/deactivate + audit | Deactivation preserves existing activity relationships |
 | FR-07–09 Activities | Assigned coordinator CRUD via create/read/update/cancel/archive, admin oversight, lifecycle states, activity imagery, and free/onsite-cash participation fees | Historical records are retained rather than hard deleted; activity image storage remains an implementation detail rather than a new domain entity |
 | FR-10–11 Discovery/details | Search, categories, times, venue, coordinator, capacity, cutoff, requirements/status | List view rather than calendar; status filter included |
