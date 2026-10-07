@@ -41,6 +41,11 @@ begin
   if jsonb_typeof(raw_tags)<>'array' or jsonb_array_length(raw_tags)>6 then raise exception 'Invalid activity tags'; end if;
   if exists(
     select 1
+    from jsonb_array_elements(raw_tags) t(value)
+    where jsonb_typeof(value)<>'string'
+  ) then raise exception 'Invalid activity tags'; end if;
+  if exists(
+    select 1
     from jsonb_array_elements_text(raw_tags) t(value)
     where length(regexp_replace(trim(value),'\s+',' ','g')) not between 1 and 24
   ) then raise exception 'Invalid activity tags'; end if;
