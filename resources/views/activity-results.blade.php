@@ -47,6 +47,14 @@
                         @endif
                     </div>
 
+                    @if(!empty($a['tags']))
+                        <div class="activity-tag-list" aria-label="Activity tags">
+                            @foreach($a['tags'] as $activityTag)
+                                <a class="activity-tag" href="/?tag={{ urlencode($activityTag) }}">#{{ $activityTag }}</a>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <h3><a href="/activities/{{ $a['activity_id'] }}">{{ $a['title'] }}</a></h3>
                     <p class="schedule">{{ \Carbon\Carbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('D, M j · g:i A') }}</p>
                     <p class="venue">{{ $a['venue'] }}</p>
