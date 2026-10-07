@@ -458,36 +458,160 @@ class PortalController extends Controller
         return back()->with('status', 'Category saved.');
     }
 
-    public function reports(Community $s)
+    private function reportFilters(Request $r): array
+    {
+        return $r->validate([
+            'from' => 'nullable|date',
+            'to' => 'nullable|date|after_or_equal:from',
+            'category' => 'nullable|string|max:80',
+            'coordinator' => 'nullable|string|max:80',
+            'status' => ['nullable', Rule::in(['draft', 'open', 'full', 'ongoing', 'completed', 'cancelled', 'archived'])],
+        ]);
+    }
+
+    private function reportData(Community $s, array $filters): array
     {
         $this->staff($s);
-        $rows = [];
+        $all = collect($this->activities($s));
 
-        foreach ($this->activities($s) as $a) {
+        $categoryOptions = $all
+            ->map(fn ($a) => trim($a['categories']['name'] ?? 'Uncategorized'))
+            ->filter()->unique()->sort()->values()->all();
+
+        $coordinatorOptions = $all
+            ->mapWithKeys(fn ($a) => [(string) $a['coordinator_id'] => $a['coordinator_name'] ?? $a['coordinator_id']])
+            ->sort()->all();
+
+        $activities = $all->filter(function ($a) use ($filters) {
+            $start = Carbon::parse($a['start_at'])->timezone(config('app.timezone'));
+            if (! empty($filters['from']) && $start->lt(Carbon::parse($filters['from'], config('app.timezone'))->startOfDay())) return false;
+            if (! empty($filters['to']) && $start->gt(Carbon::parse($filters['to'], config('app.timezone'))->endOfDay())) return false;
+            if (! empty($filters['category']) && trim($a['categories']['name'] ?? 'Uncategorized') !== $filters['category']) return false;
+            if (! empty($filters['coordinator']) && (string) $a['coordinator_id'] !== $filters['coordinator']) return false;
+            if (! empty($filters['status']) && ($a['status'] ?? '') !== $filters['status']) return false;
+            return true;
+        })->values();
+
+        $rows = [];
+        foreach ($activities as $a) {
             $p = collect($this->participants($a['activity_id'], $s));
             $registered = $p->whereIn('status', ['confirmed', 'completed']);
             $attended = $p->whereStrict('attended', true)->count();
+            $paid = ($a['is_free'] ?? true) ? 0 : $registered->where('payment_status', 'paid')->count();
+            $fee = (float) ($a['fee'] ?? 0);
+            $start = Carbon::parse($a['start_at'])->timezone(config('app.timezone'));
 
             $rows[] = [
+                'activity_id' => $a['activity_id'],
                 'title' => $a['title'],
                 'category' => trim($a['categories']['name'] ?? 'Uncategorized'),
+                'coordinator_id' => $a['coordinator_id'],
                 'coordinator' => $a['coordinator_name'] ?? $a['coordinator_id'],
                 'status' => $a['status'],
+                'start_at' => $start->toIso8601String(),
+                'start_label' => $start->format('M j, Y g:i A'),
+                'month_key' => $start->format('Y-m'),
+                'month_label' => $start->format('M Y'),
                 'capacity' => (int) $a['capacity'],
                 'confirmed' => $registered->count(),
                 'waitlisted' => $p->where('status', 'waitlisted')->count(),
                 'attended' => $attended,
                 'absent' => $p->whereStrict('attended', false)->count(),
                 'unrecorded' => $registered->whereNull('attended')->count(),
-                'paid' => ($a['is_free'] ?? true) ? 0 : $registered->where('payment_status', 'paid')->count(),
+                'paid' => $paid,
                 'unpaid' => ($a['is_free'] ?? true) ? 0 : $registered->where('payment_status', '!=', 'paid')->count(),
                 'is_free' => (bool) ($a['is_free'] ?? true),
-                'fee' => (float) ($a['fee'] ?? 0),
+                'fee' => $fee,
+                'cash_collected' => $paid * $fee,
                 'attendance_rate' => $registered->count() > 0 ? round(($attended / $registered->count()) * 100) : 0,
             ];
         }
 
-        return view('reports', ['rows' => $rows, 'demo' => $s->demo()]);
+        $collection = collect($rows);
+        $registered = $collection->sum('confirmed');
+        $attended = $collection->sum('attended');
+
+        $categoryChart = $collection->groupBy('category')->map(fn ($group, $category) => [
+            'label' => $category,
+            'registered' => $group->sum('confirmed'),
+            'waitlisted' => $group->sum('waitlisted'),
+        ])->sortByDesc('registered')->values();
+
+        $trendChart = $collection->groupBy('month_key')->map(fn ($group, $key) => [
+            'key' => $key,
+            'label' => $group->first()['month_label'],
+            'registered' => $group->sum('confirmed'),
+            'attended' => $group->sum('attended'),
+        ])->sortBy('key')->values();
+
+        return [
+            'rows' => $rows,
+            'filters' => $filters,
+            'categoryOptions' => $categoryOptions,
+            'coordinatorOptions' => $coordinatorOptions,
+            'stats' => [
+                'activities' => $collection->count(),
+                'registered' => $registered,
+                'attended' => $attended,
+                'attendance_rate' => $registered > 0 ? round(($attended / $registered) * 100) : 0,
+                'waitlisted' => $collection->sum('waitlisted'),
+                'paid' => $collection->sum('paid'),
+                'unpaid' => $collection->sum('unpaid'),
+                'cash_collected' => $collection->sum('cash_collected'),
+            ],
+            'charts' => [
+                'category' => [
+                    'labels' => $categoryChart->pluck('label')->all(),
+                    'series' => [
+                        ['label' => 'Registered', 'values' => $categoryChart->pluck('registered')->all()],
+                        ['label' => 'Waitlisted', 'values' => $categoryChart->pluck('waitlisted')->all()],
+                    ],
+                ],
+                'trend' => [
+                    'labels' => $trendChart->pluck('label')->all(),
+                    'series' => [
+                        ['label' => 'Registered', 'values' => $trendChart->pluck('registered')->all()],
+                        ['label' => 'Attended', 'values' => $trendChart->pluck('attended')->all()],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function reports(Request $r, Community $s)
+    {
+        return view('reports', $this->reportData($s, $this->reportFilters($r)) + [
+            'demo' => $s->demo(),
+            'role' => $s->role(),
+        ]);
+    }
+
+    public function exportReports(Request $r, Community $s)
+    {
+        $this->admin($s);
+        $rows = $this->reportData($s, $this->reportFilters($r))['rows'];
+
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['Activity','Category','Coordinator','Status','Start','Capacity','Registered','Waitlisted','Attended','Absent','Attendance not recorded','Attendance rate %','Payment type','Fee PHP','Paid','Unpaid','Cash collected PHP']);
+
+            foreach ($rows as $row) {
+                $safe = fn ($value) => preg_match('/^[=+\-@]/', ltrim((string) $value)) ? "'".(string) $value : (string) $value;
+                fputcsv($out, [
+                    $safe($row['title']), $safe($row['category']), $safe($row['coordinator']),
+                    $row['status'], $row['start_label'], $row['capacity'], $row['confirmed'],
+                    $row['waitlisted'], $row['attended'], $row['absent'], $row['unrecorded'],
+                    $row['attendance_rate'], $row['is_free'] ? 'Free' : 'Onsite cash',
+                    number_format($row['fee'], 2, '.', ''), $row['paid'], $row['unpaid'],
+                    number_format($row['cash_collected'], 2, '.', ''),
+                ]);
+            }
+            fclose($out);
+        }, 'komuniedad-participation-report-'.now()->format('Y-m-d').'.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Cache-Control' => 'private, no-store',
+        ]);
     }
 
     public function register(Request $r, Community $s)
