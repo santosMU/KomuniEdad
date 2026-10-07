@@ -26,7 +26,7 @@
                 $remaining = max(0, $capacity - $confirmed);
             @endphp
 
-            <article class="activity-card">
+            <article class="activity-card clickable-card" data-card-href="/activities/{{ $a['activity_id'] }}" tabindex="0" role="link" aria-label="View {{ $a['title'] }}">
                 <div class="card-photo">
                     <img src="{{ $imgSrc }}" alt="{{ $portal->activityImageAlt($a) }}" loading="lazy" decoding="async">
                     <span class="photo-label">{{ strtoupper($a['categories']['name'] ?? 'COMMUNITY') }}</span>
