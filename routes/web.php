@@ -60,6 +60,7 @@ Route::middleware([CommunitySession::class, \App\Http\Middleware\ValidateRecordI
     Route::get('/administration', [Portal::class, 'administration']);
     Route::post('/administration/users/{id}', [Portal::class, 'user']);
     Route::post('/administration/categories', [Portal::class, 'category']);
+    Route::post('/administration/settings', [Portal::class, 'systemSettings']);
     Route::get('/reports',[Portal::class, 'reports']);
     Route::get('/reports/export',[Portal::class, 'exportReports']);
     Route::get('/help', function () {
