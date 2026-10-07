@@ -24,7 +24,16 @@ class CommunitySession
         }
         $cachedProfile = session('profile');
         $verifiedAt = (int) session('profile_verified_at', 0);
-        if (is_array($cachedProfile) && ($cachedProfile['account_status'] ?? null) === 'active' && time() - $verifiedAt < 60) {
+        $tokenHash = hash('sha256', (string) $s->accessToken());
+        $cachedTokenHash = session('profile_token_hash');
+
+        // Never trust a cached profile unless it was resolved for this exact
+        // access token. This prevents identity details leaking across logins.
+        if (is_array($cachedProfile)
+            && ($cachedProfile['account_status'] ?? null) === 'active'
+            && is_string($cachedTokenHash)
+            && hash_equals($cachedTokenHash, $tokenHash)
+            && time() - $verifiedAt < 60) {
             $r->attributes->set('verified_profile', $cachedProfile);
 
             return $next($r);
@@ -45,7 +54,11 @@ class CommunitySession
             return redirect('/login')->withErrors(['account' => 'Please sign in again.']);
         }
         abort_unless(isset($p[0]) && $p[0]['account_status'] === 'active', 403);
-        session(['profile' => $p[0], 'profile_verified_at' => time()]);
+        session([
+            'profile' => $p[0],
+            'profile_verified_at' => time(),
+            'profile_token_hash' => $tokenHash,
+        ]);
         $r->attributes->set('verified_profile', $p[0]);
 
         return $next($r);
