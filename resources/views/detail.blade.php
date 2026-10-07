@@ -136,6 +136,37 @@
             </div>
         </div>
     </div>
+
+    <section class="card shadow-sm border-0 rounded-3 bg-white mb-4 activity-discussion"
+             id="discussion"
+             data-discussion
+             data-discussion-url="/activities/{{ $activity['activity_id'] }}/discussion">
+        <div class="p-4">
+            <div class="discussion-heading">
+                <div>
+                    <div class="small text-muted fw-semibold text-uppercase">Community conversation</div>
+                    <h2 class="h4 mb-1">Discussion</h2>
+                    <p class="text-muted mb-0">Ask questions, share reminders, or talk with other members about this activity.</p>
+                </div>
+                <span class="discussion-live">Live</span>
+            </div>
+
+            <div class="discussion-list" data-discussion-list aria-live="polite">
+                <div class="discussion-empty">Loading discussion…</div>
+            </div>
+
+            <form action="/activities/{{ $activity['activity_id'] }}/discussion" method="POST" class="discussion-form">
+                @csrf
+                <label for="discussion-message" class="form-label">Add a comment</label>
+                <textarea id="discussion-message" name="message" class="form-control" rows="3" maxlength="1000" required placeholder="Write a comment or question..."></textarea>
+                <div class="discussion-form-footer">
+                    <small class="text-muted">Visible to signed-in KomuniEdad members.</small>
+                    <button type="submit" class="btn btn-primary">Post comment</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
 </div>
 
 @endsection
