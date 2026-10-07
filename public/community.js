@@ -436,6 +436,7 @@
     }
 
     function initTransientAlerts() {
+        if (document.querySelector('.senior-shell')) return;
         document.querySelectorAll('.alert-success:not([data-auto-hide-bound])').forEach(alert => {
             alert.dataset.autoHideBound = '1';
             window.setTimeout(() => {
