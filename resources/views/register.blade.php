@@ -77,8 +77,8 @@
 
     <aside class="auth-hero auth-hero-register" aria-label="KomuniEdad community">
         <picture>
-            <source media="(max-width: 767px)" srcset="https://images.pexels.com/photos/17289959/pexels-photo-17289959.jpeg?auto=compress&cs=tinysrgb&w=900">
-            <img src="https://images.pexels.com/photos/9710828/pexels-photo-9710828.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Older adults spending time together">
+            <source media="(max-width: 767px)" srcset="https://images.pexels.com/photos/38887911/pexels-photo-38887911.jpeg?auto=compress&cs=tinysrgb&w=900">
+            <img src="https://images.pexels.com/photos/38887911/pexels-photo-38887911.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Senior couple relaxing outdoors in Quezon, Philippines">
         </picture>
 
         <div class="auth-hero-shade" aria-hidden="true"></div>

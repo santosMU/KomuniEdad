@@ -22,14 +22,14 @@
         /* Locks the app shell and prevents background mirroring/scaling glitches */
         .app-shell {
             display: flex !important;
-            height: 100vh !important;
+            height: 100dvh !important;
             width: 100vw !important;
             overflow: hidden !important;
             position: relative !important;
         }
        .workspace {
             flex: 1 !important;
-            height: 100vh !important;
+            height: 100dvh !important;
             overflow-y: auto !important;
             overflow-x: hidden !important;
             position: relative !important;
@@ -112,7 +112,9 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                height: 70px;
+                min-height: 70px;
+                height: calc(70px + env(safe-area-inset-bottom));
+                padding-bottom: env(safe-area-inset-bottom);
                 background: #ffffff;
                 border-top: 2px solid #e2e8f0;
                 display: flex;
@@ -142,7 +144,7 @@
                 margin-bottom: 2px;
             }
             .workspace {
-                padding-bottom: 70px !important;
+                padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
                 box-sizing: border-box !important;
             }
         }

@@ -551,3 +551,82 @@ a.activity-tag:hover{background:#dfe9db;color:#193f32}
   .senior-top-help span{display:none}
   .senior-top-help{width:44px;justify-content:center;padding:0}
 }
+
+
+/* Responsive regression fixes: auth, senior cards, and shared mobile pages */
+@media(min-width:768px){
+  .auth-page{overflow-y:auto}
+  .auth-page-shell{height:auto;min-height:100dvh;overflow:visible;padding:24px}
+  .auth-card{height:auto;min-height:min(720px,calc(100dvh - 48px));overflow:hidden}
+  .auth-card-register{min-height:760px}
+  .auth-form-panel{min-height:0}
+  .auth-card-register .auth-form-panel{padding-block:clamp(28px,3vw,42px)}
+  .auth-hero{height:auto;min-height:100%}
+  .auth-card-login .auth-hero picture img{object-position:center 48%}
+  .auth-card-register .auth-hero picture img{object-position:center 45%}
+}
+@media(min-width:768px) and (max-height:820px){
+  .auth-page-shell{align-items:flex-start;padding:16px 24px}
+  .auth-card{min-height:0}
+  .auth-card-register{min-height:730px}
+}
+@media(min-width:768px) and (max-height:730px){
+  .auth-page-shell{padding:14px 20px}
+  .auth-card{height:auto;min-height:0}
+  .auth-card-register{min-height:700px}
+  .auth-form-panel{padding-top:24px;padding-bottom:24px}
+  .auth-card-register .auth-form-panel{padding-top:24px;padding-bottom:24px}
+  .auth-page .auth-input,.auth-page .auth-card-register .auth-input{min-height:48px!important}
+}
+@media(max-width:767px){
+  .auth-page{overflow-y:auto}
+  .auth-page-shell{overflow:visible}
+  .auth-card{min-height:100dvh}
+  .auth-hero,.auth-card-register .auth-hero{height:clamp(150px,22dvh,200px)}
+  .auth-card-login .auth-hero picture img{object-position:center 48%}
+  .auth-card-register .auth-hero picture img{object-position:center 42%}
+  .auth-form-panel,.auth-card-register .auth-form-panel{
+    flex:none;
+    min-height:calc(100dvh - 165px);
+    padding-bottom:max(32px,env(safe-area-inset-bottom));
+  }
+  .auth-copy,.auth-card-register .auth-copy{text-align:left}
+  .auth-copy p{max-width:34rem}
+}
+@media(max-width:1024px){
+  .senior-shell .activity-grid{align-items:start}
+  .senior-shell .activity-card{height:auto;align-self:start}
+  .senior-shell .card-content{height:auto!important;min-height:0!important}
+  .senior-shell .activity-card-actions{margin-top:12px}
+}
+@media(max-width:760px){
+  .senior-shell .workspace{min-height:100dvh}
+  .senior-shell main{width:100%;max-width:none;padding:20px 16px calc(96px + env(safe-area-inset-bottom))}
+  .senior-shell .activity-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+  .senior-shell .activity-card{width:100%;height:auto;min-height:0}
+  .senior-shell .card-photo{height:auto;aspect-ratio:16/9}
+  .senior-shell .card-content{display:block;height:auto!important;padding:18px}
+  .senior-shell .activity-card-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:16px}
+  .senior-shell .senior-card-primary,.senior-shell .discussion-link{width:100%}
+  .senior-shell .section-heading{align-items:flex-start!important;flex-direction:column;gap:12px}
+  .senior-shell .section-heading>.btn,.senior-shell .section-heading>a.btn{width:100%}
+  .senior-shell .history-card-head{display:flex;align-items:flex-start;flex-direction:column;gap:10px}
+  .senior-shell .history-attendance{align-self:flex-start}
+  .senior-shell .announcement-meta{align-items:flex-start;flex-direction:column;gap:6px}
+  .senior-shell .profile-photo-section{align-items:flex-start;flex-direction:column}
+  .senior-shell .profile-photo-copy{width:100%}
+  .senior-shell .profile-photo-picker{align-items:flex-start;flex-direction:column}
+  .senior-shell .discussion-form-footer{align-items:stretch;flex-direction:column}
+  .senior-shell .discussion-form-footer .btn{width:100%}
+  .senior-shell .empty-state{padding:28px 20px}
+  .senior-shell .panel{max-width:100%;overflow-wrap:anywhere}
+  .senior-shell img{max-width:100%}
+  .senior-shell .mobile-bottom-nav a{padding:7px 2px}
+  .senior-shell .mobile-bottom-nav a span{font-size:12px;line-height:1.15;white-space:nowrap}
+  .senior-shell .mobile-bottom-nav .nav-icon{font-size:22px;margin-bottom:3px}
+}
+@media(max-width:390px){
+  .senior-shell main{padding-left:12px;padding-right:12px}
+  .senior-shell .card-content{padding:16px}
+  .senior-shell .mobile-bottom-nav a span{font-size:11px}
+}
