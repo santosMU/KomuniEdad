@@ -15,10 +15,10 @@
         <div class="section-heading align-items-end">
             <div>
                 <p class="eyebrow mb-1">MY ACTIVITIES</p>
-                <h1 class="h3 mb-1">Your activity schedule</h1>
-                <p class="intro mb-0">See what is coming up, your registration status, and activities you have already joined.</p>
+                <h1 class="h3 mb-1">My schedule</h1>
+                <p class="intro mb-0">Everything you signed up for, in one place.</p>
             </div>
-            <a href="/" class="btn btn-primary">Find another activity</a>
+            <a href="/" class="btn btn-primary">Find activities</a>
         </div>
 
         <section class="mb-5">
@@ -71,10 +71,10 @@
             <section>
                 <div class="section-heading">
                     <div>
-                        <h2 class="fs-5 mb-1">Past and closed activities</h2>
-                        <p class="text-muted mb-0">Your older registrations remain available for reference.</p>
+                        <h2 class="fs-5 mb-1">Earlier activities</h2>
+                        <p class="text-muted mb-0">See activities you joined before, including completed and cancelled registrations.</p>
                     </div>
-                    <a href="/history" class="btn btn-outline-secondary">View participation history</a>
+                    <a href="/history" class="btn btn-outline-secondary">See past activities</a>
                 </div>
                 <div class="row g-3">
                     @foreach($past as $activity)
@@ -95,66 +95,52 @@
             </section>
         @endif
     @else
-        <div class="section-heading mb-3">
+        <div class="senior-page-heading">
             <div>
-                <p class="eyebrow mb-1">DISCOVER</p>
-                <h1 class="h3 mb-1">Community activities</h1>
-                <p class="intro mb-0">Choose an activity that fits your interests and schedule.</p>
+                <p class="eyebrow mb-1">ACTIVITIES</p>
+                <h1 class="mb-2">Find a community activity</h1>
+                <p class="intro mb-0">Search by name, place, or activity type. Open an activity to see the full details before joining.</p>
             </div>
             <span id="result-count" class="result-count">{{ count($activities) }} {{ count($activities) === 1 ? 'activity' : 'activities' }}</span>
         </div>
 
-        <nav class="category-filters mb-3" aria-label="Activity categories">
-            <a href="/{{ request('q') ? '?q='.urlencode(request('q')) : '' }}" class="btn btn-sm {{ !request('category') ? 'btn-primary' : 'btn-outline-secondary' }} rounded-pill">All activities</a>
-            @foreach($categories as $category)
-                @php
-                    $catId = $category['category_id'] ?? $category['id'] ?? '';
-                    $catName = trim($category['name'] ?? '');
-                @endphp
-                <a href="/?category={{ urlencode($catId) }}{{ request('q') ? '&q='.urlencode(request('q')) : '' }}" class="btn btn-sm {{ request('category') == $catId ? 'btn-primary' : 'btn-outline-secondary' }} rounded-pill">
-                    {{ $catName }}
-                </a>
-            @endforeach
-        </nav>
-
-        @if(!empty($availableTags))
-            <div class="activity-tag-filters mb-3" aria-label="Filter activities by interest">
-                <span class="activity-tag-filter-label">Interests:</span>
-                @foreach($availableTags as $activityTag)
-                    <a
-                        href="/?tag={{ urlencode($activityTag) }}{{ request('category') ? '&category='.urlencode(request('category')) : '' }}{{ request('q') ? '&q='.urlencode(request('q')) : '' }}"
-                        class="activity-tag-filter {{ request('tag') === $activityTag ? 'active' : '' }}">
-                        #{{ $activityTag }}
-                    </a>
-                @endforeach
-                @if(request('tag'))
-                    <a href="/{{ request('category') ? '?category='.urlencode(request('category')) : '' }}" class="activity-tag-clear">Clear</a>
-                @endif
+        <form class="senior-search-panel" method="get" action="/" data-activity-search>
+            <div class="senior-filter-grid">
+                <div class="senior-field senior-search-field">
+                    <label for="activity-search">What are you looking for?</label>
+                    <input id="activity-search" name="q" class="form-control" maxlength="160" value="{{ $query ?? '' }}" placeholder="Example: gardening or Senior Citizens Hall">
+                </div>
+                <div class="senior-field">
+                    <label for="activity-category">Type of activity</label>
+                    <select id="activity-category" name="category" class="form-select">
+                        <option value="">All activity types</option>
+                        @foreach($categories as $category)
+                            @php
+                                $catId = $category['category_id'] ?? $category['id'] ?? '';
+                                $catName = trim($category['name'] ?? '');
+                            @endphp
+                            <option value="{{ $catId }}" @selected(request('category') == $catId)>{{ $catName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="senior-field">
+                    <label for="activity-status">Registration status</label>
+                    <select id="activity-status" name="status" class="form-select">
+                        <option value="">Show all</option>
+                        <option value="open" @selected(request('status') === 'open')>Open for registration</option>
+                        <option value="full" @selected(request('status') === 'full')>Waitlist available</option>
+                        <option value="ongoing" @selected(request('status') === 'ongoing')>Ongoing now</option>
+                        <option value="completed" @selected(request('status') === 'completed')>Completed</option>
+                        <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
+                    </select>
+                </div>
             </div>
-        @endif
-
-        <form class="filters senior-discovery-filters mb-3" method="get" action="/" data-activity-search>
-            <input type="hidden" name="category" value="{{ request('category') }}">
-            <input type="hidden" name="tag" value="{{ request('tag') }}">
-            <div class="search-field">
-                <label for="activity-search">Search activities</label>
-                <input id="activity-search" name="q" class="form-control" maxlength="160" value="{{ $query ?? '' }}" placeholder="Search by activity or venue">
+            <div class="senior-search-actions">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-search" aria-hidden="true"></i> Search activities</button>
+                <button class="btn btn-outline-secondary" type="button" data-clear-search>Clear search</button>
             </div>
-            <div>
-                <label for="activity-status">Show</label>
-                <select id="activity-status" name="status" class="form-select">
-                    <option value="">Available and recent</option>
-                    <option value="open" @selected(request('status') === 'open')>Open for registration</option>
-                    <option value="full" @selected(request('status') === 'full')>Waitlist available</option>
-                    <option value="ongoing" @selected(request('status') === 'ongoing')>Ongoing</option>
-                    <option value="completed" @selected(request('status') === 'completed')>Completed</option>
-                    <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
-                </select>
-            </div>
-            <button class="btn btn-primary align-self-end" type="submit">Search</button>
-            <button class="btn btn-outline-secondary align-self-end" type="button" data-clear-search>Clear</button>
         </form>
-        <p id="search-status" role="status" aria-live="polite"></p>
+        <p id="search-status" class="senior-search-status" role="status" aria-live="polite"></p>
         <div id="activity-results">@include('activity-results')</div>
     @endif
 </div>
