@@ -38,6 +38,14 @@
                 </span>
             </div>
 
+            @if(!empty($activity['tags']))
+                <div class="activity-tag-list mb-2" aria-label="Activity tags">
+                    @foreach($activity['tags'] as $activityTag)
+                        <a class="activity-tag" href="/?tag={{ urlencode($activityTag) }}">#{{ $activityTag }}</a>
+                    @endforeach
+                </div>
+            @endif
+
             <h1 class="h3 fw-bold text-dark mb-2">{{ $activity['title'] }}</h1>
             <p class="text-muted mb-4">{{ $activity['description'] }}</p>
 
