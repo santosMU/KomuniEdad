@@ -242,3 +242,12 @@ body.auth-page {
 .coordinator-card{display:flex;align-items:center;gap:16px;padding:16px;border:1px solid var(--line);border-radius:12px;background:#f7f9f5}
 .coordinator-card .coordinator-avatar{width:64px;height:64px;flex-basis:64px;font-size:24px}
 @media(max-width:560px){.profile-photo-section,.coordinator-card{align-items:flex-start}.profile-photo-section{flex-direction:column}.profile-photo-preview{width:76px;height:76px;flex-basis:76px}}
+
+
+/* Advanced reports */
+.report-filter-panel{margin-bottom:16px}.report-filter-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:end}.report-filter-actions{display:flex;gap:8px;align-items:end}
+.report-chart-panel{min-height:420px}.report-chart-wrap{width:100%;overflow:hidden;min-height:320px}.report-chart{display:block;max-width:100%;width:100%;height:320px}
+.report-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1100px){.report-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.report-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){.report-filter-grid{grid-template-columns:1fr 1fr}.report-filter-actions{grid-column:1/-1}.report-metrics{grid-template-columns:1fr 1fr}.report-chart-panel{min-height:390px}}
+@media(max-width:500px){.report-filter-grid{grid-template-columns:1fr}.report-filter-actions{grid-column:1}.report-filter-actions .btn{flex:1}.report-metrics{grid-template-columns:1fr 1fr}}
