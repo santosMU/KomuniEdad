@@ -86,7 +86,7 @@ class CommunityController extends Controller
         abort_unless(collect($s->activities())->contains('activity_id', $id), 404);
 
         $comments = $s->demo() ? [] : $s->table('activity_comments', [
-            'select' => 'comment_id,activity_id,author_id,message,created_at,profiles(full_name,role,avatar_path)',
+            'select' => 'comment_id,activity_id,author_id,author_name,author_role,message,created_at',
             'activity_id' => 'eq.'.$id,
             'order' => 'created_at.asc',
             'limit' => 100,
