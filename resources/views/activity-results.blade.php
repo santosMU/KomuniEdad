@@ -48,9 +48,9 @@
                     </div>
 
                     @if(!empty($a['tags']))
-                        <div class="activity-tag-list" aria-label="Activity tags">
+                        <div class="activity-tag-list" aria-label="Activity interests">
                             @foreach($a['tags'] as $activityTag)
-                                <a class="activity-tag" href="/?tag={{ urlencode($activityTag) }}">#{{ $activityTag }}</a>
+                                <a class="activity-tag" href="/?tag={{ urlencode($activityTag) }}">{{ ucfirst($activityTag) }}</a>
                             @endforeach
                         </div>
                     @endif
