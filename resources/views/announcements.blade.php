@@ -63,7 +63,7 @@
 
                 @if($role==='admin' || ($role==='coordinator' && collect($activities)->contains('activity_id',$n['activity_id'])))
                     <details class="mt-3">
-                        <summary>Edit or archive</summary>
+                        <summary>Edit, archive, or delete</summary>
                         <form method="post" class="form-grid mt-3">
                             @csrf
                             <input type="hidden" name="announcement_id" value="{{ $n['announcement_id'] }}">
@@ -84,6 +84,11 @@
                                 </select>
                             </div>
                             <div><button class="btn btn-primary">Save announcement</button></div>
+                        </form>
+
+                        <form method="post" action="/announcements/{{ $n['announcement_id'] }}/delete" class="mt-3" data-confirm="Delete this announcement? This cannot be undone.">
+                            @csrf
+                            <button class="btn btn-outline-danger">Delete announcement</button>
                         </form>
                     </details>
                 @endif
