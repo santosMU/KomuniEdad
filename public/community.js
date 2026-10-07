@@ -97,7 +97,8 @@
         const file = input?.files?.[0];
         if (!file) return null;
 
-        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowed.includes(file.type)) {
             throw Object.assign(new Error('Choose a JPG, PNG, or WebP profile photo.'), { status: 422 });
         }
 
@@ -105,42 +106,72 @@
             throw Object.assign(new Error('Choose a profile photo smaller than 10 MB.'), { status: 422 });
         }
 
-        const objectUrl = URL.createObjectURL(file);
-        const image = new Image();
-        try {
-            await new Promise((resolve, reject) => {
-                image.onload = resolve;
-                image.onerror = () => reject(new Error('The selected image could not be read.'));
-                image.src = objectUrl;
-            });
+        let source = null;
+        let objectUrl = null;
 
-            const side = Math.min(image.naturalWidth, image.naturalHeight);
-            const sourceX = Math.floor((image.naturalWidth - side) / 2);
-            const sourceY = Math.floor((image.naturalHeight - side) / 2);
+        // createImageBitmap handles some phone/camera JPEGs that HTMLImageElement
+        // cannot decode reliably. If neither decoder works, send the original
+        // file and let Laravel perform authoritative image validation.
+        if (typeof createImageBitmap === 'function') {
+            try {
+                source = await createImageBitmap(file, { imageOrientation: 'from-image' });
+            } catch {}
+        }
+
+        if (!source) {
+            objectUrl = URL.createObjectURL(file);
+            const image = new Image();
+            try {
+                await new Promise((resolve, reject) => {
+                    image.onload = resolve;
+                    image.onerror = reject;
+                    image.src = objectUrl;
+                });
+                source = image;
+            } catch {
+                source = null;
+            }
+        }
+
+        if (!source) {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            return file;
+        }
+
+        try {
+            const width = source.width || source.naturalWidth;
+            const height = source.height || source.naturalHeight;
+            if (!width || !height) return file;
+
+            const side = Math.min(width, height);
+            const sourceX = Math.floor((width - side) / 2);
+            const sourceY = Math.floor((height - side) / 2);
 
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const context = canvas.getContext('2d', { alpha: false });
-            if (!context) throw new Error('The profile photo could not be prepared.');
+            if (!context) return file;
 
             context.imageSmoothingEnabled = true;
             context.imageSmoothingQuality = 'high';
             context.fillStyle = '#ffffff';
             context.fillRect(0, 0, 512, 512);
-            context.drawImage(image, sourceX, sourceY, side, side, 0, 0, 512, 512);
+            context.drawImage(source, sourceX, sourceY, side, side, 0, 0, 512, 512);
 
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.82));
-            if (!blob) throw new Error('The profile photo could not be prepared.');
+            if (!blob) return file;
 
             return new File([blob], 'profile-photo.jpg', {
                 type: 'image/jpeg',
                 lastModified: Date.now(),
             });
+        } catch {
+            return file;
         } finally {
-            URL.revokeObjectURL(objectUrl);
+            source?.close?.();
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
         }
-
     }
 
     function clearErrors(form) {
