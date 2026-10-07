@@ -225,7 +225,14 @@ class CommunityController extends Controller
         }
 
         $r->session()->regenerate();
-        $r->session()->forget('access_token');
+        // A regenerated Laravel session keeps existing data. Clear any identity
+        // cached for the previous account before installing the new auth cookie.
+        $r->session()->forget([
+            'access_token',
+            'profile',
+            'profile_verified_at',
+            'profile_token_hash',
+        ]);
 
         $cookie = cookie(
             Community::AUTH_COOKIE,
