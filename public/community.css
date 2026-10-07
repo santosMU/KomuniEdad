@@ -390,3 +390,24 @@ a.activity-tag:hover{background:#dfe9db;color:#193f32}
 @media(prefers-reduced-motion:reduce){
   .auth-card .btn{transition:none}
 }
+
+
+/* Activity discussions */
+.activity-card-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px}
+.activity-card-actions .card-action{margin-top:0}
+.discussion-link{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap}
+.discussion-link:hover{text-decoration:underline}
+.activity-discussion{scroll-margin-top:90px}
+.discussion-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.discussion-live{display:inline-flex;align-items:center;gap:7px;background:#e7f3eb;color:#23734e;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800}
+.discussion-live:before{content:"";width:8px;height:8px;border-radius:50%;background:#2f9e68}
+.discussion-list{display:grid;gap:12px;margin:20px 0;max-height:520px;overflow:auto}
+.discussion-comment{padding:14px;border:1px solid var(--line);border-radius:12px;background:#fbfcfa}
+.discussion-comment strong{margin-right:8px}
+.discussion-comment small{color:var(--muted)}
+.discussion-comment p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;margin:8px 0 0}
+.discussion-empty{padding:22px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted);background:#fafbf8}
+.discussion-form{border-top:1px solid var(--line);padding-top:20px}
+.discussion-form textarea{resize:vertical;min-height:92px}
+.discussion-form-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+@media(max-width:560px){.activity-card-actions{align-items:flex-start;flex-direction:column;gap:8px}.discussion-form-footer{align-items:stretch;flex-direction:column}.discussion-form-footer .btn{width:100%}}

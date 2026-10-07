@@ -37,6 +37,8 @@ Route::get('/health', fn () => response()->json(['status' => 'ok', 'service' => 
 Route::middleware([CommunitySession::class, \App\Http\Middleware\ValidateRecordIds::class, \App\Http\Middleware\JsonFormResponse::class])->group(function () {
     Route::get('/', [Community::class, 'index']);
     Route::get('/activities/{id}', [Community::class, 'detail']);
+    Route::get('/activities/{id}/discussion', [Community::class, 'discussion']);
+    Route::post('/activities/{id}/discussion', [Community::class, 'comment'])->middleware('throttle:20,1');
     Route::post('/activities/{id}/enroll', [Community::class, 'enroll'])->middleware('throttle:20,1');
     Route::post('/enrollments/{id}/withdraw', [Community::class, 'withdraw']);
     Route::get('/workspace', [Portal::class, 'workspace']);

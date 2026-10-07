@@ -59,10 +59,16 @@
                     <p class="schedule">{{ \Carbon\Carbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('D, M j · g:i A') }}</p>
                     <p class="venue">{{ $a['venue'] }}</p>
                     <p class="payment-note">{{ ($a['is_free'] ?? true) ? 'Free activity' : '₱'.number_format((float) ($a['fee'] ?? 0), 2).' cash payment onsite' }}</p>
-                    <a class="card-action" href="/activities/{{ $a['activity_id'] }}">
-                        {{ $entry ? 'View my enrollment' : 'View details & enroll' }}
-                        <span aria-hidden="true">→</span>
-                    </a>
+                    <div class="activity-card-actions">
+                        <a class="card-action" href="/activities/{{ $a['activity_id'] }}">
+                            {{ $entry ? 'View my enrollment' : 'View details & enroll' }}
+                            <span aria-hidden="true">→</span>
+                        </a>
+                        <a class="discussion-link" href="/activities/{{ $a['activity_id'] }}#discussion">
+                            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                            Discussion
+                        </a>
+                    </div>
                 </div>
             </article>
         @endforeach
