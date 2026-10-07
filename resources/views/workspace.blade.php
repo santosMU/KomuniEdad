@@ -127,6 +127,13 @@
                     <span class="badge {{ $a['status'] === 'open' ? 'bg-success' : 'bg-warning text-dark' }} text-uppercase" style="font-size: 0.7rem;">{{ ucfirst($a['status']) }}</span>
                 </div>
                 <h3 class="fs-6 fw-bold text-dark mb-1">{{ $a['title'] }}</h3>
+                @if(!empty($a['tags']))
+                    <div class="activity-tag-list mb-2">
+                        @foreach($a['tags'] as $activityTag)
+                            <span class="activity-tag">{{ ucfirst($activityTag) }}</span>
+                        @endforeach
+                    </div>
+                @endif
                 <p class="text-muted small mb-3 text-truncate">{{ $a['description'] }}</p>
                 <div class="small text-secondary mb-3 mt-auto">
                     <div><strong>Schedule:</strong> {{ \Carbon\Carbon::parse($a['start_at'])->format('M j, Y • g:i A') }}</div>

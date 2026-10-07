@@ -40,6 +40,21 @@
                 <label for="venue">Venue</label>
                 <input id="venue" class="form-control" name="venue" required maxlength="200" value="{{ old('venue', $activity['venue'] ?? '') }}">
             </div>
+
+
+            <div class="wide">
+                <label for="tags">Activity tags</label>
+                <input
+                    id="tags"
+                    class="form-control"
+                    name="tags"
+                    maxlength="300"
+                    value="{{ old('tags', implode(', ', $activity['tags'] ?? [])) }}"
+                    placeholder="Example: beginner, social, gardening"
+                    data-activity-tags>
+                <p class="small text-muted mb-0 mt-1">Add up to 6 short tags, separated by commas. Seniors can tap them to find similar activities.</p>
+                <div class="activity-tag-preview mt-2" data-tag-preview aria-live="polite"></div>
+            </div>
            
             @foreach(['start_at' => 'Start time', 'end_at' => 'End time', 'cutoff_at' => 'Registration deadline'] as $field => $label)
             <div>
@@ -115,6 +130,7 @@
                         <span id="preview-category" class="badge bg-secondary mb-1">General</span>
                         <span id="preview-status" class="badge bg-success">Open</span>
                     </div>
+                    <div id="preview-tags" class="activity-tag-list mb-2"></div>
                     <h3 id="preview-title" class="fs-6 fw-bold text-dark mb-1">Activity title</h3>
                     <p id="preview-desc" class="text-muted small mb-2">Description will appear here...</p>
                     <div class="small text-secondary mb-3">

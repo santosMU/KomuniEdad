@@ -21,6 +21,7 @@ class CommunityController extends Controller
             'q' => 'nullable|string|max:160',
             'category' => 'nullable|string|max:80',
             'status' => 'nullable|in:open,full,ongoing,completed,cancelled',
+            'tag' => 'nullable|string|max:24',
             'mine' => 'nullable|boolean',
         ]);
         $enrollments = $s->ownEnrollments();
@@ -28,6 +29,7 @@ class CommunityController extends Controller
         $query = $r->string('q')->toString();
         $mine = $r->boolean('mine');
         $status = $r->string('status')->toString();
+        $tag = strtolower(trim($r->string('tag')->toString()));
        
         $activities = array_filter($s->activities(), fn ($a) =>
             (! $category ||
@@ -35,7 +37,8 @@ class CommunityController extends Controller
                 ($a['categories']['category_id'] ?? '') === $category ||
                 strcasecmp($a['categories']['name'] ?? '', $category) === 0
             ) &&
-            (! $query || str_contains(strtolower($a['title'].' '.$a['venue']), strtolower($query))) &&
+            (! $query || str_contains(strtolower($a['title'].' '.$a['venue'].' '.implode(' ', $a['tags'] ?? [])), strtolower($query))) &&
+            (! $tag || in_array($tag, array_map('strtolower', $a['tags'] ?? []), true)) &&
             (! $mine || collect($enrollments)->contains(fn ($e) => $e['activity_id'] === $a['activity_id'] && $e['status'] !== 'cancelled'))
         );
 
@@ -55,7 +58,16 @@ class CommunityController extends Controller
             ])->header('Cache-Control', 'private, no-store');
         }
 
-        return view('community', compact('activities', 'enrollments', 'category', 'query', 'mine', 'status') + ['demo' => $s->demo(), 'categories' => $s->table('categories')]);
+        $availableTags = collect($s->activities())
+            ->flatMap(fn ($activity) => $activity['tags'] ?? [])
+            ->filter()
+            ->map(fn ($value) => strtolower(trim((string) $value)))
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        return view('community', compact('activities', 'enrollments', 'category', 'query', 'mine', 'status', 'tag', 'availableTags') + ['demo' => $s->demo(), 'categories' => $s->table('categories')]);
     }
 
     public function detail(string $id, Community $s)

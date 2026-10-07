@@ -117,8 +117,25 @@
             @endforeach
         </nav>
 
+        @if(!empty($availableTags))
+            <div class="activity-tag-filters mb-3" aria-label="Filter activities by interest">
+                <span class="activity-tag-filter-label">Interests:</span>
+                @foreach($availableTags as $activityTag)
+                    <a
+                        href="/?tag={{ urlencode($activityTag) }}{{ request('category') ? '&category='.urlencode(request('category')) : '' }}{{ request('q') ? '&q='.urlencode(request('q')) : '' }}"
+                        class="activity-tag-filter {{ request('tag') === $activityTag ? 'active' : '' }}">
+                        #{{ $activityTag }}
+                    </a>
+                @endforeach
+                @if(request('tag'))
+                    <a href="/{{ request('category') ? '?category='.urlencode(request('category')) : '' }}" class="activity-tag-clear">Clear</a>
+                @endif
+            </div>
+        @endif
+
         <form class="filters senior-discovery-filters mb-3" method="get" action="/" data-activity-search>
             <input type="hidden" name="category" value="{{ request('category') }}">
+            <input type="hidden" name="tag" value="{{ request('tag') }}">
             <div class="search-field">
                 <label for="activity-search">Search activities</label>
                 <input id="activity-search" name="q" class="form-control" maxlength="160" value="{{ $query ?? '' }}" placeholder="Search by activity or venue">

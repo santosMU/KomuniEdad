@@ -102,6 +102,7 @@ class PortalController extends Controller
             'status' => ['required', Rule::in(['draft', 'open', 'full', 'ongoing', 'completed', 'cancelled', 'archived'])],
             'is_free' => 'nullable|boolean',
             'fee' => 'nullable|numeric|min:0|max:100000',
+            'tags' => 'nullable',
         ]);
 
         // Handle image upload: Convert to Base64 string to store directly in the database
@@ -113,6 +114,31 @@ class PortalController extends Controller
             $d['image'] = $old['image'] ?? null;
             $d['image_url'] = $old['image_url'] ?? null;
         }
+
+        $tagInput = $d['tags'] ?? [];
+        if (is_string($tagInput)) {
+            if (mb_strlen($tagInput) > 300) {
+                throw ValidationException::withMessages(['tags' => 'Keep the tags short and simple.']);
+            }
+            $tagInput = preg_split('/[,\n]+/', $tagInput, -1, PREG_SPLIT_NO_EMPTY);
+        } elseif (! is_array($tagInput)) {
+            throw ValidationException::withMessages(['tags' => 'Use simple text tags.']);
+        }
+
+        $rawTags = collect($tagInput)
+            ->filter(fn ($tag) => is_string($tag))
+            ->map(fn ($tag) => Str::of($tag)->squish()->lower()->toString())
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($rawTags->count() > 6 || $rawTags->contains(fn ($tag) => mb_strlen($tag) > 24)) {
+            throw ValidationException::withMessages([
+                'tags' => 'Use up to 6 short tags, with 24 characters or fewer each.',
+            ]);
+        }
+
+        $d['tags'] = $rawTags->all();
 
         $d['is_free'] = $r->has('is_free') ? $r->boolean('is_free') : true;
         $d['requirements'] = $d['requirements'] ?? '';

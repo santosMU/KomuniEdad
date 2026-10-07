@@ -322,4 +322,57 @@ class PortalTest extends TestCase
             ->assertSee('data-card-href="/workspace/1/edit"', false);
     }
 
+
+    public function test_activity_tags_render_filter_and_save_in_demo(): void
+    {
+        $this->get('/?tag=gentle')
+            ->assertOk()
+            ->assertSee('Morning movement & gentle stretching')
+            ->assertDontSee('Grow together: urban gardening');
+
+        $activity = app(Community::class)->activities()[0];
+
+        $this->withSession(['demo_role' => 'coordinator'])
+            ->post('/workspace/1/edit', [
+                'title' => $activity['title'],
+                'description' => $activity['description'],
+                'venue' => $activity['venue'],
+                'category_id' => $activity['category_id'],
+                'start_at' => $activity['start_at'],
+                'end_at' => $activity['end_at'],
+                'cutoff_at' => $activity['cutoff_at'],
+                'capacity' => $activity['capacity'],
+                'requirements' => $activity['requirements'],
+                'status' => $activity['status'],
+                'is_free' => 1,
+                'fee' => 0,
+                'tags' => 'Gentle, Social, gentle',
+            ])->assertRedirect('/workspace');
+
+        $saved = collect(session('demo_activities'))->firstWhere('activity_id', '1');
+        $this->assertSame(['gentle', 'social'], $saved['tags']);
+    }
+
+    public function test_activity_tags_are_limited_to_six_short_values(): void
+    {
+        $activity = app(Community::class)->activities()[0];
+
+        $this->withSession(['demo_role' => 'coordinator'])
+            ->post('/workspace/1/edit', [
+                'title' => $activity['title'],
+                'description' => $activity['description'],
+                'venue' => $activity['venue'],
+                'category_id' => $activity['category_id'],
+                'start_at' => $activity['start_at'],
+                'end_at' => $activity['end_at'],
+                'cutoff_at' => $activity['cutoff_at'],
+                'capacity' => $activity['capacity'],
+                'requirements' => $activity['requirements'],
+                'status' => $activity['status'],
+                'is_free' => 1,
+                'fee' => 0,
+                'tags' => 'one,two,three,four,five,six,seven',
+            ])->assertSessionHasErrors('tags');
+    }
+
 }
