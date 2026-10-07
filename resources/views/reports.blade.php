@@ -94,7 +94,7 @@
                     height="360"
                     data-report-chart
                     data-chart-type="line"
-                    data-chart='@json($charts["trend"])'
+                    data-chart="{{ json_encode($charts['trend']) }}"
                     aria-label="Participation trend chart"
                     role="img"></canvas>
             </div>
@@ -118,7 +118,7 @@
                     height="360"
                     data-report-chart
                     data-chart-type="bar"
-                    data-chart='@json($charts["category"])'
+                    data-chart="{{ json_encode($charts['category']) }}"
                     aria-label="Category demand chart"
                     role="img"></canvas>
             </div>
