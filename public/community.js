@@ -388,7 +388,7 @@
                 tags.forEach(tag => {
                     const chip = document.createElement('span');
                     chip.className = editable ? 'activity-tag activity-tag-edit-preview' : 'activity-tag';
-                    chip.textContent = '#' + tag;
+                    chip.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
                     container.appendChild(chip);
                 });
             };
