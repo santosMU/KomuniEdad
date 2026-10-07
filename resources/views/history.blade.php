@@ -4,11 +4,11 @@
 
 <div class="section-heading align-items-end">
     <div>
-        <p class="eyebrow mb-1">MY PARTICIPATION</p>
-        <h1 class="mb-1">Activity history</h1>
-        <p class="intro mb-0">Review activities you joined, attendance records, and feedback.</p>
+        <p class="eyebrow mb-1">PAST ACTIVITIES</p>
+        <h1 class="mb-1">Past activities</h1>
+        <p class="intro mb-0">See the activities you joined before and leave feedback when it is available.</p>
     </div>
-    <a href="/" class="btn btn-outline-primary">Discover activities</a>
+    <a href="/" class="btn btn-outline-primary">Find activities</a>
 </div>
 
 <div class="history-list">
@@ -58,28 +58,30 @@
                 </div>
             @elseif($e['status'] === 'completed' && $present)
                 <details class="mt-3">
-                    <summary>Share feedback</summary>
+                    <summary>Leave feedback</summary>
                     <form method="post" action="/history/{{ $e['enrollment_id'] }}/feedback" class="form-grid mt-3">
                         @csrf
                         <div>
-                            <label for="rating-{{ $e['enrollment_id'] }}">How was your experience?</label>
+                            <label for="rating-{{ $e['enrollment_id'] }}">How was this activity?</label>
                             <select class="form-select" name="rating" id="rating-{{ $e['enrollment_id'] }}">
-                                @foreach([5,4,3,2,1] as $score)
-                                    <option value="{{ $score }}">{{ $score }} / 5</option>
-                                @endforeach
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Good</option>
+                                <option value="3">3 - Okay</option>
+                                <option value="2">2 - Not very good</option>
+                                <option value="1">1 - Poor</option>
                             </select>
                         </div>
                         <div class="wide">
-                            <label for="comments-{{ $e['enrollment_id'] }}">Comments (optional)</label>
+                            <label for="comments-{{ $e['enrollment_id'] }}">Anything else you would like us to know? (optional)</label>
                             <textarea class="form-control" name="comments" id="comments-{{ $e['enrollment_id'] }}" maxlength="2000" rows="3"></textarea>
                         </div>
-                        <div class="wide"><button class="btn btn-primary">Send feedback</button></div>
+                        <div class="wide"><button class="btn btn-primary">Send my feedback</button></div>
                     </form>
                 </details>
             @endif
 
             @if($a)
-                <a class="btn btn-outline-secondary btn-sm mt-3" href="/activities/{{ $a['activity_id'] }}">View activity details</a>
+                <a class="btn btn-outline-secondary btn-sm mt-3" href="/activities/{{ $a['activity_id'] }}">View activity</a>
             @endif
         </article>
     @empty

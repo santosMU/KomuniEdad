@@ -165,7 +165,7 @@
             <img src="/images/logo.png" alt="" aria-hidden="true" style="width: 65px; height: auto; margin-right: -5px; margin-left: -5px;">
             <span>KomuniEdad</span>
         </a>
-        <span class="portal-label">Senior Citizen Community Portal</span>
+        <span class="portal-label">Community Activities</span>
     </header>
 
     <div id="request-status" role="status" aria-live="polite" tabindex="-1" hidden></div>
@@ -195,20 +195,20 @@
         </div>
        <nav aria-label="Main navigation">
             @if($currentRole==='senior')
-                <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/">Discover Activities</a>
-                <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1">My Activities</a>
-                <a class="nav-item {{ request()->is('history') ? 'selected' : '' }}" href="/history">Participation history</a>
+                <a class="nav-item {{ request()->is('/') && !request()->boolean('mine') ? 'selected' : '' }}" href="/"><i class="bi bi-compass" aria-hidden="true"></i><span>Activities</span></a>
+                <a class="nav-item {{ request()->boolean('mine') ? 'selected' : '' }}" href="/?mine=1"><i class="bi bi-calendar2-check" aria-hidden="true"></i><span>My schedule</span></a>
+                <a class="nav-item {{ request()->is('history') ? 'selected' : '' }}" href="/history"><i class="bi bi-clock-history" aria-hidden="true"></i><span>Past activities</span></a>
+                <a class="nav-item {{ request()->is('announcements') ? 'selected' : '' }}" href="/announcements"><i class="bi bi-megaphone" aria-hidden="true"></i><span>Updates</span></a>
+                <a class="nav-item {{ request()->is('profile') ? 'selected' : '' }}" href="/profile"><i class="bi bi-person" aria-hidden="true"></i><span>Profile</span></a>
+                <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help"><i class="bi bi-question-circle" aria-hidden="true"></i><span>Help</span></a>
             @else
                 <a class="nav-item {{ request()->is('workspace*') ? 'selected' : '' }}" href="/workspace">Program Workspace</a>
                 <a class="nav-item {{ request()->is('reports') ? 'selected' : '' }}" href="/reports">Participation reports</a>
-            @endif
-            <a class="nav-item {{ request()->is('announcements') ? 'selected' : '' }}" href="/announcements">Announcements</a>
-            <a class="nav-item {{ request()->is('profile') ? 'selected' : '' }}" href="/profile">My profile</a>
-            @if($currentRole === 'senior')
-                <a class="nav-item {{ request()->is('help') ? 'selected' : '' }}" href="/help">Help & FAQ</a>
-            @endif
-            @if($currentRole==='admin')
-                <a class="nav-item {{ request()->is('administration*') ? 'selected' : '' }}" href="/administration">Administration</a>
+                <a class="nav-item {{ request()->is('announcements') ? 'selected' : '' }}" href="/announcements">Announcements</a>
+                <a class="nav-item {{ request()->is('profile') ? 'selected' : '' }}" href="/profile">My profile</a>
+                @if($currentRole==='admin')
+                    <a class="nav-item {{ request()->is('administration*') ? 'selected' : '' }}" href="/administration">Administration</a>
+                @endif
             @endif
         </nav>
 
@@ -260,6 +260,9 @@
                 </span>
             </div>
             <div class="topbar-end">
+                @if($currentRole === 'senior')
+                    <a class="senior-top-help" href="/help"><i class="bi bi-question-circle" aria-hidden="true"></i><span>Help</span></a>
+                @endif
                 @if(!$demo && $portal->accessToken())
                     <form method="post" action="/logout" class="mobile-signout">@csrf<button class="btn btn-outline-secondary">Sign out</button></form>
                 @endif
@@ -302,20 +305,16 @@
     @if($currentRole === 'senior')
     <nav class="mobile-bottom-nav" aria-label="Mobile bottom navigation">
         <a href="/" class="{{ request()->is('/') && !request()->boolean('mine') ? 'active' : '' }}">
-            <i class="nav-icon bi bi-house-door-fill" aria-hidden="true"></i>
-            <span>Discover</span>
+            <i class="nav-icon bi bi-compass-fill" aria-hidden="true"></i><span>Activities</span>
         </a>
         <a href="/?mine=1" class="{{ request()->boolean('mine') ? 'active' : '' }}">
-            <i class="nav-icon bi bi-calendar-check-fill" aria-hidden="true"></i>
-            <span>My Activities</span>
+            <i class="nav-icon bi bi-calendar2-check-fill" aria-hidden="true"></i><span>My schedule</span>
         </a>
-        <a href="/help" class="{{ request()->is('help') ? 'active' : '' }}">
-            <i class="nav-icon bi bi-question-circle-fill" aria-hidden="true"></i>
-            <span>Help & FAQ</span>
+        <a href="/announcements" class="{{ request()->is('announcements') ? 'active' : '' }}">
+            <i class="nav-icon bi bi-megaphone-fill" aria-hidden="true"></i><span>Updates</span>
         </a>
         <a href="/profile" class="{{ request()->is('profile') ? 'active' : '' }}">
-            <i class="nav-icon bi bi-person-fill" aria-hidden="true"></i>
-            <span>Profile</span>
+            <i class="nav-icon bi bi-person-fill" aria-hidden="true"></i><span>Profile</span>
         </a>
     </nav>
     @endif

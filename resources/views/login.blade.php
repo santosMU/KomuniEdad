@@ -12,8 +12,8 @@
         </div>
 
         <div class="auth-copy">
-            <h1 id="login-heading">Welcome back</h1>
-            <p>Sign in to your community portal.</p>
+            <h1 id="login-heading">Sign in to KomuniEdad</h1>
+            <p>Enter your email and password to see your activities and community updates.</p>
         </div>
 
         @if (session('status') || session('error') || $errors->any())
@@ -62,10 +62,10 @@
 
         <a href="/register" class="btn auth-secondary-btn">
             <i class="bi bi-person-plus" aria-hidden="true"></i>
-            Create a senior account
+            Create an account
         </a>
 
-        <p class="auth-help">Need help signing in? Ask your community coordinator.</p>
+        <p class="auth-help">Having trouble? Ask your community coordinator for help.</p>
     </section>
 
     <aside class="auth-hero" aria-label="KomuniEdad community">

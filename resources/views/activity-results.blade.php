@@ -47,26 +47,17 @@
                         @endif
                     </div>
 
-                    @if(!empty($a['tags']))
-                        <div class="activity-tag-list" aria-label="Activity interests">
-                            @foreach($a['tags'] as $activityTag)
-                                <a class="activity-tag" href="/?tag={{ urlencode($activityTag) }}">{{ ucfirst($activityTag) }}</a>
-                            @endforeach
-                        </div>
-                    @endif
-
                     <h3><a href="/activities/{{ $a['activity_id'] }}">{{ $a['title'] }}</a></h3>
                     <p class="schedule">{{ \Carbon\Carbon::parse($a['start_at'])->timezone(config('app.timezone'))->format('D, M j · g:i A') }}</p>
                     <p class="venue">{{ $a['venue'] }}</p>
-                    <p class="payment-note">{{ ($a['is_free'] ?? true) ? 'Free activity' : '₱'.number_format((float) ($a['fee'] ?? 0), 2).' cash payment onsite' }}</p>
+                    <p class="payment-note">{{ ($a['is_free'] ?? true) ? 'Free to join' : '₱'.number_format((float) ($a['fee'] ?? 0), 2).' cash, paid at the activity' }}</p>
                     <div class="activity-card-actions">
-                        <a class="card-action" href="/activities/{{ $a['activity_id'] }}">
-                            {{ $entry ? 'View my enrollment' : 'View details & enroll' }}
-                            <span aria-hidden="true">→</span>
+                        <a class="btn btn-primary senior-card-primary" href="/activities/{{ $a['activity_id'] }}">
+                            {{ $entry ? 'View my registration' : 'View activity' }}
                         </a>
                         <a class="discussion-link" href="/activities/{{ $a['activity_id'] }}#discussion">
                             <i class="bi bi-chat-dots" aria-hidden="true"></i>
-                            Discussion
+                            Comments & questions
                         </a>
                     </div>
                 </div>

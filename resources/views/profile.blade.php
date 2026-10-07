@@ -12,17 +12,17 @@
     <div class="section-heading align-items-end">
         <div>
             <p class="eyebrow mb-1">MY PROFILE</p>
-            <h1 class="h3 mb-1">Your profile</h1>
-            <p class="text-muted mb-0">Update your personal details.</p>
+            <h1 class="h3 mb-1">My profile</h1>
+            <p class="text-muted mb-0">Keep your contact details up to date.</p>
         </div>
     </div>
 
-    <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Profile shortcuts">
-        @if($profile['role']==='senior')<a class="btn btn-outline-secondary" href="/history">Participation history</a>@endif
-        <a class="btn btn-outline-secondary" href="/announcements">Announcements</a>
+    <nav class="senior-profile-links" aria-label="Profile shortcuts">
+        @if($profile['role']==='senior')<a class="btn btn-outline-secondary" href="/history">Past activities</a>@endif
+        <a class="btn btn-outline-secondary" href="/announcements">Updates</a>
     </nav>
 
-    <form class="panel form-grid bg-light p-3 rounded-3 shadow-sm m-0" method="post" action="/profile" enctype="multipart/form-data">
+    <form class="panel form-grid senior-profile-form m-0" method="post" action="/profile" enctype="multipart/form-data">
         @csrf
 
         <div class="wide profile-photo-section">
@@ -45,31 +45,31 @@
         </div>
 
         <div class="mb-2">
-            <label class="form-label small fw-bold mb-1" for="full_name">Full name</label>
-            <input class="form-control form-control-sm py-2" name="full_name" id="full_name" required maxlength="120" value="{{ old('full_name',$profile['full_name']) }}">
+            <label class="form-label fw-bold mb-1" for="full_name">Full name</label>
+            <input class="form-control py-2" name="full_name" id="full_name" required maxlength="120" value="{{ old('full_name',$profile['full_name']) }}">
         </div>
 
         <div class="mb-2">
-            <label class="form-label small fw-bold mb-1" for="contact_number">Contact number (optional)</label>
-            <input class="form-control form-control-sm py-2" name="contact_number" id="contact_number" maxlength="30" value="{{ old('contact_number',$profile['contact_number']??'') }}">
+            <label class="form-label fw-bold mb-1" for="contact_number">Contact number (optional)</label>
+            <input class="form-control py-2" name="contact_number" id="contact_number" maxlength="30" value="{{ old('contact_number',$profile['contact_number']??'') }}">
         </div>
 
         @if($profile['role']==='senior')
             <div class="mb-2">
-                <label class="form-label small fw-bold mb-1" for="birthdate">Birthdate (optional)</label>
-                <input class="form-control form-control-sm py-2" type="date" name="birthdate" id="birthdate" max="{{ now()->toDateString() }}" value="{{ old('birthdate',$senior['birthdate']??'') }}">
+                <label class="form-label fw-bold mb-1" for="birthdate">Birthdate (optional)</label>
+                <input class="form-control py-2" type="date" name="birthdate" id="birthdate" max="{{ now()->toDateString() }}" value="{{ old('birthdate',$senior['birthdate']??'') }}">
             </div>
 
             <div class="mb-2">
-                <label class="form-label small fw-bold mb-1" for="address">Address (optional)</label>
-                <input class="form-control form-control-sm py-2" name="address" id="address" maxlength="500" value="{{ old('address',$senior['address']??'') }}">
+                <label class="form-label fw-bold mb-1" for="address">Address (optional)</label>
+                <input class="form-control py-2" name="address" id="address" maxlength="500" value="{{ old('address',$senior['address']??'') }}">
             </div>
 
-            <p class="small text-muted mb-2">Verification status: <strong class="text-dark">{{ ucfirst($senior['verification_status']??'pending') }}</strong></p>
+            <p class="small text-muted mb-2">Account verification: <strong class="text-dark">{{ ucfirst($senior['verification_status']??'pending') }}</strong></p>
         @endif
 
         <div class="wide d-flex gap-2 mt-3">
-            <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">Save profile</button>
+            <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">Save my profile</button>
 
             @if(!$demo && $portal->accessToken())
                 <button type="submit" form="profile-logout" class="btn btn-outline-danger flex-grow-1 fw-bold">Sign out</button>
