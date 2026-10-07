@@ -81,6 +81,38 @@ class CommunityController extends Controller
         return view('detail', ['activity' => $activity, 'enrollments' => $s->ownEnrollments(), 'demo' => $s->demo()]);
     }
 
+    public function discussion(string $id, Community $s)
+    {
+        abort_unless(collect($s->activities())->contains('activity_id', $id), 404);
+
+        $comments = $s->demo() ? [] : $s->table('activity_comments', [
+            'select' => 'comment_id,activity_id,author_id,message,created_at,profiles(full_name,role,avatar_path)',
+            'activity_id' => 'eq.'.$id,
+            'order' => 'created_at.asc',
+            'limit' => 100,
+        ]);
+
+        return response()->json([
+            'count' => count($comments),
+            'html' => view('activity-discussion', compact('comments'))->render(),
+        ])->header('Cache-Control', 'private, no-store');
+    }
+
+    public function comment(string $id, Request $r, Community $s)
+    {
+        abort_unless(collect($s->activities())->contains('activity_id', $id), 404);
+        $data = $r->validate(['message' => 'required|string|max:1000']);
+
+        if (! $s->demo()) {
+            $s->api('POST', '/rest/v1/activity_comments', [
+                'activity_id' => $id,
+                'message' => trim($data['message']),
+            ]);
+        }
+
+        return redirect('/activities/'.$id.'#discussion')->with('status', 'Comment posted.');
+    }
+
     public function enroll(string $id, Community $s)
     {
         abort_unless($s->role() === 'senior', 403);
