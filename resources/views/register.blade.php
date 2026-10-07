@@ -12,8 +12,8 @@
         </div>
 
         <div class="auth-copy">
-            <h1 id="register-heading">Create your account</h1>
-            <p>Join KomuniEdad and stay connected.</p>
+            <h1 id="register-heading">Create your senior account</h1>
+            <p>Create an account to join activities and receive community updates.</p>
         </div>
 
         @if ($errors->any())
@@ -70,9 +70,9 @@
 
         <div class="auth-divider" aria-hidden="true"><span>or</span></div>
 
-        <a href="/login" class="btn auth-secondary-btn">Already have an account? Sign in</a>
+        <a href="/login" class="btn auth-secondary-btn">I already have an account</a>
 
-        <p class="auth-help">Need help creating an account? Ask your community coordinator.</p>
+        <p class="auth-help">If you need help, ask your community coordinator.</p>
     </section>
 
     <aside class="auth-hero auth-hero-register" aria-label="KomuniEdad community">
