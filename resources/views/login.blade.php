@@ -70,8 +70,8 @@
 
     <aside class="auth-hero" aria-label="KomuniEdad community">
         <picture>
-            <source media="(max-width: 767px)" srcset="https://images.pexels.com/photos/5637718/pexels-photo-5637718.jpeg?auto=compress&cs=tinysrgb&w=900">
-            <img src="https://images.pexels.com/photos/8153988/pexels-photo-8153988.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Older adults enjoying time together">
+            <source media="(max-width: 767px)" srcset="https://images.pexels.com/photos/7937532/pexels-photo-7937532.jpeg?auto=compress&cs=tinysrgb&w=900">
+            <img src="https://images.pexels.com/photos/8153745/pexels-photo-8153745.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Older adults enjoying time together">
         </picture>
 
         <div class="auth-hero-shade" aria-hidden="true"></div>
