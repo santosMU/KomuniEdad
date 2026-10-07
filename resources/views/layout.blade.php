@@ -12,12 +12,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="/community.js" defer></script>
     <style>
-        @media (min-width: 768px) and (max-width: 1200px) {
-            .auth-page input.form-control {
-                font-size: 26px !important;
-                min-height: 74px !important;
-            }
-        }
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus {
