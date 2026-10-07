@@ -13,7 +13,7 @@
         <div>
             <p class="eyebrow mb-1">MY PROFILE</p>
             <h1 class="h3 mb-1">Your profile</h1>
-            <p class="text-muted mb-0">Keep your contact details and profile photo up to date.</p>
+            <p class="text-muted mb-0">Update your personal details.</p>
         </div>
     </div>
 
@@ -33,10 +33,14 @@
                     <span>{{ $initial }}</span>
                 @endif
             </div>
-            <div>
-                <label class="form-label fw-bold mb-1" for="profile_photo">Profile photo (optional)</label>
-                <input class="form-control" type="file" name="profile_photo" id="profile_photo" accept="image/jpeg,image/png,image/webp" data-profile-photo>
-                <p class="small text-muted mb-0 mt-1">JPG, PNG, or WebP. The app crops the center to a square, resizes it to 512 × 512, and compresses it before upload.</p>
+            <div class="profile-photo-copy">
+                <p class="form-label fw-bold mb-2">Your photo</p>
+                <div class="profile-photo-picker">
+                    <label class="btn btn-outline-primary profile-photo-button" for="profile_photo">Choose photo</label>
+                    <span class="profile-photo-file-name" data-profile-photo-name>No new photo selected</span>
+                    <input class="visually-hidden" type="file" name="profile_photo" id="profile_photo" accept="image/jpeg,image/png,image/webp" data-profile-photo>
+                </div>
+                <p class="small text-muted mb-0 mt-2">Choose a clear photo of yourself. You can change it anytime.</p>
             </div>
         </div>
 

@@ -242,6 +242,13 @@
         event.target.form?.querySelectorAll('[data-date-validation]').forEach(el => el.setCustomValidity(''));
         if (event.target.closest?.('#activity-form')) syncActivityPreview();
 
+        if (event.target.matches?.('[data-profile-photo]')) {
+            const name = document.querySelector('[data-profile-photo-name]');
+            if (name) {
+                name.textContent = event.target.files?.[0]?.name || 'No new photo selected';
+            }
+        }
+
         if (event.target.matches?.('[data-participant-search]')) {
             const term = event.target.value.trim().toLowerCase();
             const cards = [...document.querySelectorAll('[data-participant-name]')];
